@@ -1,0 +1,52 @@
+# Rust MakeFile
+# install: cargo install cargo-make
+# run: cargo make android-build
+
+[env]
+# 后端应用目录
+APPS = "apps"
+# 移动端项目目录
+MOBILE_PROJECT = "apps/mobile"
+# Android NDK HOME, 支持直接读取系统环境变量
+# NDK_HOME = "/home/user/.Android/Sdk/ndk/28.0.12433566"
+
+
+[tasks.clean]
+# private = true
+cwd = "${APPS}"
+command = "cargo"
+args = ["clean"]
+
+
+[tasks.dev]
+description = "Build desktop dev."
+category = "desktop"
+cwd = "${MOBILE_PROJECT}"
+command = "cargo"
+args = ["tauri", "dev"]
+
+
+[tasks.build]
+description = "Build desktop build."
+category = "desktop"
+cwd = "${MOBILE_PROJECT}"
+command = "cargo"
+args = ["tauri", "build"]
+
+
+[tasks.android-dev]
+description = "Build android dev."
+category = "mobile"
+env = { "CC_aarch64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
+cwd = "${MOBILE_PROJECT}"
+command = "cargo"
+args = ["tauri", "android", "dev"]
+
+
+[tasks.android-build]
+description = "Build android build."
+category = "mobile"
+env = { "CC_aarch64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
+cwd = "${MOBILE_PROJECT}"
+command = "cargo"
+args = ["tauri", "android", "build"]

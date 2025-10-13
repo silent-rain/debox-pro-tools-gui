@@ -1,0 +1,6 @@
+/src/main/java/com/one/debox_pro_tools_gui/generated
+/src/main/jniLibs/**/*.so
+/src/main/assets/tauri.conf.json
+/tauri.build.gradle.kts
+/proguard-tauri.pro
+/tauri.properties
