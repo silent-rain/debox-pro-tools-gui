@@ -6,47 +6,184 @@
 # 后端应用目录
 APPS = "apps"
 # 移动端项目目录
-MOBILE_PROJECT = "apps/mobile"
+MOBILE = "apps/mobile"
+MOBILE_WEB = "mobile-web"
 # Android NDK HOME, 支持直接读取系统环境变量
 # NDK_HOME = "/home/user/.Android/Sdk/ndk/28.0.12433566"
 
+# ============= 安装依赖 =============
+[tasks.install-java-sdk-deps]
+description = "Install java sdk deps."
+category = "deps"
+command = "sudo"
+args = ["pacman", "-S", "--needed", "jdk17-openjdk"]
 
+[tasks.install-linux-sys-deps]
+description = "Install linux sys deps."
+category = "deps"
+command = "sudo"
+args = [
+    "pacman",
+    "-S",
+    "--needed",
+    "binutils",
+    "gcc",
+    "lld",
+    "llvm",
+    "xdg-utils",
+]
+
+[tasks.install-linux-aur-sys-deps]
+description = "Install linux aur sys deps."
+category = "deps"
+command = "yay"
+args = [
+    "-S",
+    "--needed",
+    "linuxdeploy", # build: linuxdeploy --appdir ./debox-pro-tools-gui.AppDir --output appimage
+]
+
+[tasks.install-linux-desktop-deps]
+description = "Install linux desktop deps."
+category = "deps"
+command = "sudo"
+args = [
+    "pacman",
+    "-S",
+    "--needed",
+    "webkit2gtk-4.1",
+    "base-devel",
+    "curl",
+    "wget",
+    "file",
+    "openssl",
+    "appmenu-gtk-module",
+    "libappindicator-gtk3",
+    "librsvg",
+    "xdotool",
+]
+
+[tasks.install-win-nsis-deps]
+description = "Install win nsis deps."
+category = "deps"
+command = "yay"
+args = [
+    "-S",
+    "--needed",
+    "nsis",     # 交叉编译为 Windows Nsis 包
+]
+
+
+[tasks.install-linux-appimage-deps]
+description = "Install linux appimage deps."
+category = "deps"
+command = "sudo"
+args = [
+    "pacman",
+    "-S",
+    "--needed",
+    "fuse",     # 运行 Linux AppImage
+]
+
+
+[tasks.install-cargo-deps]
+description = "Install cargo deps."
+category = "deps"
+command = "cargo"
+args = [
+    "install",
+    "cargo-xwin",       # Windows SDK
+    "create-tauri-app", # 创建 Tauri 项目
+    "tauri-cli",        # Tauri 命令行工具
+]
+
+[tasks.install-rustup-android-deps]
+description = "Install rustup add android deps."
+category = "deps"
+command = "rustup"
+args = [
+    "target",
+    "add",
+    "aarch64-linux-android",
+    "armv7-linux-androideabi",
+    "i686-linux-android",
+    "x86_64-linux-android",
+]
+
+[tasks.install-rustup-ios-deps]
+description = "Install rustup add ios deps."
+category = "deps"
+command = "rustup"
+args = [
+    "target",
+    "add",
+    "aarch64-apple-ios",
+    "x86_64-apple-ios",
+    "aarch64-apple-ios-sim",
+]
+
+# 初始化前端环境
+[tasks.install-mobile-web]
+description = "Init mobile-web."
+category = "deps"
+cwd = "${MOBILE_WEB}"
+command = "pnpm"
+args = ["install"]
+
+
+[tasks.install]
+description = "Init all deps."
+category = "deps"
+run_task = [
+    { name = [
+        "install-linux-sys-deps",
+        # "install-linux-aur-sys-deps",
+        "install-linux-desktop-deps",
+        "install-win-nsis-deps",
+        "install-linux-appimage-deps",
+        "install-cargo-deps",
+        "install-rustup-android-deps",
+        # "install-rustup-ios-deps",
+        "install-mobile-web",
+    ] },
+]
+
+# ============= 清理 =============
 [tasks.clean]
 # private = true
 cwd = "${APPS}"
 command = "cargo"
 args = ["clean"]
 
-
+# ============= 开发调式 =============
 [tasks.dev]
 description = "Build desktop dev."
 category = "desktop"
-cwd = "${MOBILE_PROJECT}"
+cwd = "${MOBILE}"
 command = "cargo"
 args = ["tauri", "dev"]
-
-
-[tasks.build]
-description = "Build desktop build."
-category = "desktop"
-cwd = "${MOBILE_PROJECT}"
-command = "cargo"
-args = ["tauri", "build"]
-
 
 [tasks.android-dev]
 description = "Build android dev."
 category = "mobile"
 env = { "CC_aarch64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
-cwd = "${MOBILE_PROJECT}"
+cwd = "${MOBILE}"
 command = "cargo"
 args = ["tauri", "android", "dev"]
+
+# ============= 打包 =============
+[tasks.build]
+description = "Build desktop build."
+category = "desktop"
+cwd = "${MOBILE}"
+command = "cargo"
+args = ["tauri", "build"]
 
 
 [tasks.android-build]
 description = "Build android build."
 category = "mobile"
 env = { "CC_aarch64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
-cwd = "${MOBILE_PROJECT}"
+cwd = "${MOBILE}"
 command = "cargo"
 args = ["tauri", "android", "build"]

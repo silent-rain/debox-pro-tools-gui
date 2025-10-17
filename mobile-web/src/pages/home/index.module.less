@@ -1,0 +1,28 @@
+.card_wrapper {
+  position: relative;
+  /* 设为内联块元素以避免影响布局 */
+  display: inline-block;
+  width: 100%;
+  height: 200px;
+  border-radius: 16px;
+  /* 隐藏超出包装元素的内容 */
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  /* 设置图片尺寸 */
+  object-fit: cover;
+}
+
+.title {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  background: dimgrey;
+  padding: 7px;
+  border-radius: 12px;
+  font-size: 18px;
+}
