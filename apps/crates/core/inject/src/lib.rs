@@ -3,7 +3,7 @@ use std::sync::Arc;
 
 use database::{Mdb, PoolTrait};
 
-use nject::{provide, provider};
+use nject::provider;
 
 #[provider]
 pub struct InjectProvider {

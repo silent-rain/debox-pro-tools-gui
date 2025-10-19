@@ -1,3 +1,5 @@
+use axum_response::ResponseErr;
+
 use crate::Error;
 
 #[derive(Debug, thiserror::Error)]
@@ -63,5 +65,11 @@ impl ErrorMsg {
 impl std::fmt::Display for ErrorMsg {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "ErrorMsg(code: {}, msg: {})", self.code(), self.msg())
+    }
+}
+
+impl From<ErrorMsg> for ResponseErr {
+    fn from(err_msg: ErrorMsg) -> ResponseErr {
+        ResponseErr::new(err_msg.code(), err_msg.msg())
     }
 }
