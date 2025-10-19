@@ -18,7 +18,47 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { workspace = true, features = [] }
 
 [dependencies]
-tauri = { workspace = true, features = [] }
+logger = { path = "../crates/core/logger" }
+state = { path = "../crates/state" }
+
+err_code = { workspace = true }
+
+# Tauri 
+tauri = { workspace = true, features = ["rustls-tls"] }
 tauri-plugin-opener = { workspace = true }
+tauri-plugin-shell = { workspace = true }
+tauri-plugin-websocket = { workspace = true }
+tauri-plugin-log = { workspace = true }
+tauri-plugin-fs = { workspace = true }
+tauri-plugin-http = { workspace = true, features = ["unsafe-headers"] }
+
+
+axum = { workspace = true }
+axum-streams = { workspace = true, features = ["json", "protobuf", "text"] }
+tower-http = { workspace = true, features = ["cors"] }
+tokio = { workspace = true, features = ["full"] }
+tokio-stream = { workspace = true }
+futures = { workspace = true }
+
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+serde_repr = { workspace = true }
+anyhow = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+colored = { workspace = true }
+
+log = { workspace = true }
+tracing = { workspace = true }
+tracing-appender = { workspace = true }
+tracing-subscriber = { workspace = true, features = [
+    "env-filter",
+    "time",
+    "local-time",
+    "tracing-log",
+] }
+
+
+# Android openssl 支持
+[target.'cfg(any(target_os = "ios", target_os = "android", target_os = "macos"))'.dependencies]
+openssl-sys = { version = "0.9.104", features = ["vendored"] }

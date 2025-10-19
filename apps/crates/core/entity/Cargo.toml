@@ -1,0 +1,18 @@
+[package]
+name = "entity"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+sea-orm = { workspace = true }
+database = { workspace = true }
+
+serde = { workspace = true, features = ["derive"] }
+serde_repr = { workspace = true }
+chrono = { workspace = true }
+time = { workspace = true }
+rust_decimal = { workspace = true }
