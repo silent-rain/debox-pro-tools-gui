@@ -1,10 +1,12 @@
 //! 应用目录
 
+use std::path::PathBuf;
+
 use log::info;
 use tauri::{App, Manager};
 
 /// 初始化系统目录
-pub fn init_dir(app: &mut App) -> Result<(), tauri::Error> {
+pub fn init_dir(app: &mut App) -> Result<PathBuf, tauri::Error> {
     /*
     Android:
     audio_dir: "/storage/emulated/0/Android/data/com.mobile_llm.app/files/Music"
@@ -87,7 +89,7 @@ pub fn init_dir(app: &mut App) -> Result<(), tauri::Error> {
     let resource_dir = app.path().resource_dir();
     info!("========== resource_dir: {:#?}", resource_dir);
 
-    let app_config_dir = app.path().app_config_dir();
+    let app_config_dir = app.path().app_config_dir()?;
     info!("========== app_config_dir: {:#?}", app_config_dir);
 
     let app_data_dir = app.path().app_data_dir();
@@ -108,5 +110,36 @@ pub fn init_dir(app: &mut App) -> Result<(), tauri::Error> {
     let home_dir = app.path().home_dir();
     info!("========== home_dir: {:#?}", home_dir);
 
-    Ok(())
+    #[cfg(target_os = "android")]
+    let app_dir = {
+        let download_dir = app.path().download_dir()?;
+        let app_dir = download_dir
+            .parent()
+            .ok_or_else(|| tauri::Error::NoParent)?
+            .to_path_buf();
+        if !app_dir.exists() {
+            info!("========== create app_dir: {:#?}", app_dir);
+            std::fs::create_dir(&app_dir)?;
+        }
+        app_dir
+    };
+    #[cfg(target_os = "linux")]
+    let app_dir = {
+        let app_dir = app.path().app_config_dir()?;
+        if !app_dir.exists() {
+            info!("========== create app_dir: {:#?}", app_dir);
+            std::fs::create_dir(&app_dir)?;
+        }
+        app_dir
+    };
+    #[cfg(target_os = "windows")]
+    let app_dir = {
+        let app_dir = app.path().app_config_dir()?;
+        if !app_dir.exists() {
+            info!("========== create app_dir: {:#?}", app_dir);
+            std::fs::create_dir(&app_dir)?;
+        }
+        app_dir
+    };
+    Ok(app_dir)
 }
