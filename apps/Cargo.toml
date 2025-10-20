@@ -24,19 +24,20 @@ axum_response = { path = "crates/axum_response" }
 axum_validator = { path = "crates/axum_validator" }
 
 
-# inject 注入
+# Inject 依赖注入
 inject = { path = "crates/core/inject" }
 nject = "0.4"
 
 # Tauri
-tauri = "2"
-tauri-build = "2"
-tauri-plugin-opener = "2"
-tauri-plugin-shell = "2"
-tauri-plugin-websocket = "2"
-tauri-plugin-log = "2"
-tauri-plugin-fs = "2"
-tauri-plugin-http = "2"
+tauri = "2.8"
+tauri-build = "2.4"
+tauri-plugin-opener = "2.5"
+tauri-plugin-shell = "2.3"
+tauri-plugin-websocket = "2.4"
+tauri-plugin-log = "2.7"
+tauri-plugin-fs = "2.4"
+tauri-plugin-http = "2.5"
+tauri-plugin-notification = "2.3"
 
 # 服务框架
 axum = "0.8"

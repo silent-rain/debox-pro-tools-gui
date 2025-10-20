@@ -3,7 +3,8 @@ name = "debox-pro-tools-gui"
 version = "0.1.0"
 description = "A Tauri App"
 authors = ["you"]
-edition = "2021"
+edition = "2024"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -31,6 +32,9 @@ tauri-plugin-websocket = { workspace = true }
 tauri-plugin-log = { workspace = true }
 tauri-plugin-fs = { workspace = true }
 tauri-plugin-http = { workspace = true, features = ["unsafe-headers"] }
+# tauri-plugin-notification = { workspace = true, features = [
+#     "windows7-compat", # 支持 Windows 7
+# ] }
 
 
 axum = { workspace = true }

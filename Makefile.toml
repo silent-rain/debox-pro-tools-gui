@@ -3,13 +3,11 @@
 # run: cargo make android-build
 
 [env]
-# 后端应用目录
-APPS = "apps"
-# 移动端项目目录
-MOBILE = "apps/mobile"
-MOBILE_WEB = "mobile-web"
-# Android NDK HOME, 支持直接读取系统环境变量
-# NDK_HOME = "/home/user/.Android/Sdk/ndk/28.0.12433566"
+APPS = "apps"             # 后端应用目录
+MOBILE = "apps/mobile"    # 移动端应用
+MOBILE_WEB = "mobile-web" # 移动前端项目
+# NDK_HOME = "/home/user/.Android/Sdk/ndk/28.0.12433566" # Android NDK HOME, 支持直接读取系统环境变量
+# TAURI_BUNDLER_WIX_FIPS_COMPLIANT = "true" # 如果您的系统要求 MSI 软件包符合 FIPS 标准，则设置此环境变量。
 
 # ============= 安装依赖 =============
 [tasks.install-java-sdk-deps]
@@ -30,8 +28,8 @@ args = [
     "--needed",
     "binutils",
     "gcc",
-    "lld",
-    "llvm",
+    "lld",       # 链接器
+    "llvm",      # 链接器
     "xdg-utils",
 ]
 
@@ -109,7 +107,13 @@ private = true
 description = "Install rustup add linux deps."
 category = "deps"
 command = "rustup"
-args = ["target", "add", "x86_64-unknown-linux-gnu", "x86_64-pc-windows-gnu"]
+args = [
+    "target",
+    "add",
+    "x86_64-unknown-linux-gnu",
+    "x86_64-pc-windows-gnu",
+    # "x86_64-pc-windows-msvc",
+]
 
 [tasks.install-rustup-android-deps]
 private = true
