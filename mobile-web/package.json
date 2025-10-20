@@ -21,7 +21,6 @@
     "antd-mobile": "^5.38.1",
     "antd-mobile-icons": "^0.3.0",
     "axios": "^1.7.9",
-    "crypto-js": "^4.2.0",
     "js-cookie": "^3.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
