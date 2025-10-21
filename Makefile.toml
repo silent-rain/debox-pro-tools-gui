@@ -94,7 +94,8 @@ args = [
     "install",
     "cargo-xwin",       # Windows SDK
     "create-tauri-app", # 创建 Tauri 项目
-    "tauri-cli",        # Tauri 命令行工具
+    "tauri-cli",        # Tauri Cli 工具
+    "sea-orm-cli",      # Sea-Orm Cli 工具
 ]
 
 [tasks.install-rustup-android-deps]

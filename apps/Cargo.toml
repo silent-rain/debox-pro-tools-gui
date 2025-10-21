@@ -5,6 +5,7 @@ members = [
     "crates/core/err_code",
     "crates/core/database",
     "crates/core/entity",
+    "crates/core/migration",
     "crates/core/logger",
     "crates/core/inject",
 
@@ -20,8 +21,10 @@ members = [
 err_code = { path = "crates/core/err_code" }
 database = { path = "crates/core/database" }
 entity = { path = "crates/core/entity" }
+migration = { path = "crates/core/migration" }
 axum_response = { path = "crates/axum_response" }
 axum_validator = { path = "crates/axum_validator" }
+debox-pro-rs = { git = "https://github.com/silent-rain/debox-pro-rs.git" }
 
 
 # inject 注入
