@@ -7,7 +7,7 @@ use err_code::Error;
 use logger::config::ConsoleBunyanConfig;
 use state::mobile::{AppDirector, AppState};
 
-use crate::utils::app_dir::init_dir;
+use crate::utils::app_dir::{init_dir, print_app_dir};
 
 pub struct Setup {}
 
@@ -29,6 +29,9 @@ impl Setup {
             log_guards,
         };
         app.manage(state);
+
+        // 打印系统目录
+        print_app_dir(app).expect("打印系统目录失败");
 
         Ok(())
     }
