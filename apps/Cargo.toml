@@ -8,6 +8,14 @@ members = [
     "crates/core/migration",
     "crates/core/logger",
     "crates/core/inject",
+    "crates/core/requests",
+    "crates/core/utils",
+
+    # 组件
+    "crates/axum_context",
+    "crates/axum_jwt",
+    "crates/axum_response",
+    "crates/axum_validator",
 
     "crates/state",
     "crates/service_hub",
@@ -15,6 +23,7 @@ members = [
     # app 应用
     "mobile",
 ]
+
 
 [workspace.dependencies]
 # 本地组件
