@@ -32,8 +32,8 @@ inject = { path = "crates/core/inject" }
 nject = "0.4"
 
 # Tauri
-tauri = "2.8"
-tauri-build = "2.4"
+tauri = "2.9"
+tauri-build = "2.5"
 tauri-plugin-opener = "2.5"
 tauri-plugin-shell = "2.3"
 tauri-plugin-websocket = "2.4"
