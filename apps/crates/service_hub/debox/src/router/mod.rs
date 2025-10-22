@@ -3,6 +3,7 @@
 use axum::Router;
 
 pub mod api_operation;
+pub mod debox_account;
 pub mod system_log;
 pub mod web_log;
 
@@ -10,14 +11,11 @@ pub mod web_log;
 pub struct LogRouter;
 
 impl LogRouter {
-    /// 注册`日志管理`路由
+    /// 注册`Debox管理`路由
     pub fn register() -> Router {
         Router::new().nest(
-            "/log",
-            Router::new()
-                .merge(system_log::SystemLogRouter::register()) // 系统日志管理
-                .merge(api_operation::ApiOperationRouter::register()) // 操作日志管理
-                .merge(web_log::WebLogRouter::register()), // WEB日志管理
+            "/debox",
+            Router::new().merge(debox_account::DeboxAccountRouter::register()), // DeBox账号管理
         )
     }
 }
