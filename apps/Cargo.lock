@@ -469,6 +469,7 @@ dependencies = [
  "matchit",
  "memchr 2.7.6",
  "mime",
+ "multer",
  "percent-encoding",
  "pin-project-lite",
  "serde_core",
@@ -527,6 +528,41 @@ dependencies = [
  "axum",
  "serde",
  "serde_json",
+]
+
+[[package]]
+name = "axum_typed_multipart"
+version = "0.16.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a3e5345def2a33cfc056ece2751f3e255597691e84bdf7f4380086010495bd4b"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "axum",
+ "axum_typed_multipart_macros",
+ "bytes",
+ "chrono",
+ "futures-core",
+ "futures-util",
+ "rust_decimal",
+ "tempfile",
+ "thiserror 2.0.17",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
+name = "axum_typed_multipart_macros"
+version = "0.16.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "15c97c70acc884855204b16861765d0c7e9765ab7cfcfbe6dcc36b32d703ac87"
+dependencies = [
+ "darling 0.20.11",
+ "heck 0.5.0",
+ "proc-macro-error2",
+ "quote",
+ "syn 2.0.107",
+ "ubyte",
 ]
 
 [[package]]
@@ -1001,15 +1037,6 @@ checksum = "ba5a308b75df32fe02788e748662718f03fde005016435c444eea572398219fd"
 dependencies = [
  "bytes",
  "memchr 2.7.6",
-]
-
-[[package]]
-name = "comfyui"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tracing",
 ]
 
 [[package]]
@@ -3342,6 +3369,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "multer"
+version = "3.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "83e87776546dc87511aa5ee218730c92b666d7264ab6ed41f9d215af9cd5224b"
+dependencies = [
+ "bytes",
+ "encoding_rs",
+ "futures-util",
+ "http",
+ "httparse",
+ "memchr 2.7.6",
+ "mime",
+ "spin",
+ "version_check",
+]
+
+[[package]]
 name = "nalgebra"
 version = "0.30.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5520,9 +5564,10 @@ dependencies = [
 name = "service_hub"
 version = "0.1.0"
 dependencies = [
- "comfyui",
  "debox",
  "log 0.1.0",
+ "system",
+ "user",
 ]
 
 [[package]]
@@ -6085,6 +6130,32 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.107",
+]
+
+[[package]]
+name = "system"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum_response",
+ "axum_typed_multipart",
+ "axum_validator",
+ "base64 0.22.1",
+ "chrono",
+ "database",
+ "entity",
+ "err_code",
+ "infer",
+ "inject",
+ "log 0.4.28",
+ "nject",
+ "sea-orm",
+ "serde",
+ "serde_repr",
+ "tempfile",
+ "utils",
+ "uuid",
+ "validator",
 ]
 
 [[package]]
@@ -7107,6 +7178,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "ubyte"
+version = "0.10.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f720def6ce1ee2fc44d40ac9ed6d3a59c361c80a75a7aa8e75bb9baed31cf2ea"
+
+[[package]]
 name = "ucd-trie"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7237,6 +7314,33 @@ dependencies = [
  "serde",
  "unic-ucd-ident",
  "url",
+]
+
+[[package]]
+name = "user"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum_response",
+ "axum_validator",
+ "base64 0.22.1",
+ "chrono",
+ "database",
+ "entity",
+ "err_code",
+ "inject",
+ "log 0.4.28",
+ "nject",
+ "regex 1.12.2",
+ "rust_decimal",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "time",
+ "utils",
+ "uuid",
+ "validator",
 ]
 
 [[package]]

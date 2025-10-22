@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-comfyui = { path = "./comfyui" }
 log = { path = "./log" }
+system = { path = "./system" }
+user = { path = "./user" }
 debox = { path = "./debox" }
