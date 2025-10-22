@@ -2,15 +2,13 @@
 
 use axum::Router;
 
-pub mod api_operation;
 pub mod debox_account;
-pub mod system_log;
-pub mod web_log;
+pub mod debox_group;
 
 /// 路由器
-pub struct LogRouter;
+pub struct DeboxRouter;
 
-impl LogRouter {
+impl DeboxRouter {
     /// 注册`Debox管理`路由
     pub fn register() -> Router {
         Router::new().nest(

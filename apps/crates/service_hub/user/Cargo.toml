@@ -5,7 +5,6 @@ edition = "2024"
 
 [dependencies]
 utils = { path = "../../core/utils" }
-# cache = { path = "../../core/cache" }
 
 
 database = { workspace = true }
@@ -13,7 +12,7 @@ entity = { workspace = true }
 err_code = { workspace = true }
 inject = { workspace = true }
 axum_response = { workspace = true }
-# axum_context = { workspace = true }
+axum_context = { workspace = true }
 axum_validator = { workspace = true }
 
 

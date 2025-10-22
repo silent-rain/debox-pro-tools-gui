@@ -4,13 +4,12 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
-use database::utils::GenericTree;
-use entity::system::config;
+use entity::debox::debox_account;
 use err_code::{Error, ErrorMsg};
 
 use crate::{
-    dao::config::DeboxAccountDao,
-    dto::config::{
+    dao::debox_account::DeboxAccountDao,
+    dto::debox_account::{
         CreateDeboxAccountReq, DeleteDeboxAccountReq, GetDeboxAccountReq, GetDeboxAccountsReq,
         UpdateDeboxAccountReq, UpdateDeboxAccountStatusReq,
     },
@@ -19,7 +18,7 @@ use crate::{
 /// 服务层
 #[injectable]
 pub struct DeboxAccountService {
-    config_dao: DeboxAccountDao,
+    debox_account_dao: DeboxAccountDao,
 }
 
 impl DeboxAccountService {
@@ -27,139 +26,109 @@ impl DeboxAccountService {
     pub async fn list(
         &self,
         req: GetDeboxAccountsReq,
-    ) -> Result<(Vec<config::Model>, u64), ErrorMsg> {
+    ) -> Result<(Vec<debox_account::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
-            return self.config_dao.all().await.map_err(|err| {
-                error!("查询配置列表失败, err: {:#?}", err);
-                Error::DbQueryError.into_err_with_msg("查询配置列表失败")
+            return self.debox_account_dao.all().await.map_err(|err| {
+                error!("查询DeBox账号列表失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号列表失败")
             });
         }
 
-        let (results, total) = self.config_dao.list(req).await.map_err(|err| {
-            error!("查询配置列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_err_with_msg("查询配置列表失败")
+        let (results, total) = self.debox_account_dao.list(req).await.map_err(|err| {
+            error!("查询DeBox账号列表失败, err: {:#?}", err);
+            Error::DbQueryError.into_err_with_msg("查询DeBox账号列表失败")
         })?;
 
         Ok((results, total))
     }
 
-    /// 获取树列表数据
-    pub async fn tree(&self) -> Result<Vec<GenericTree<config::Model>>, ErrorMsg> {
-        let (results, _total) = self.config_dao.all().await.map_err(|err| {
-            error!("查询配置列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_err_with_msg("查询配置列表失败")
-        })?;
-
-        // 将列表转换为树列表
-        let results = GenericTree::to_tree(&results, None);
-
-        Ok(results)
-    }
-
     /// 获取详情数据
-    pub async fn info(&self, req: GetDeboxAccountReq) -> Result<config::Model, ErrorMsg> {
+    pub async fn info(&self, req: GetDeboxAccountReq) -> Result<debox_account::Model, ErrorMsg> {
         let result = self
-            .config_dao
+            .debox_account_dao
             .info(req.id)
             .await
             .map_err(|err| {
-                error!("查询配置信息失败, err: {:#?}", err);
-                Error::DbQueryError.into_err_with_msg("查询配置信息失败")
+                error!("查询DeBox账号信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号信息失败")
             })?
             .ok_or_else(|| {
-                error!("配置不存在");
-                Error::DbQueryEmptyError.into_err_with_msg("配置不存在")
+                error!("DeBox账号不存在");
+                Error::DbQueryEmptyError.into_err_with_msg("DeBox账号不存在")
             })?;
 
         Ok(result)
     }
 
     /// 添加数据
-    pub async fn create(&self, req: CreateDeboxAccountReq) -> Result<config::Model, ErrorMsg> {
-        // 查询配置编码是否存在
-        self.check_code_exist(req.code.clone(), None).await?;
-
-        let model = config::ActiveModel {
-            pid: Set(req.pid),
-            name: Set(req.name),
-            code: Set(req.code),
-            value: Set(req.value),
-            sort: Set(req.sort),
+    pub async fn create(
+        &self,
+        req: CreateDeboxAccountReq,
+    ) -> Result<debox_account::Model, ErrorMsg> {
+        let model = debox_account::ActiveModel {
+            user_id: Set(req.user_id),
+            api_key: Set(req.api_key),
+            app_secret: Set(req.app_secret),
+            access_token: Set(req.access_token),
+            web_token: Set(req.web_token),
+            debox_user_id: Set(req.debox_user_id),
+            wallet_address: Set(req.wallet_address),
+            api_key_status: Set(req.api_key_status),
+            access_token_status: Set(req.access_token_status),
+            web_token_status: Set(req.web_token_status),
             desc: Set(req.desc),
             status: Set(true),
             ..Default::default()
         };
-        let result = self.config_dao.create(model).await.map_err(|err| {
-            error!("添加配置信息失败, err: {:#?}", err);
-            Error::DbAddError.into_err_with_msg("添加配置信息失败")
+        let result = self.debox_account_dao.create(model).await.map_err(|err| {
+            error!("添加DeBox账号信息失败, err: {:#?}", err);
+            Error::DbAddError.into_err_with_msg("添加DeBox账号信息失败")
         })?;
 
         Ok(result)
     }
 
-    /// 更新配置
+    /// 更新DeBox账号
     pub async fn update(&self, req: UpdateDeboxAccountReq) -> Result<u64, ErrorMsg> {
-        // 查询配置编码是否存在且不属于当前ID
-        self.check_code_exist(req.code.clone(), Some(req.id))
-            .await?;
-
-        let model = config::ActiveModel {
+        let model = debox_account::ActiveModel {
             id: Set(req.id),
-            pid: Set(req.pid),
-            name: Set(req.name),
-            code: Set(req.code),
-            value: Set(req.value),
-            sort: Set(req.sort),
+            user_id: Set(req.user_id),
+            api_key: Set(req.api_key),
+            app_secret: Set(req.app_secret),
+            access_token: Set(req.access_token),
+            web_token: Set(req.web_token),
+            debox_user_id: Set(req.debox_user_id),
+            wallet_address: Set(req.wallet_address),
+            api_key_status: Set(req.api_key_status),
+            access_token_status: Set(req.access_token_status),
+            web_token_status: Set(req.web_token_status),
             desc: Set(req.desc),
             status: Set(req.status),
             ..Default::default()
         };
 
-        let result = self.config_dao.update(model).await.map_err(|err| {
-            error!("更新配置失败, err: {:#?}", err);
-            Error::DbUpdateError.into_err_with_msg("更新配置失败")
+        let result = self.debox_account_dao.update(model).await.map_err(|err| {
+            error!("更新DeBox账号失败, err: {:#?}", err);
+            Error::DbUpdateError.into_err_with_msg("更新DeBox账号失败")
         })?;
 
         Ok(result)
     }
 
-    /// 检查配置编码是否存在
-    async fn check_code_exist(
-        &self,
-        code: String,
-        current_id: Option<i32>,
-    ) -> Result<(), ErrorMsg> {
-        let result = self.config_dao.info_by_code(code).await.map_err(|err| {
-            error!("查询配置编码失败, err: {:#?}", err);
-            Error::DbQueryError.into_err_with_msg("查询配置编码失败")
-        })?;
-
-        // 存在
-        if let Some(model) = result
-            && (current_id.is_none() || Some(model.id) != current_id)
-        {
-            error!("配置编码已存在");
-            return Err(Error::DbDataExistError.into_err_with_msg("配置编码已存在"));
-        }
-
-        // 不存在
-        Ok(())
-    }
-
     /// 更新数据状态
     pub async fn update_status(&self, req: UpdateDeboxAccountStatusReq) -> Result<(), ErrorMsg> {
-        self.config_dao
+        self.debox_account_dao
             .update_status(req.id, req.status)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {
-                    error!("更新配置状态失败, 该配置不存在");
+                    error!("更新DeBox账号状态失败, 该DeBox账号不存在");
                     return Error::DbUpdateError
-                        .into_err_with_msg("更新配置状态失败, 该配置不存在");
+                        .into_err_with_msg("更新DeBox账号状态失败, 该DeBox账号不存在");
                 }
-                error!("更新配置状态失败, err: {:#?}", err);
-                Error::DbUpdateError.into_err_with_msg("更新配置状态失败")
+                error!("更新DeBox账号状态失败, err: {:#?}", err);
+                Error::DbUpdateError.into_err_with_msg("更新DeBox账号状态失败")
             })?;
 
         Ok(())
@@ -167,21 +136,9 @@ impl DeboxAccountService {
 
     /// 删除数据
     pub async fn delete(&self, req: DeleteDeboxAccountReq) -> Result<u64, ErrorMsg> {
-        let config_children = self.config_dao.children(req.id).await.map_err(|err| {
-            error!("获取所有子列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_err_with_msg("获取所有子列表失败")
-        })?;
-        if !config_children.is_empty() {
-            error!(
-                "请先删除子列表, children count: {:#?}",
-                config_children.len()
-            );
-            return Err(Error::DbDataExistChildrenError.into_err_with_msg("请先删除子列表"));
-        }
-
-        let result = self.config_dao.delete(req.id).await.map_err(|err| {
-            error!("删除配置信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_err_with_msg("删除配置信息失败")
+        let result = self.debox_account_dao.delete(req.id).await.map_err(|err| {
+            error!("删除DeBox账号信息失败, err: {:#?}", err);
+            Error::DbDeleteError.into_err_with_msg("删除DeBox账号信息失败")
         })?;
 
         Ok(result)

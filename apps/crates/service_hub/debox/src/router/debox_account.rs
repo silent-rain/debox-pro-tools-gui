@@ -5,22 +5,21 @@ use axum::{
     routing::{get, put},
 };
 
-use crate::controller::config::DeboxAccountController;
+use crate::controller::debox_account::DeboxAccountController;
 
 /// 路由器
 pub struct DeboxAccountRouter;
 
 impl DeboxAccountRouter {
-    /// 注册`配置管理`路由
+    /// 注册`DeBox账号管理`路由
     pub fn register() -> Router {
         Router::new().nest(
-            "/configs",
+            "/debox-accounts",
             Router::new()
                 .route(
                     "/",
                     get(DeboxAccountController::list).post(DeboxAccountController::create),
                 )
-                .route("/tree", get(DeboxAccountController::tree))
                 .route(
                     "/{id}",
                     get(DeboxAccountController::info)

@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use entity::system::config;
+use entity::debox::debox_account;
 
 /// 查询DeBox账号列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -16,15 +16,15 @@ pub struct GetDeboxAccountsReq {
     pub start_time: Option<String>,
     /// 结束时间
     pub end_time: Option<String>,
-    /// DeBox账号名称
-    pub name: Option<String>,
+    /// 用户ID
+    pub user_id: Option<i32>,
     /// 返回所有数据
     pub all: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDeboxAccountsResp {
-    pub data_list: Vec<config::Model>,
+    pub data_list: Vec<debox_account::Model>,
     pub total: u64,
 }
 
@@ -38,23 +38,33 @@ pub struct GetDeboxAccountReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDeboxAccountResp {
     #[serde(flatten)]
-    data: config::Model,
+    data: debox_account::Model,
 }
 
 /// 添加DeBox账号 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct CreateDeboxAccountReq {
-    /// 父节点ID
-    pub pid: Option<i32>,
-    /// DeBox账号名称
-    pub name: String,
-    /// DeBox账号编码(英文)
-    pub code: String,
-    /// DeBox账号值
-    pub value: Option<String>,
-    /// 排序
-    pub sort: Option<i32>,
-    /// DeBox账号描述
+    /// 用户ID
+    pub user_id: i32,
+    /// 开发者 API Key，在DeBox开放平台获取
+    pub api_key: String,
+    /// 开发者 App Secret，在DeBox开放平台获取
+    pub app_secret: String,
+    /// 登录授权, 有效期较短
+    pub access_token: String,
+    /// WEB登录授权
+    pub web_token: String,
+    /// DeBox 用户ID
+    pub debox_user_id: String,
+    /// 用户钱包地址
+    pub wallet_address: String,
+    /// ApiKey 状态(0:无效,1:有效)
+    pub api_key_status: String,
+    /// Access Token 状态(0:无效,1:有效)
+    pub access_token_status: String,
+    /// Web Token 状态(0:无效,1:有效)
+    pub web_token_status: String,
+    /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)
     pub status: bool,
@@ -68,17 +78,27 @@ pub struct CreateDeboxAccountResp {}
 pub struct UpdateDeboxAccountReq {
     /// DeBox账号ID
     pub id: i32,
-    /// 父节点ID
-    pub pid: Option<i32>,
-    /// DeBox账号名称
-    pub name: String,
-    /// DeBox账号编码(英文)
-    pub code: String,
-    /// DeBox账号值
-    pub value: Option<String>,
-    /// 排序
-    pub sort: Option<i32>,
-    /// DeBox账号描述
+    /// 用户ID
+    pub user_id: i32,
+    /// 开发者 API Key，在DeBox开放平台获取
+    pub api_key: String,
+    /// 开发者 App Secret，在DeBox开放平台获取
+    pub app_secret: String,
+    /// 登录授权, 有效期较短
+    pub access_token: String,
+    /// WEB登录授权
+    pub web_token: String,
+    /// DeBox 用户ID
+    pub debox_user_id: String,
+    /// 用户钱包地址
+    pub wallet_address: String,
+    /// ApiKey 状态(0:无效,1:有效)
+    pub api_key_status: String,
+    /// Access Token 状态(0:无效,1:有效)
+    pub access_token_status: String,
+    /// Web Token 状态(0:无效,1:有效)
+    pub web_token_status: String,
+    /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)
     pub status: bool,
@@ -95,6 +115,7 @@ pub struct UpdateDeboxAccountStatusReq {
     pub status: bool,
 }
 
+/// 更新数据状态 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateDeboxAccountStatusResp {}
 
@@ -104,3 +125,7 @@ pub struct DeleteDeboxAccountReq {
     /// DeBox账号ID
     pub id: i32,
 }
+
+/// 删除数据 响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeleteDeboxAccountResp {}
