@@ -1,6 +1,11 @@
 # Rust MakeFile
+# 
+# github: https://github.com/sagiegurari/cargo-make
+# 
 # install: cargo install cargo-make
-# run: cargo make android-build
+# 
+# menu: cargo make list
+# run task: cargo make android-build
 
 [env]
 APPS = "apps"             # 后端应用目录
