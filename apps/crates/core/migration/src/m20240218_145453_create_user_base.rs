@@ -2,10 +2,10 @@
 //! Entity: [`entity::prelude::UserBase`]
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, Index, Table},
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, Index, Table},
 };
-use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -59,9 +59,9 @@ impl MigrationTrait for Migration {
                     )
                     .col(
                         ColumnDef::new(UserBase::Status)
-                            .tiny_integer()
+                            .boolean()
                             .not_null()
-                            .default(1)
+                            .default(false)
                             .comment("状态(0:停用,1:正常)"),
                     )
                     .col(

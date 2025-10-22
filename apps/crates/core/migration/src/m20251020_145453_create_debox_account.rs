@@ -4,10 +4,10 @@
 use crate::m20240218_145453_create_user_base::UserBase;
 
 use sea_orm::{
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
 };
-use sea_orm_migration::{async_trait, DbErr, MigrationTrait, SchemaManager};
+use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -107,6 +107,13 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
+                        ColumnDef::new(DeboxAccount::Status)
+                            .boolean()
+                            .not_null()
+                            .default(false)
+                            .comment("状态(0:停用,1:正常)"),
+                    )
+                    .col(
                         ColumnDef::new(DeboxAccount::CreatedAt)
                             .date_time()
                             .not_null()
@@ -194,6 +201,7 @@ pub enum DeboxAccount {
     AccessTokenStatus,
     WebTokenStatus,
     Desc,
+    Status,
     CreatedAt,
     UpdatedAt,
 }

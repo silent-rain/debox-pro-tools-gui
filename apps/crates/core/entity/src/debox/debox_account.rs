@@ -39,6 +39,8 @@ pub struct Model {
     pub web_token_status: String,
     /// 描述信息
     pub desc: Option<String>,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
     /// 创建时间
     pub created_at: DateTime,
     /// 更新时间
