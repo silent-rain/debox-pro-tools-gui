@@ -1,3 +1,3 @@
 //! 路由
-mod tauri;
-pub use tauri::tauri_register;
+pub mod axum_router;
+pub mod tauri_router;

@@ -5,7 +5,7 @@ use tauri::{Runtime, State, ipc::InvokeHandler};
 use tokio::sync::Mutex;
 
 /// 注册路由
-pub fn tauri_register<R>() -> Box<InvokeHandler<R>>
+pub fn register<R>() -> Box<InvokeHandler<R>>
 where
     R: Runtime,
 {

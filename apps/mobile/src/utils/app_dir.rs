@@ -113,8 +113,9 @@ pub fn print_app_dir(app: &mut App) -> Result<(), tauri::Error> {
     info!("========== local_data_dir: {:#?}", local_data_dir);
 
     // Linux/macOS/Windows
-    let desktop_dir = app.path().desktop_dir();
-    info!("========== desktop_dir: {:#?}", desktop_dir);
+    // 不支持 Android
+    // let desktop_dir = app.path().desktop_dir();
+    // info!("========== desktop_dir: {:#?}", desktop_dir);
 
     // Linux/macOS/Windows
     let document_dir = app.path().document_dir();
@@ -146,8 +147,9 @@ pub fn print_app_dir(app: &mut App) -> Result<(), tauri::Error> {
 
     // Linux/Windows
     // **macOS:** Not supported.
-    let template_dir = app.path().template_dir();
-    info!("========== template_dir: {:#?}", template_dir);
+    // 不支持 Android
+    // let template_dir = app.path().template_dir();
+    // info!("========== template_dir: {:#?}", template_dir);
 
     // Linux/macOS/Windows
     let video_dir = app.path().video_dir();

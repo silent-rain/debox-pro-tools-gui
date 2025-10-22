@@ -1,80 +1,34 @@
 //! Http Server
 use std::{
-    collections::HashMap,
     net::{IpAddr, Ipv4Addr, SocketAddr},
+    sync::Arc,
 };
 
-use axum::{Json, Router, extract::Query, response::IntoResponse, routing::get};
-use axum_streams::StreamBodyAs;
+use axum::{Extension, Router};
 use colored::Colorize;
-use futures::{
-    Stream,
-    stream::{self},
-};
-use log::{error, info};
-use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
+use database::Mdb;
+use inject::InjectProvider;
+use log::info;
 
-use tokio_stream::StreamExt;
-
-use crate::middleware::cors_layer;
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-struct MyTestStructure {
-    some_test_field: String,
-}
-
-fn source_test_stream() -> impl Stream<Item = MyTestStructure> {
-    // Simulating a stream with a plain vector and throttling to show how it works
-    stream::iter(vec![
-        MyTestStructure {
-            some_test_field: "test1".to_string()
-        };
-        100
-    ])
-    .throttle(std::time::Duration::from_secs(1))
-}
-
-async fn test_json_array_stream() -> impl IntoResponse {
-    StreamBodyAs::json_array(source_test_stream())
-}
-
-async fn test_json_nl_stream() -> impl IntoResponse {
-    StreamBodyAs::json_nl(source_test_stream())
-}
-
-fn source_text_stream() -> impl Stream<Item = String> {
-    // Simulating a stream with a plain vector and throttling to show how it works
-    stream::iter(vec![
-        "苟利国家生死以，岂因祸福避趋之？".to_string();
-        1000
-    ])
-    .throttle(std::time::Duration::from_secs(1))
-}
-
-async fn test_text_stream() -> impl IntoResponse {
-    StreamBodyAs::text(source_text_stream())
-}
-
-async fn hello(Query(params): Query<HashMap<String, String>>) -> Json<Value> {
-    error!("================={:#?}", params);
-    Json(json!({"code":0, "data" : format!("hi, {}", params.get("name").map_or("noi", |v| v))}))
-}
+use crate::config::AppConfig;
+use crate::router::axum_router;
 
 /// Http 服务
 pub struct HttpServer {}
 
 impl HttpServer {
     /// 服务
-    pub async fn run() -> anyhow::Result<()> {
-        // 创建路由
+    pub async fn run(
+        app_config: AppConfig,
+        _db_pool: Mdb,
+        inject_provider: Arc<InjectProvider>,
+    ) -> anyhow::Result<()> {
+        // Build our application by creating our router.
         let app = Router::new()
-            .route("/test_json_array_stream", get(test_json_array_stream))
-            .route("/test_json_nl_stream", get(test_json_nl_stream))
-            .route("/test_text_stream", get(test_text_stream))
-            .route("/health", get(|| async { "ok" }))
-            .route("/hello", get(hello))
-            .layer(cors_layer());
+            .nest("/api/v1", axum_router::register()) // API 服务
+            .fallback(axum_router::fallback) // 用于处理与路由器路由不匹配的任何请求
+            .layer(Extension(app_config)) // 全局配置文件
+            .layer(Extension(inject_provider)); // 依赖注入
 
         // 启动服务器
         let addr = SocketAddr::new(IpAddr::V4(Ipv4Addr::new(0, 0, 0, 0)), 3000);
