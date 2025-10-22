@@ -2,8 +2,8 @@
 //! cargo run --package migration --example migration
 use std::env;
 
-use database::DbOptions;
-use logger::config::{ConsoleConfig, Level, Logger};
+use database::Options as DbOptions;
+use logger::config::{ConsoleConfig, Level, LoggerConfig};
 use migration::Migrator;
 
 use colored::Colorize;
@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 读取配置环境变量
     dotenv().ok();
 
-    let conf = Logger {
+    let conf = LoggerConfig {
         color_eyre: false,
         console: ConsoleConfig {
             level: Level::Info,

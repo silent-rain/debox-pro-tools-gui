@@ -7,6 +7,7 @@ use tracing_appender::non_blocking::WorkerGuard;
 /// 应用目录
 pub struct AppDirector {
     pub home_dir: PathBuf,
+    pub app_dir: PathBuf,
 }
 
 /// 全局应用状态

@@ -14,15 +14,16 @@ pub struct Setup {}
 impl Setup {
     pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
         // 初始化应用目录
-        init_dir(app).expect("初始化应用目录失败");
+        let app_dir = init_dir(app).expect("初始化应用目录失败");
 
         // 初始化日志
-        let log_dir = "";
-        let log_guards = Self::init_logger(log_dir).expect("初始化日志失败");
+        let log_dir = app_dir.join("logs").to_string_lossy().to_string();
+        let log_guards = Self::init_logger(&log_dir).expect("初始化日志失败");
 
         let state = AppState {
             counter: 0,
             app_directory: AppDirector {
+                app_dir,
                 home_dir: "".into(),
             },
             log_guards,

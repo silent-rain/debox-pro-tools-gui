@@ -1,0 +1,30 @@
+[package]
+name = "system"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+utils = { path = "../../core/utils" }
+
+database = { workspace = true }
+entity = { workspace = true }
+err_code = { workspace = true }
+axum_response = { workspace = true }
+inject = { workspace = true }
+
+
+axum = { workspace = true }
+axum_validator = { workspace = true }
+axum_typed_multipart = { workspace = true }
+validator = { workspace = true, features = ["derive"] }
+sea-orm = { workspace = true }
+nject = { workspace = true }
+base64 = { workspace = true }
+tempfile = { workspace = true }
+infer = { workspace = true }
+
+log = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true, features = ["v4"] }
+serde = { workspace = true, features = ["derive"] }
+serde_repr = { workspace = true }

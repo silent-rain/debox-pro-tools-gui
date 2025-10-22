@@ -1,3 +1,3 @@
 //! 服务集
 
-pub use comfyui;
+pub use debox;
