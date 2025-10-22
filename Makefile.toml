@@ -195,12 +195,12 @@ cwd = "${APPS}"
 command = "cargo"
 args = ["clean"]
 
-# [tasks.clean-android]
-# description = "Clean android build"
-# category = "utils"
-# cwd = "${APPS}"
-# command = "cargo"
-# args = ["clean"]
+[tasks.clean-android]
+description = "Clean android build"
+category = "utils"
+cwd = "${MOBILE}/gen/android/app/"
+command = "rm"
+args = ["-rf", "build"]
 
 
 [tasks.fmt]
