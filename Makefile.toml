@@ -9,6 +9,18 @@ MOBILE_WEB = "mobile-web" # 移动前端项目
 # NDK_HOME = "/home/user/.Android/Sdk/ndk/28.0.12433566" # Android NDK HOME, 支持直接读取系统环境变量
 # TAURI_BUNDLER_WIX_FIPS_COMPLIANT = "true" # 如果您的系统要求 MSI 软件包符合 FIPS 标准，则设置此环境变量。
 
+
+# ============= 功能列表 =============
+[tasks.list]
+description = "List all tasks."
+category = "menu"
+script = [
+    "cargo make --quiet --list-category-steps deps",
+    "cargo make --quiet --list-category-steps build",
+    "cargo make --quiet --list-category-steps utils",
+]
+
+
 # ============= 安装依赖 =============
 [tasks.install-java-sdk-deps]
 private = true
@@ -170,13 +182,20 @@ run_task = [
     ] },
 ]
 
-# ============= 清理 =============
+# ============= 工具 =============
 [tasks.clean-cargo]
 description = "Clean cargo build"
-category = "clean"
+category = "utils"
 cwd = "${APPS}"
 command = "cargo"
 args = ["clean"]
+
+[tasks.fmt]
+description = "Cargo fmt all"
+category = "utils"
+cwd = "${APPS}"
+command = "cargo"
+args = ["fmt", "--all"]
 
 # ============= 开发调式 =============
 [tasks.dev]
