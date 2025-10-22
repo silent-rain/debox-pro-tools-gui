@@ -1,6 +1,6 @@
 //! 接口响应类型
 
-use axum::{response::IntoResponse, Json};
+use axum::{Json, response::IntoResponse};
 use serde::{Deserialize, Serialize};
 
 use crate::ResponseErr;

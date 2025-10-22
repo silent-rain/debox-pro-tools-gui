@@ -3,6 +3,4 @@
 /// 控制器
 pub struct LocalController;
 
-impl LocalController {
-    
-}
+impl LocalController {}

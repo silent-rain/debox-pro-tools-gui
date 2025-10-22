@@ -4,16 +4,16 @@ use std::{
     net::{IpAddr, Ipv4Addr, SocketAddr},
 };
 
-use axum::{extract::Query, response::IntoResponse, routing::get, Json, Router};
+use axum::{Json, Router, extract::Query, response::IntoResponse, routing::get};
 use axum_streams::StreamBodyAs;
 use colored::Colorize;
 use futures::{
-    stream::{self},
     Stream,
+    stream::{self},
 };
 use log::{error, info};
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 
 use tokio_stream::StreamExt;
 

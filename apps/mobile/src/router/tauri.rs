@@ -1,7 +1,7 @@
 //! tauri simple
 use state::mobile::AppState;
 
-use tauri::{ipc::InvokeHandler, Runtime, State};
+use tauri::{Runtime, State, ipc::InvokeHandler};
 use tokio::sync::Mutex;
 
 /// 注册路由
