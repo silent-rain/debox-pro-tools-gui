@@ -1,4 +1,4 @@
-use sea_orm_migration::{async_trait, MigrationTrait, MigratorTrait};
+use sea_orm_migration::{MigrationTrait, MigratorTrait, async_trait};
 
 mod m20230617_084425_create_log_system;
 mod m20240218_145453_create_user_base;
