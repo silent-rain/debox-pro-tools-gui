@@ -231,6 +231,8 @@ args = ["tauri", "android", "dev"]
 description = "Build desktop build."
 category = "build"
 cwd = "${MOBILE}"
+# NO_STRIP=true cargo tauri build
+env = { "NO_STRIP" = true }
 command = "cargo"
 args = ["tauri", "build"]
 

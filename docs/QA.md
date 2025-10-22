@@ -22,3 +22,20 @@ android:usesCleartextTraffic="${usesCleartextTraffic}">
 
 android:usesCleartextTraffic="true">
 ```
+
+## WSL2 打包 AppImage 失败
+
+- 错误信息
+
+```text
+failed to bundle project `failed to run linuxdeploy`
+```
+
+- 解决
+
+```sh
+# DeskTop 打包
+# cargo tauri build
+# AppImage 打包
+NO_STRIP=true cargo tauri build
+```
