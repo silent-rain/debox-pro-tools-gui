@@ -37,6 +37,7 @@
     },
     "windows": {
       "webviewInstallMode": {
+        // downloadBootstrapper/embedBootstrapper/offlineInstaller
         "type": "embedBootstrapper"
       }
     },

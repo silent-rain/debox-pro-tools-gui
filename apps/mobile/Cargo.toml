@@ -16,7 +16,7 @@ name = "debox_pro_tools_gui_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { workspace = true, features = [] }
+tauri-build = { workspace = true, features = ["config-json5"] }
 
 [dependencies]
 logger = { path = "../crates/core/logger" }
@@ -25,7 +25,7 @@ state = { path = "../crates/state" }
 err_code = { workspace = true }
 
 # Tauri 
-tauri = { workspace = true, features = ["rustls-tls"] }
+tauri = { workspace = true, features = ["rustls-tls", "config-json5"] }
 tauri-plugin-opener = { workspace = true }
 tauri-plugin-shell = { workspace = true }
 tauri-plugin-websocket = { workspace = true }
