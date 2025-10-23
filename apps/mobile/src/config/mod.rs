@@ -55,6 +55,13 @@ impl AppConfig {
         Ok(config)
     }
 
+    pub fn form_str(content: &str) -> Result<AppConfig, Error> {
+        let config: AppConfig = serde_yaml::from_str(content)
+            .map_err(|err| Error::ConfigFileParseError(err.to_string()))?;
+        GLOBAL_CONFIG.get_or_init(|| config.clone());
+        Ok(config)
+    }
+
     /// 获取全局配置
     /// # Examples
     /// ```

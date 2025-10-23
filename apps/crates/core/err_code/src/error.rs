@@ -187,6 +187,9 @@ pub enum Error {
     ComfyUIError(String) = 30001,
 
     #[error(transparent)]
+    Tauri(#[from] tauri::Error),
+
+    #[error(transparent)]
     ColorEyreReport(#[from] color_eyre::Report),
     #[error(transparent)]
     Any(#[from] anyhow::Error) = 65535,

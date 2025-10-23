@@ -7,7 +7,10 @@ use tauri::{App, Manager};
 
 /// 初始化系统目录
 pub fn init_dir(app: &mut App) -> Result<PathBuf, tauri::Error> {
-    let app_dir = if cfg!(target_os = "android") {
+    let app_dir = if cfg!(debug_assertions) && !cfg!(target_os = "android") {
+        // 调试模式下使用当前运行路径
+        PathBuf::from("./")
+    } else if cfg!(target_os = "android") {
         let download_dir = app.path().download_dir()?;
         let app_dir = download_dir
             .parent()
@@ -25,9 +28,6 @@ pub fn init_dir(app: &mut App) -> Result<PathBuf, tauri::Error> {
             std::fs::create_dir(&app_dir)?;
         }
         app_dir
-    } else if cfg!(debug_assertions) && !cfg!(target_os = "android") {
-        // 调试模式下使用当前运行路径
-        PathBuf::from("./")
     } else {
         // 其他场景, 使用当前运行路径
         PathBuf::from("./")

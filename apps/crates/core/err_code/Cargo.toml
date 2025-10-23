@@ -10,3 +10,4 @@ thiserror = { workspace = true }
 anyhow = { workspace = true }
 color-eyre = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
+tauri = { workspace = true }

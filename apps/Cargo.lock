@@ -1805,6 +1805,7 @@ dependencies = [
  "axum_response",
  "color-eyre",
  "serde",
+ "tauri",
  "thiserror 2.0.17",
 ]
 
