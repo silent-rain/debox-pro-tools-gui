@@ -2,6 +2,8 @@
 
 use std::path::Path;
 
+use log::info;
+use tauri::path::BaseDirectory;
 use tauri::{App, Manager};
 use tracing_appender::non_blocking::WorkerGuard;
 
@@ -17,6 +19,8 @@ impl Setup {
     pub fn setup(app: &mut App) -> Result<(), Box<dyn std::error::Error>> {
         // 加载配置文件
         let app_config = AppConfig::new("config.yaml").expect("加载配置文件失败");
+
+        println!("========== app_config: {:#?}", app_config);
 
         // 初始化应用目录
         let app_dir = init_dir(app).expect("初始化应用目录失败");
@@ -36,6 +40,12 @@ impl Setup {
 
         // 打印系统目录
         print_app_dir(app).expect("打印系统目录失败");
+
+        // 读取 Resources 目录中文件
+        let config_resource_path = app.path().resolve("config.yaml", BaseDirectory::Resource)?;
+        let config_content = std::fs::read_to_string(&config_resource_path)?;
+        info!("========== config content: {:#?}", config_content);
+        println!("========== config content: {:#?}", config_content);
 
         Ok(())
     }

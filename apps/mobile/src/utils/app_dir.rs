@@ -7,37 +7,32 @@ use tauri::{App, Manager};
 
 /// 初始化系统目录
 pub fn init_dir(app: &mut App) -> Result<PathBuf, tauri::Error> {
-    #[cfg(target_os = "android")]
-    let app_dir = {
+    let app_dir = if cfg!(target_os = "android") {
         let download_dir = app.path().download_dir()?;
         let app_dir = download_dir
             .parent()
             .ok_or_else(|| tauri::Error::NoParent)?
             .to_path_buf();
         if !app_dir.exists() {
-            info!("========== create app_dir: {:#?}", app_dir);
+            info!("========== create android app_dir: {:#?}", app_dir);
             std::fs::create_dir(&app_dir)?;
         }
         app_dir
-    };
-    #[cfg(target_os = "linux")]
-    let app_dir = {
+    } else if cfg!(target_os = "linux") || cfg!(target_os = "windows") {
         let app_dir = app.path().app_config_dir()?;
         if !app_dir.exists() {
-            info!("========== create app_dir: {:#?}", app_dir);
+            info!("========== create desktop app_dir: {:#?}", app_dir);
             std::fs::create_dir(&app_dir)?;
         }
         app_dir
+    } else if cfg!(debug_assertions) && !cfg!(target_os = "android") {
+        // 调试模式下使用当前运行路径
+        PathBuf::from("./")
+    } else {
+        // 其他场景, 使用当前运行路径
+        PathBuf::from("./")
     };
-    #[cfg(target_os = "windows")]
-    let app_dir = {
-        let app_dir = app.path().app_config_dir()?;
-        if !app_dir.exists() {
-            info!("========== create app_dir: {:#?}", app_dir);
-            std::fs::create_dir(&app_dir)?;
-        }
-        app_dir
-    };
+
     Ok(app_dir)
 }
 

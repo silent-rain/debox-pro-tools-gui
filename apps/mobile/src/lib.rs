@@ -47,24 +47,26 @@ pub async fn run() {
         .setup(Setup::setup)
         .invoke_handler(tauri_router::register());
 
-    let runtime = tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .enable_io()
-        .enable_time()
-        .build()
-        .expect("初始化运行时失败");
+    // let runtime = tokio::runtime::Builder::new_multi_thread()
+    //     .enable_all()
+    //     .enable_io()
+    //     .enable_time()
+    //     .build()
+    //     .expect("初始化运行时失败");
+    // runtime.spawn(async {
+    //     HttpServer::run(app_config, db_pool, inject_provider)
+    //         .await
+    //         .expect("初始化接口服务失败");
+    // });
 
-    runtime.spawn(async {
+    // 启动 Http 服务
+    tokio::spawn(async {
         HttpServer::run(app_config, db_pool, inject_provider)
             .await
             .expect("初始化接口服务失败");
     });
 
-    // runtime.spawn(async {
-    //     let pipeline = simple_llama_pipeline().await.unwrap();
-    //     PIPELINE.get_or_init(|| pipeline);
-    //     warn!("model laod success ...");
-    // });
+    // use tauri::async_runtime::block_on( || {});
 
     app.run(tauri::generate_context!())
         .expect("error while running tauri application");

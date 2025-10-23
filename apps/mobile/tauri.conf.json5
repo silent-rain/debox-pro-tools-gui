@@ -14,7 +14,8 @@
       {
         "title": "Debox Pro Tools Gui",
         "width": 600,
-        "height": 800
+        "height": 800,
+        "resizable": false // 窗口是否可调整大小
       }
     ],
     "security": {
@@ -35,12 +36,37 @@
     "android": {
       "minSdkVersion": 28
     },
+    "linux": {
+      "appimage": {
+        "bundleMediaFramework": false, // 包含音频和视频播放所需的额外 gstreamer 依赖项
+        "files": {
+          "./README.md": "",
+          "./config.yaml": "config.yaml",
+          "./data.dat": "data.dat",
+          "./assets/img/*": "assets/img/"
+        }
+      },
+      "deb": {
+        "files": {}
+      },
+      "rpm": {
+        "epoch": 0,
+        "files": {},
+        "release": "1"
+      }
+    },
     "windows": {
       "webviewInstallMode": {
         // downloadBootstrapper/embedBootstrapper/offlineInstaller
         "type": "embedBootstrapper"
       }
     },
+    "resources": [
+      "./README.md",
+      "./config.yaml",
+      "./data.dat",
+      "./assets/img/*"
+    ],
     "licenseFile": "../../LICENSE"
   }
 }
