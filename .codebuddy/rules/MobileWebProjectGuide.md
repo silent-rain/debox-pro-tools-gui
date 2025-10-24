@@ -47,6 +47,16 @@ const CustomButton: React.FC<ButtonProps> = ({
 };
 ```
 
+## 组件开发结构与样式规范
+
+```sh
+├── message
+│   ├── components            // 组件文件夹
+│   │   ├── send-message.tsx  // 发送消息组件
+│   ├── index.module.less     // 样式文件
+│   └── index.tsx             // 组件文件
+```
+
 ### 状态管理优化
 
 ```ts
