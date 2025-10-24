@@ -8,7 +8,7 @@ const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
 export default defineConfig({
-   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
+  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //
   // 1. prevent vite from obscuring rust errors
   clearScreen: false,
@@ -21,10 +21,10 @@ export default defineConfig({
     cors: true, // 允许跨域
     hmr: host
       ? {
-          protocol: "ws",
-          host,
-          port: 1421,
-        }
+        protocol: "ws",
+        host,
+        port: 1421,
+      }
       : undefined,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
@@ -58,7 +58,7 @@ export default defineConfig({
     },
   },
   build: {
-    target: 'modules', // 浏览器兼容目标
+    target: 'esnext', // 浏览器兼容目标
     outDir: 'dist', // 打包输出路径
     assetsDir: 'assets', // 静态资源存放路径
     cssCodeSplit: true, // 允许 css 代码拆分
@@ -68,6 +68,14 @@ export default defineConfig({
       compress: {
         drop_console: true, // 取消 console
         drop_debugger: true, // 取消 debugger
+      },
+    },
+    rollupOptions: {
+      onwarn(warning, warn) {
+        if (warning.code === 'EVAL' && warning.id?.includes('vconsole')) {
+          return;
+        }
+        warn(warning);
       },
     },
   },

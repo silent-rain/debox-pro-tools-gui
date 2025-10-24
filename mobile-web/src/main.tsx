@@ -2,10 +2,12 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
-import VConsole from 'vconsole';
-
-const vConsole = new VConsole();
-console.log(vConsole);
+// 仅在开发环境中引入 vconsole
+if (import.meta.env.MODE === 'development') {
+  import('vconsole').then(({ default: VConsole }) => {
+    new VConsole();
+  });
+}
 
 // 重置浏览器样式
 import 'normalize.css';
