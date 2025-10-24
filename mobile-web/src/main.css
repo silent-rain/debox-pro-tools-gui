@@ -1,8 +1,8 @@
-// @tailwind base;
-// @tailwind components;
-// @tailwind utilities;
+/* @import "tailwindcss"; */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@import "tailwindcss";
 
 :root {
   color: rgb(255 255 255 / 87%);

@@ -12,7 +12,7 @@ console.log(vConsole);
 import 'normalize.css';
 
 // 自定义样式
-import './main.less';
+import './main.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

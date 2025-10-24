@@ -45,7 +45,7 @@ export default defineConfig({
       minify: true,
       inject: {
         data: {
-          title: 'AI涂鸦',
+          title: 'Debox Pro Tools Gui',
         },
       },
     }),
