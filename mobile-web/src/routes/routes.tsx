@@ -9,9 +9,46 @@ const Message = lazy(() => import('@/pages/message'));
 const PersonalCenter = lazy(() => import('@/pages/personal-center'));
 const AiPainting = lazy(() => import('@/pages/ai-painting'));
 const AiPaintingTextToImageBase = lazy(() => import('@/pages/text-to-image-base'));
+const Login = lazy(() => import('@/pages/login'));
 
-// AI 绘图
-const aiPainting: RouteObject = {
+// TabBar Routes
+const tabBarRoutes: RouteObject = {
+  path: '/',
+  element: <Layout />,
+  children: [
+    {
+      path: '',
+      element: <Home />,
+      meta: {
+        title: '首页',
+      },
+    },
+    {
+      path: 'todo',
+      element: <Todo />,
+      meta: {
+        title: '待办',
+      },
+    },
+    {
+      path: 'message',
+      element: <Message />,
+      meta: {
+        title: '消息',
+      },
+    },
+    {
+      path: 'me',
+      element: <PersonalCenter />,
+      meta: {
+        title: '我的',
+      },
+    },
+  ],
+};
+
+// AI 绘图 Routes
+const aiPaintingRoutes: RouteObject = {
   path: '/ai-painting',
   element: <Layout />,
   children: [
@@ -33,54 +70,22 @@ const aiPainting: RouteObject = {
 };
 
 export const RootRoutes = (): RouteObject[] => [
+  // TabBar Routes
+  tabBarRoutes,
   {
-    path: '/',
-    element: <Layout />,
-    children: [
-      {
-        path: '',
-        element: <Home />,
-        meta: {
-          title: '首页',
-        },
-      },
-      {
-        path: 'todo',
-        element: <Todo />,
-        meta: {
-          title: '待办',
-        },
-      },
-      {
-        path: 'message',
-        element: <Message />,
-        meta: {
-          title: '消息',
-        },
-      },
-      {
-        path: 'me',
-        element: <PersonalCenter />,
-        meta: {
-          title: '我的',
-        },
-      },
-    ],
+    path: '/login',
+    element: <Login />,
+    meta: {
+      requiresAuth: false,
+      title: '登录页',
+      key: 'login',
+    },
   },
-  aiPainting,
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,
   // },
-  // {
-  //   path: '/login',
-  //   element: <Login />,
-  //   meta: {
-  //     requiresAuth: false,
-  //     title: '登录页',
-  //     key: 'login',
-  //   },
-  // },
+  aiPaintingRoutes,
   {
     path: '*',
     element: <Navigate to='/404' />,
