@@ -10,6 +10,7 @@ const PersonalCenter = lazy(() => import('@/pages/personal-center'));
 const AiPainting = lazy(() => import('@/pages/ai-painting'));
 const AiPaintingTextToImageBase = lazy(() => import('@/pages/text-to-image-base'));
 const Login = lazy(() => import('@/pages/login'));
+const Register = lazy(() => import('@/pages/register'));
 
 // TabBar Routes
 const tabBarRoutes: RouteObject = {
@@ -77,8 +78,17 @@ export const RootRoutes = (): RouteObject[] => [
     element: <Login />,
     meta: {
       requiresAuth: false,
-      title: '登录页',
+      title: '登录',
       key: 'login',
+    },
+  },
+  {
+    path: '/register',
+    element: <Register />,
+    meta: {
+      requiresAuth: false,
+      title: '用户注册',
+      key: 'register',
     },
   },
   // {

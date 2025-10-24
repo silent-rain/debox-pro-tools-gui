@@ -130,7 +130,11 @@ export default function Login(): JSX.Element {
           </Form.Item>
         </Form>
 
-        {/* <div className={styles.tips}>未注册的账号将自动创建</div> */}
+        <div className={styles.tips}>
+          <Button size='small' fill='none' onClick={() => navigate('/register')}>
+            没有账号？去注册
+          </Button>
+        </div>
       </div>
     </div>
   );
