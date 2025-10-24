@@ -18,7 +18,6 @@ const Header = ({ title }: HeaderProps) => {
   return (
     <NavBar
       className={styles.header}
-      backIcon={false}
       onBack={() => {
         navigate(-1);
       }}
