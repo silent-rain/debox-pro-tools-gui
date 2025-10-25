@@ -188,6 +188,8 @@ pub enum Error {
 
     #[error(transparent)]
     Tauri(#[from] tauri::Error),
+    #[error(transparent)]
+    AxumJwt(#[from] axum_jwt::Error),
 
     #[error(transparent)]
     ColorEyreReport(#[from] color_eyre::Report),

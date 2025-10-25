@@ -458,6 +458,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
+name = "auth"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum_context",
+ "axum_jwt",
+ "axum_response",
+ "axum_validator",
+ "chrono",
+ "database",
+ "entity",
+ "err_code",
+ "inject",
+ "log 0.4.28",
+ "nject",
+ "sea-orm",
+ "serde",
+ "serde_json",
+ "system",
+ "tokio",
+ "user",
+ "utils",
+ "validator",
+]
+
+[[package]]
 name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1802,6 +1828,7 @@ name = "err_code"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "axum_jwt",
  "axum_response",
  "color-eyre",
  "serde",
@@ -3418,6 +3445,7 @@ name = "migration"
 version = "0.1.0"
 dependencies = [
  "async-std",
+ "chrono",
  "colored",
  "database",
  "dotenv",
@@ -3425,6 +3453,7 @@ dependencies = [
  "logger",
  "sea-orm",
  "sea-orm-migration",
+ "serde",
  "sqlx",
  "tokio",
  "tracing",
@@ -5818,6 +5847,7 @@ dependencies = [
 name = "service_hub"
 version = "0.1.0"
 dependencies = [
+ "auth",
  "debox",
  "log 0.1.0",
  "system",

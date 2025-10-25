@@ -4,7 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum_response = { path = "../../axum_response" }
+axum_response = { workspace = true }
+axum_jwt = { workspace = true }
 
 thiserror = { workspace = true }
 anyhow = { workspace = true }
