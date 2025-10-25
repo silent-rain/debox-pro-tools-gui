@@ -1,23 +1,19 @@
-//! 配置文件
-#![allow(unused)]
-
+//! App 配置
 use std::fs::read_to_string;
 use std::sync::OnceLock;
-
-pub mod env;
-pub mod server;
 
 use err_code::Error;
 use logger::config::LoggerConfig;
 
 use serde::{Deserialize, Serialize};
-use tracing::error;
+
+use crate::{env, server};
 
 /// 全局配置对象
 static GLOBAL_CONFIG: OnceLock<AppConfig> = OnceLock::new();
 
 /// 全局配置 结构
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct AppConfig {
     /// 环境配置
     #[serde(default)]
@@ -55,13 +51,6 @@ impl AppConfig {
         Ok(config)
     }
 
-    pub fn form_str(content: &str) -> Result<AppConfig, Error> {
-        let config: AppConfig = serde_yaml::from_str(content)
-            .map_err(|err| Error::ConfigFileParseError(err.to_string()))?;
-        GLOBAL_CONFIG.get_or_init(|| config.clone());
-        Ok(config)
-    }
-
     /// 获取全局配置
     /// # Examples
     /// ```
@@ -83,12 +72,5 @@ mod tests {
         let config = AppConfig::new(path);
         println!("config:\n{:#?}", config);
         assert!(config.is_ok())
-    }
-
-    #[test]
-    fn test_include_str() {
-        let yaml_str = include_str!("../../config.yaml");
-        println!("config:\n{:#?}", yaml_str);
-        assert_ne!(yaml_str, "");
     }
 }

@@ -1,0 +1,17 @@
+[package]
+name = "config"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+logger = { path = "../core/logger" }
+
+
+database = { workspace = true }
+err_code = { workspace = true }
+
+
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+log = { workspace = true }

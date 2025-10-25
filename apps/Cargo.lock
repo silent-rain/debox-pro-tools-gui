@@ -24,6 +24,40 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
+name = "admin"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "app_state",
+ "axum",
+ "axum-streams",
+ "axum_context",
+ "axum_middleware",
+ "axum_response",
+ "colored",
+ "config",
+ "database",
+ "dotenv",
+ "err_code",
+ "futures",
+ "inject",
+ "listenfd",
+ "log 0.4.28",
+ "logger",
+ "rust-embed",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "service_hub",
+ "thiserror 2.0.17",
+ "tokio",
+ "tokio-stream",
+ "tower",
+ "tower-http",
+ "utils",
+]
+
+[[package]]
 name = "ahash"
 version = "0.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -173,6 +207,13 @@ name = "anyhow"
 version = "1.0.100"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a23eb6b1614318a8071c9b2521f36b424b2c83db5eb3a0fead4a6c0809af6e61"
+
+[[package]]
+name = "app_state"
+version = "0.1.0"
+dependencies = [
+ "tracing-appender",
+]
 
 [[package]]
 name = "approx"
@@ -544,9 +585,9 @@ dependencies = [
 
 [[package]]
 name = "axum-streams"
-version = "0.23.1"
+version = "0.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "144504cefd7a118724978cd549651c93e8c993978715634aff6e14c2e41f69c5"
+checksum = "49debcb7f7400a7f2c96d590795c12372f4db7ad0f518d5a02286d8c8b8c691d"
 dependencies = [
  "axum",
  "bytes",
@@ -586,6 +627,24 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.17",
  "tower",
+]
+
+[[package]]
+name = "axum_middleware"
+version = "0.1.0"
+dependencies = [
+ "axum",
+ "axum_context",
+ "axum_response",
+ "bytes",
+ "err_code",
+ "futures",
+ "serde_json",
+ "service_hub",
+ "tokio",
+ "tower",
+ "tower-http",
+ "tracing",
 ]
 
 [[package]]
@@ -803,6 +862,16 @@ checksum = "874bb8112abecc98cbd6d81ea4fa7e94fb9449648c93cc89aa40c81c24d7de03"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
+]
+
+[[package]]
+name = "bstr"
+version = "1.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "234113d19d0d7d613b40e86fb654acf958910802bcceab913a4f9e7cda03b1a4"
+dependencies = [
+ "memchr 2.7.6",
+ "serde",
 ]
 
 [[package]]
@@ -1131,6 +1200,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4ca0197aee26d1ae37445ee532fefce43251d24cc7c166799f4d46817f1d3973"
 dependencies = [
  "crossbeam-utils",
+]
+
+[[package]]
+name = "config"
+version = "0.1.0"
+dependencies = [
+ "database",
+ "err_code",
+ "log 0.4.28",
+ "logger",
+ "serde",
+ "serde_json",
+ "serde_yaml",
 ]
 
 [[package]]
@@ -1485,13 +1567,15 @@ dependencies = [
 name = "debox-pro-tools-gui"
 version = "0.1.0"
 dependencies = [
+ "admin",
  "anyhow",
+ "app_state",
  "axum",
  "axum-streams",
  "axum_context",
  "axum_response",
  "chrono",
- "colored",
+ "config",
  "database",
  "err_code",
  "futures",
@@ -1504,7 +1588,6 @@ dependencies = [
  "serde_repr",
  "serde_yaml",
  "service_hub",
- "state",
  "tauri",
  "tauri-build",
  "tauri-plugin-fs",
@@ -2405,6 +2488,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0cc23270f6e1808e30a928bdc84dea0b9b4136a8bc82338574f23baf47bbd280"
 
 [[package]]
+name = "globset"
+version = "0.4.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "52dfc19153a48bde0cbd630453615c8151bce3a5adfac7a0aebfbf0a1e1f57e3"
+dependencies = [
+ "aho-corasick 1.1.3",
+ "bstr",
+ "log 0.4.28",
+ "regex-automata",
+ "regex-syntax 0.8.8",
+]
+
+[[package]]
 name = "gloo-timers"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3263,6 +3359,17 @@ name = "linux-raw-sys"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "df1d3c3b53da64cf5760482273a98e575c651a67eec7f77df96b5b642de8f039"
+
+[[package]]
+name = "listenfd"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b87bc54a4629b4294d0b3ef041b64c40c611097a677d9dc07b2c67739fe39dba"
+dependencies = [
+ "libc",
+ "uuid",
+ "winapi 0.3.9",
+]
 
 [[package]]
 name = "litemap"
@@ -5242,6 +5349,7 @@ version = "8.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "21fcbee55c2458836bcdbfffb6ec9ba74bbc23ca7aa6816015a3dd2c4d8fc185"
 dependencies = [
+ "globset",
  "mime_guess",
  "sha2",
  "walkdir",
@@ -6307,13 +6415,6 @@ name = "stable_deref_trait"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
-
-[[package]]
-name = "state"
-version = "0.1.0"
-dependencies = [
- "tracing-appender",
-]
 
 [[package]]
 name = "static_assertions"

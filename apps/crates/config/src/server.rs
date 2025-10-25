@@ -31,7 +31,7 @@ impl Default for Server {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Base {
     pub address: String,
-    pub port: u32,
+    pub port: u16,
 }
 impl Base {
     /// 服务监听地址

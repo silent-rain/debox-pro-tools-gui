@@ -2,20 +2,18 @@
 
 use std::{path::Path, sync::Arc};
 
-use database::Mdb;
-use inject::InjectProvider;
 use log::info;
 use tauri::{App, Manager, path::BaseDirectory};
 use tracing_appender::non_blocking::WorkerGuard;
 
+use admin::server::HttpServer;
+use app_state::mobile::{AppDirector, AppState};
+use config::AppConfig;
+use database::Mdb;
 use err_code::Error;
-use state::mobile::{AppDirector, AppState};
+use inject::InjectProvider;
 
-use crate::{
-    config::AppConfig,
-    server::HttpServer,
-    utils::app_dir::{init_dir, print_app_dir},
-};
+use crate::utils::app_dir::{init_dir, print_app_dir};
 
 const CONFIG_FILE: &str = "config.yaml";
 const DATA_DAT_FILE: &str = "data.dat";
@@ -44,22 +42,23 @@ impl Setup {
         let inject_provider = Arc::new(InjectProvider::new(db_pool.clone()));
 
         // 全局状态
-        let state = AppState {
+        let state = Arc::new(AppState {
             counter: 0,
             log_guards,
             app_directory: AppDirector {
                 app_dir,
                 home_dir: "".into(),
             },
-        };
-        app.manage(state);
+        });
+        app.manage(state.clone());
 
         // 打印系统目录
         print_app_dir(app).expect("打印系统目录失败");
 
         // 启动 Http 服务
+        let state_c = state.clone();
         tauri::async_runtime::spawn(async {
-            HttpServer::run(app_config, db_pool, inject_provider)
+            HttpServer::run(app_config, db_pool, inject_provider, state_c)
                 .await
                 .expect("初始化接口服务失败")
         });

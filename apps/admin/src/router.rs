@@ -3,6 +3,7 @@
 use std::time::Duration;
 
 use axum::{Router, extract::DefaultBodyLimit};
+use log::warn;
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_http::{
@@ -13,10 +14,9 @@ use tower_http::{
     timeout::TimeoutLayer,
     trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer},
 };
-use tracing::warn;
 
-use crate::middleware::{cors_layer, empty_wrapper_layer};
 use axum_context::ContextLayer;
+use axum_middleware::{cors::cors_layer, empty_wrapper_fn::empty_wrapper_layer};
 use service_hub::{debox::DeboxRouter, log::LogRouter, system::SystemRouter, user::UserRouter};
 
 /// axum handler for any request that fails to match the router routes.
@@ -30,7 +30,7 @@ pub async fn fallback(uri: axum::http::Uri) -> impl axum::response::IntoResponse
 }
 
 /// 优雅关机
-pub async fn _shutdown_signal() {
+pub async fn shutdown_signal() {
     let ctrl_c = async {
         signal::ctrl_c()
             .await

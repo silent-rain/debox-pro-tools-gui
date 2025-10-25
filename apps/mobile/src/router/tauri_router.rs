@@ -1,5 +1,5 @@
 //! tauri simple
-use state::mobile::AppState;
+use app_state::mobile::AppState;
 
 use tauri::{Runtime, State, ipc::InvokeHandler};
 use tokio::sync::Mutex;

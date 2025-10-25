@@ -20,7 +20,9 @@ tauri-build = { workspace = true, features = ["config-json5"] }
 
 [dependencies]
 logger = { path = "../crates/core/logger" }
-state = { path = "../crates/state" }
+app_state = { path = "../crates/app_state" }
+config = { path = "../crates/config" }
+admin = { path = "../admin" }
 
 err_code = { workspace = true }
 database = { workspace = true }
@@ -67,7 +69,6 @@ serde_repr = { workspace = true }
 anyhow = { workspace = true }
 chrono = { workspace = true }
 uuid = { workspace = true, features = ["v4"] }
-colored = { workspace = true }
 
 log = { workspace = true }
 tracing = { workspace = true }

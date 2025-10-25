@@ -5,6 +5,7 @@ use std::path::PathBuf;
 use tracing_appender::non_blocking::WorkerGuard;
 
 /// 应用目录
+#[derive(Debug, Default, Clone)]
 pub struct AppDirector {
     pub home_dir: PathBuf,
     pub app_dir: PathBuf,
