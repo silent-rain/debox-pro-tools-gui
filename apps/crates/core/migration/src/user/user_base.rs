@@ -1,11 +1,13 @@
 //! 用户信息表
-//! Entity: [`entity::prelude::UserBase`]
+//! Entity: [`entity::user::UserBase`]
 
 use sea_orm::{
-    DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, Index, Table},
+    DeriveIden, DeriveMigrationName,
+    sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -46,9 +48,9 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(UserBase::Gender)
                             .tiny_integer()
-                            .null()
-                            .default(1)
-                            .comment("性别;1:男,2:女,3:保密"),
+                            .not_null()
+                            .default(0)
+                            .comment("性别(0:保密,1:女,2:男)"),
                     )
                     .col(
                         ColumnDef::new(UserBase::Password)
@@ -61,8 +63,8 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(UserBase::Status)
                             .boolean()
                             .not_null()
-                            .default(false)
-                            .comment("状态(0:停用,1:正常)"),
+                            .default(true)
+                            .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
                         ColumnDef::new(UserBase::Age)
@@ -165,34 +167,17 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(UserBase::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
             .await?;
 
-        if !manager
-            .has_index(UserBase::Table.to_string(), "idx_username")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_username")
-                        .table(UserBase::Table)
-                        .col(UserBase::Username)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
+        if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::Username]).await?;
+        if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::RealName]).await?;
+        if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::Password]).await?;
+        if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::ShareCode]).await?;
         Ok(())
     }
 

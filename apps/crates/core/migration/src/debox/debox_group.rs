@@ -1,13 +1,13 @@
 //! DeBox群组表
-//! Entity: [`entity::prelude::UserDeboxGroup`]
-
-use crate::m20251020_145453_create_debox_account::DeboxAccount;
+//! Entity: [`entity::prelude::DeboxAccount`]
 
 use sea_orm::{
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::debox::debox_account::DeboxAccount;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

@@ -1,11 +1,13 @@
 //! 配置表
-//! Entity: [`entity::prelude::SysConfig`]
+//! Entity: [`entity::system::SysConfig`]
 
 use sea_orm::{
-    DatabaseBackend, DeriveIden, DeriveMigrationName,
+    DeriveIden, DeriveMigrationName,
     sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::utils::if_not_exists_create_index;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -18,11 +20,11 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(SysConfig::Table)
+                    .table(Config::Table)
                     .comment("配置表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(SysConfig::Id)
+                        ColumnDef::new(Config::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
@@ -30,21 +32,21 @@ impl MigrationTrait for Migration {
                             .comment("配置ID"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Pid)
+                        ColumnDef::new(Config::Pid)
                             .integer()
                             .null()
                             .default(0)
                             .comment("父节点ID"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Name)
+                        ColumnDef::new(Config::Name)
                             .string()
                             .string_len(64)
                             .not_null()
                             .comment("配置名称"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Code)
+                        ColumnDef::new(Config::Code)
                             .string()
                             .string_len(64)
                             .unique_key()
@@ -52,20 +54,20 @@ impl MigrationTrait for Migration {
                             .comment("配置编码(英文)"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Value)
+                        ColumnDef::new(Config::Value)
                             .text()
                             .null()
                             .comment("配置值"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Sort)
+                        ColumnDef::new(Config::Sort)
                             .integer()
                             .null()
                             .default(0)
                             .comment("排序"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Desc)
+                        ColumnDef::new(Config::Desc)
                             .string()
                             .string_len(200)
                             .null()
@@ -73,47 +75,48 @@ impl MigrationTrait for Migration {
                             .comment("配置描述"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::Status)
-                            .tiny_integer()
+                        ColumnDef::new(Config::Status)
+                            .boolean()
                             .not_null()
-                            .default(1)
-                            .comment("状态(0:停用,1:正常)"),
+                            .default(true)
+                            .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::CreatedAt)
+                        ColumnDef::new(Config::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(SysConfig::UpdatedAt)
+                        ColumnDef::new(Config::UpdatedAt)
                             .date_time()
                             .not_null()
-                            .extra({
-                                match manager.get_database_backend() {
-                                    DatabaseBackend::Sqlite => "DEFAULT CURRENT_TIMESTAMP",
-                                    _ => "DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-                                }
-                            })
+                            .default(Expr::current_timestamp())
                             .comment("更新时间"),
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        if_not_exists_create_index(manager, Config::Table, vec![Config::Name]).await?;
+        if_not_exists_create_index(manager, Config::Table, vec![Config::Pid]).await?;
+        if_not_exists_create_index(manager, Config::Table, vec![Config::Code]).await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
 
         manager
-            .drop_table(Table::drop().table(SysConfig::Table).to_owned())
+            .drop_table(Table::drop().table(Config::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum SysConfig {
+pub enum Config {
     #[sea_orm(iden = "t_sys_config")]
     Table,
     Id,

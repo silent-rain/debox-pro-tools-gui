@@ -1,13 +1,13 @@
 //! DeBox账号表
-//! Entity: [`entity::prelude::UserAccount`]
-
-use crate::m20240218_145453_create_user_base::UserBase;
+//! Entity: [`entity::prelude::UserBase`]
 
 use sea_orm::{
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
+
+use crate::user::user_base::UserBase;
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;

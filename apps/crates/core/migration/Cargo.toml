@@ -9,6 +9,9 @@ name = "migration"
 path = "src/lib.rs"
 
 [dependencies]
+entity = { path = "../entity" }
+
+
 async-std = { workspace = true, features = ["attributes", "tokio1"] }
 sea-orm = { workspace = true }
 sea-orm-migration = { workspace = true, features = [
@@ -30,6 +33,8 @@ entity = { workspace = true }
 
 sqlx = { workspace = true }
 dotenv = { workspace = true }
+chrono = { workspace = true }
+serde = { workspace = true }
 tracing = { workspace = true }
 tokio = { workspace = true, features = [
     "macros",

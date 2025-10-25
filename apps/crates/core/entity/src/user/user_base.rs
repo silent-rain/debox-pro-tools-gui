@@ -85,9 +85,6 @@ pub mod enums {
         /// 邮箱
         #[serde(rename = "email")]
         Email,
-        /// 区块链钱包
-        #[serde(rename = "blockchain_wallet")]
-        BlockchainWallet,
     }
 
     impl Default for UserType {
@@ -115,7 +112,6 @@ pub mod enums {
                 UserType::Phone => "phone".to_owned(),
                 UserType::Email => "email".to_owned(),
                 UserType::Base => "base".to_owned(),
-                UserType::BlockchainWallet => "blockchain_wallet".to_owned(),
             }
         }
     }

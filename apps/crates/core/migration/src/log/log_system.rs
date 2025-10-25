@@ -1,9 +1,9 @@
 //! 系统日志表
-//! Entity: [`entity::prelude::LogSystem`]
+//! Entity: [`entity::log::LogSystem`]
 
 use sea_orm::{
-    DeriveIden, DeriveMigrationName,
-    sea_query::{ColumnDef, Expr, Table},
+    DeriveIden, DeriveMigrationName, Iden,
+    sea_query::{ColumnDef, Expr, Index, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
@@ -178,7 +178,39 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
-            .await
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogSystem::Table.to_string(),
+                        LogSystem::UserId.to_string()
+                    ))
+                    .table(LogSystem::Table)
+                    .col(LogSystem::UserId)
+                    .to_owned(),
+            )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .if_not_exists()
+                    .name(format!(
+                        "idx_{}_{}",
+                        LogSystem::Table.to_string(),
+                        LogSystem::Username.to_string()
+                    ))
+                    .table(LogSystem::Table)
+                    .col(LogSystem::Username)
+                    .to_owned(),
+            )
+            .await?;
+
+        Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
