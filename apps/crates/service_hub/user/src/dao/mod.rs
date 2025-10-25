@@ -1,5 +1,6 @@
 //! 数据层
 
+pub mod email;
 pub mod phone;
 pub mod role;
 pub mod user_base;

@@ -1,5 +1,6 @@
 //! 路由层
 
+pub mod email;
 pub mod phone;
 pub mod role;
 pub mod user_base;
@@ -19,6 +20,7 @@ impl UserRouter {
                 .merge(role::RoleRouter::register()) // 角色管理
                 .merge(user_role_rel::UserRoleRelRouter::register()) // 用户角色关系管理
                 .merge(user_base::UserBaseRouter::register()) // 用户信息管理
+                .merge(email::EmailRouter::register()) // 邮件管理
                 .merge(phone::PhoneRouter::register()), // 用户手机号管理
         )
     }
