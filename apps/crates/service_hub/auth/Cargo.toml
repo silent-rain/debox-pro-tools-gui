@@ -7,7 +7,6 @@ edition = "2024"
 utils = { path = "../../core/utils" }
 
 user = { path = "../user" }
-system = { path = "../system" }
 
 database = { workspace = true }
 entity = { workspace = true }

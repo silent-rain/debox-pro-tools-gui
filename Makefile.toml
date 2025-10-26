@@ -120,6 +120,7 @@ args = [
     "create-tauri-app", # 创建 Tauri 项目
     "tauri-cli",        # Tauri Cli 工具
     "sea-orm-cli",      # Sea-Orm Cli 工具
+    "cargo-udeps",      # 分析依赖
 ]
 
 [tasks.install-rustup-linux-deps]

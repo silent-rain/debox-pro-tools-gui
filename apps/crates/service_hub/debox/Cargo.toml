@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-utils = { path = "../../core/utils" }
-
 database = { workspace = true }
 entity = { workspace = true }
 err_code = { workspace = true }
@@ -21,5 +19,4 @@ nject = { workspace = true }
 log = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_repr = { workspace = true }
-uap-rust = { workspace = true }
 thiserror = { workspace = true }

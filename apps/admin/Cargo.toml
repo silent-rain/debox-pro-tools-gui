@@ -33,7 +33,6 @@ tower-http = { workspace = true, features = [
     "request-id",
 ] }
 tokio = { workspace = true, features = ["full"] }
-tokio-stream = { workspace = true }
 futures = { workspace = true }
 listenfd = { workspace = true }
 

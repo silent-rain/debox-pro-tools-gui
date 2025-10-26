@@ -6,7 +6,7 @@ env:
 server:
   base: # 系统服务地址配置
     address: "127.0.0.1" # 服务地址
-    port: 8000 # 服务端口
+    port: 3000 # 服务端口
   captcha: # 验证码
     expire: 120 # 验证码过期时间/s, 0-255
   upload: # 上传路径配置
@@ -56,7 +56,7 @@ mysql:
 sqlite:
   type: "sqlite" # 数据库类型
   key: "db" # db信息唯一标识
-  sqlite_path: "sqlite://data.dat?mode=rwc" # sqlite 路径
+  sqlite_path: "sqlite://../mobile/data.dat?mode=rwc" # sqlite 路径
   options: # 参数配置
     max_connections: 100 # 设置池的最大连接数
     min_connections: 5 # 设置池的最小连接数

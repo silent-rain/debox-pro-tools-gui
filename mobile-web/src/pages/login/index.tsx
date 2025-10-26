@@ -1,32 +1,28 @@
 import { Button, Form, Input, Toast } from 'antd-mobile';
 import { EyeInvisibleOutline, EyeOutline } from 'antd-mobile-icons';
-import { JSX, useEffect, useState } from 'react';
+import { JSX, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './index.module.less';
-
-interface LoginValue {
-  username: string;
-  password: string;
-}
+import { LoginReq } from '@/typings/auth';
+import { UserType } from '@/enums/auth';
+import { AuthApi } from '@/api/auto';
 
 export default function Login(): JSX.Element {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [form] = Form.useForm<LoginValue>();
+  const [form] = Form.useForm<LoginReq>();
   const navigate = useNavigate();
 
-  // 测试数据
-  useEffect(() => {
-    // 设置字段值
-    form.setFieldsValue({
-      username: '18312542746',
-      password: '123456',
-    });
-  }, [form]);
+  // 测试用户
+  const initialValues: LoginReq = {
+    user_type: UserType.Phone,
+    phone: '18312542746',
+    password: '123456',
+    captcha_id: '',
+    captcha: '',
+  };
 
-  const onFinish = async (values: LoginValue) => {
-    console.log('values', values);
-
+  const onFinish = async (values: LoginReq) => {
     if (submitting) {
       // 防止重复提交
       return;
@@ -34,12 +30,13 @@ export default function Login(): JSX.Element {
 
     setSubmitting(true);
     try {
-      // TODO: 使用真正的登录接口替换此处模拟逻辑
-      await new Promise((r) => setTimeout(r, 600));
+      const response = await AuthApi.login(values);
 
       // 存储 token。生产环境请使用 HttpOnly Cookie 或者后端会话管理，避免在前端存放敏感凭证。
       try {
-        localStorage.setItem('token', 'mock-token');
+        localStorage.setItem('token', response.token);
+        localStorage.setItem('user_id', String(response.user_id));
+        localStorage.setItem('username', response.username);
       } catch (e) {
         console.log('存储 token 失败', e);
         // 某些隐私模式或受限环境下可能抛出异常，忽略但不要阻止登录流程
@@ -70,6 +67,7 @@ export default function Login(): JSX.Element {
         <div className={styles.subtitle}>请输入账号和密码</div>
         <Form
           form={form}
+          initialValues={initialValues}
           layout='horizontal'
           mode='card'
           onFinish={onFinish}
@@ -81,8 +79,18 @@ export default function Login(): JSX.Element {
             </div>
           }
         >
+          <Form.Item name='user_type' hidden>
+            <Input type='hidden' />
+          </Form.Item>
+          <Form.Item name='captcha_id' hidden>
+            <Input type='hidden' />
+          </Form.Item>
+          <Form.Item name='captcha' hidden>
+            <Input type='hidden' />
+          </Form.Item>
+
           <Form.Item
-            name='username'
+            name='phone'
             label='账号'
             rules={[
               { required: true, message: '请输入账号' },
@@ -94,9 +102,9 @@ export default function Login(): JSX.Element {
               placeholder='请输入用户名'
               onBlur={() => {
                 // 自动 trim 并回填到表单，保持数据规范
-                const val = (form.getFieldValue('username') || '').toString();
+                const val = (form.getFieldValue('phone') || '').toString();
                 const trimmed = val.trim();
-                if (trimmed !== val) form.setFieldsValue({ username: trimmed });
+                if (trimmed !== val) form.setFieldsValue({ phone: trimmed });
               }}
               aria-label='用户名'
             />

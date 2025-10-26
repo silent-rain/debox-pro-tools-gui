@@ -17,7 +17,9 @@ use tower_http::{
 
 use axum_context::ContextLayer;
 use axum_middleware::{cors::cors_layer, empty_wrapper_fn::empty_wrapper_layer};
-use service_hub::{debox::DeboxRouter, log::LogRouter, system::SystemRouter, user::UserRouter};
+use service_hub::{
+    auth::AuthRouter, debox::DeboxRouter, log::LogRouter, system::SystemRouter, user::UserRouter,
+};
 
 /// axum handler for any request that fails to match the router routes.
 /// This implementation returns HTTP status code Not Found (404).
@@ -81,6 +83,7 @@ pub fn register() -> Router {
         .propagate_x_request_id();
 
     Router::new()
+        .merge(AuthRouter::register()) // 用户认证
         .merge(UserRouter::register()) // 用户管理
         .merge(DeboxRouter::register()) // Debox管理
         .merge(SystemRouter::register()) // 系统管理

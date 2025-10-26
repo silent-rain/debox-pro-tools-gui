@@ -1,10 +1,9 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import { createHtmlPlugin } from 'vite-plugin-html'
+import { createHtmlPlugin } from 'vite-plugin-html';
 
 const host = process.env.TAURI_DEV_HOST;
-
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -21,19 +20,19 @@ export default defineConfig({
     cors: true, // 允许跨域
     hmr: host
       ? {
-        protocol: "ws",
-        host,
-        port: 1421,
-      }
+          protocol: 'ws',
+          host,
+          port: 1421,
+        }
       : undefined,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
-      ignored: ["**/src-tauri/**", "**/apps/**"],
+      ignored: ['**/src-tauri/**', '**/apps/**'],
     },
     // 配置代理
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1: 8000', // 接口地址
+        target: 'http://127.0.0.1: 3000', // 接口地址
         changeOrigin: true, // 接口跨域
         secure: false, // 启用 https 服务时需要配置
       },
