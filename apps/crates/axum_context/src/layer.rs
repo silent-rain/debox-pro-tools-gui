@@ -5,6 +5,7 @@ use std::task::Poll;
 
 use axum::{body::Body, extract::Request, http::Response};
 use futures::future::BoxFuture;
+use log::info;
 use tower::{Layer, Service};
 
 use crate::Context;
@@ -49,6 +50,7 @@ where
 
     fn call(&mut self, mut req: Request) -> Self::Future {
         // Do something with `self.state`.
+        info!("Context middleware");
 
         let not_ready_inner = self.inner.clone();
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);

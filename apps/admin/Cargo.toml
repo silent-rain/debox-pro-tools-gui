@@ -15,6 +15,7 @@ database = { workspace = true }
 inject = { workspace = true }
 axum_response = { workspace = true }
 axum_context = { workspace = true }
+axum_jwt = { workspace = true }
 axum_middleware = { workspace = true }
 service_hub = { workspace = true }
 

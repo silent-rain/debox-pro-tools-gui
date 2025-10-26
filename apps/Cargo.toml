@@ -22,7 +22,7 @@ members = [
     "crates/service_hub",
 
     # app 应用
-    "mobile",
+    # "mobile",
     "admin",
 ]
 
