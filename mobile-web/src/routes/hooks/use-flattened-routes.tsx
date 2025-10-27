@@ -1,8 +1,8 @@
-import { RouteObject } from '@/typings/routes';
+import { RouteConfig } from '@/typings/routes';
 import { RootRoutes } from '../routes';
 
-const flattenedRoutesRecursion = (routes: RouteObject[]) => {
-  const flattenedRoutes: RouteObject[] = [];
+const flattenedRoutesRecursion = (routes: RouteConfig[]) => {
+  const flattenedRoutes: RouteConfig[] = [];
   for (const route of routes) {
     const rootPath = route.path;
     const children = route.children;
@@ -32,7 +32,7 @@ const flattenedRoutesRecursion = (routes: RouteObject[]) => {
 };
 
 export const flattenedRoutes = () => {
-  const routes = RootRoutes();
+  const routes = RootRoutes;
 
   const flattenedRoutes = flattenedRoutesRecursion(routes);
   return flattenedRoutes;
