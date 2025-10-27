@@ -25,6 +25,12 @@ pub enum Error {
     // #[from] axum::extract::rejection::PathRejection
     #[error("parse path error, {0}")]
     PathRejection(String),
+    // #[from] axum::extract::rejection::QueryRejection
+    #[error("parse query error, {0}")]
+    QueryRejection(String),
+    // #[from] axum::extract::rejection::JsonRejection
+    #[error("parse json error, {0}")]
+    JsonRejection(String),
 
     #[error(transparent)]
     ValidationErrors(#[from] validator::ValidationErrors),
