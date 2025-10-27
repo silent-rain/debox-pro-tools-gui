@@ -62,7 +62,7 @@ export default function Login(): JSX.Element {
 
   return (
     <div className={styles.login_container}>
-      <div className={styles.card}>
+      <div>
         <h1 className={styles.title}>欢迎登录</h1>
         <div className={styles.subtitle}>请输入账号和密码</div>
         <Form
