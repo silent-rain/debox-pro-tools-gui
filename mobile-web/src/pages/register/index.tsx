@@ -2,24 +2,17 @@ import { Button, Form, Input, Radio, Toast, CalendarPickerView, Popup } from 'an
 import { JSX, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './index.module.less';
-
-interface RegisterValue {
-  username: string;
-  gender: 0 | 1 | 2; // 0:保密,1:女,2:男
-  password: string;
-  password2: string;
-  age?: number;
-  date_birth?: string; // 格式: YYYY-MM-DD
-}
+import { AuthApi } from '@/api/auth';
+import { RegisterReq } from '@/typings/auth';
 
 export default function Register(): JSX.Element {
   const [submitting, setSubmitting] = useState(false);
-  const [form] = Form.useForm<RegisterValue>();
+  const [form] = Form.useForm<RegisterReq>();
   const navigate = useNavigate();
   const [calendarVisible, setCalendarVisible] = useState(false);
   const dateBirth = Form.useWatch('date_birth', form);
 
-  const onFinish = async (values: RegisterValue) => {
+  const onFinish = async (values: RegisterReq) => {
     if (submitting) return;
     setSubmitting(true);
     try {
@@ -50,9 +43,7 @@ export default function Register(): JSX.Element {
       })();
       values.age = computedAge;
 
-      // TODO: 使用真实注册接口替换此处模拟
-      await new Promise((r) => setTimeout(r, 600));
-
+      await AuthApi.register(values);
       console.log('注册成功: ', values);
 
       Toast.show({ icon: 'success', content: '注册成功' });

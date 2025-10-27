@@ -5,7 +5,7 @@ use validator::Validate;
 
 use user::enums::user_base::UserType;
 
-/// 注册用户
+/// 注册用户 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct RegisterReq {
     /// 注册用户类型
@@ -49,5 +49,6 @@ pub struct RegisterReq {
     pub captcha: String,
 }
 
+/// 注册用户 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RegisterResp {}

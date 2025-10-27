@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import styles from './index.module.less';
 import { LoginReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
-import { AuthApi } from '@/api/auto';
+import { AuthApi } from '@/api/auth';
 import { useAuthStore } from '@/stores/authStore';
 import { cachedPasswordKey, cachedPhoneKey, cacheTokenKey } from '@/constant/auth';
 
