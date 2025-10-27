@@ -10,8 +10,8 @@ const Message = lazy(() => import('@/pages/message'));
 const PersonalCenter = lazy(() => import('@/pages/personal-center'));
 const AiPainting = lazy(() => import('@/pages/ai-painting'));
 const AiPaintingTextToImageBase = lazy(() => import('@/pages/text-to-image-base'));
-const Login = lazy(() => import('@/pages/login'));
-const Register = lazy(() => import('@/pages/register'));
+const Login = lazy(() => import('@/pages/auth/login'));
+const Register = lazy(() => import('@/pages/auth/register'));
 
 // TabBar Routes
 const tabBarRoutes: RouteConfig = {
