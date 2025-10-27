@@ -4,10 +4,10 @@ use std::{boxed::Box, task::Poll};
 use axum::{body::Body, extract::Request, http::Response};
 use axum_context::{ApiAuthType, Context};
 use futures::future::BoxFuture;
-use log::{error, info};
 use tower::{Layer, Service};
+use tracing::error;
 
-use crate::{Claims, Error, error::ErrorMsg};
+use crate::{Claims, Error};
 
 /// JWT权限中间件
 #[derive(Clone)]
@@ -86,14 +86,14 @@ where
         let auth_white_list = self.auth_white_list.clone();
         let not_ready_inner = self.inner.clone();
         let mut inner = std::mem::replace(&mut self.inner, not_ready_inner);
-        info!("Jwt middleware");
 
         Box::pin(async move {
             // 不存在系统鉴权标识时, 则直接通过
-            if req.headers().get(authorization.clone()).is_none() {
-                let resp = inner.call(req).await?;
-                return Ok(resp);
-            }
+            // 本地仅有JTW鉴权时, 则无需判断
+            // if req.headers().get(authorization.clone()).is_none() {
+            //     let resp = inner.call(req).await?;
+            //     return Ok(resp);
+            // }
 
             // 白名单放行
             let path = req.uri().path();
@@ -140,22 +140,21 @@ impl<S> JwtService<S> {
         req: &Request<ReqBody>,
         authorization: String,
         authorization_bearer: String,
-    ) -> Result<String, ErrorMsg> {
+    ) -> Result<String, Error> {
         let authorization = req
             .headers()
             .get(authorization.clone())
             .map_or("", |v| v.to_str().map_or("", |v| v));
 
         if authorization.is_empty() {
-            error!("鉴权标识为空");
-            return Err(Error::HeadersNotAuthorization.into_err());
+            error!("鉴权标识为空, 请求头未包含 Authorization 字段");
+            return Err(Error::HeadersNotAuthorization);
         }
         if !authorization.starts_with(&authorization_bearer) {
             error!(
-                "用户请求参数缺失 {0}, 非法请求, authorization: {authorization}",
-                authorization_bearer
+                "请求头 Authorization 字段缺失 Bearer 前缀, 非法请求, authorization: {authorization}"
             );
-            return Err(Error::HeadersNotAuthorizationBearer.into_err());
+            return Err(Error::HeadersNotAuthorizationBearer);
         }
 
         let token = authorization.replace(&authorization_bearer, "");
@@ -164,7 +163,7 @@ impl<S> JwtService<S> {
     }
 
     /// 解析系统接口Token
-    fn parse_system_token(token: String) -> Result<Claims, ErrorMsg> {
+    fn parse_system_token(token: String) -> Result<Claims, Error> {
         // 解码 Token
         let claims = Claims::decode_token(&token)?;
         // 验证 Token

@@ -21,7 +21,7 @@ pub async fn main() -> anyhow::Result<()> {
     let app_config = AppConfig::new("config.yaml")?;
 
     // 初始化日志
-    let log_guards = logger::Logger::build(&app_config.logger).expect("初始化日志失败");
+    let _log_guards = logger::Logger::build(&app_config.logger).expect("初始化日志失败");
 
     // 初始化数据库
     let main_db =
@@ -31,7 +31,7 @@ pub async fn main() -> anyhow::Result<()> {
     // 全局状态
     let state = Arc::new(AppState {
         counter: 0,
-        log_guards,
+        log_guards: vec![],
         app_directory: AppDirector::default(),
     });
 
@@ -43,6 +43,9 @@ pub async fn main() -> anyhow::Result<()> {
 
     // 关闭数据库
     let _ = db_pool.close().await;
+
+    // 关闭全局状态, 放置日志对象提前释放
+    _ = state;
 
     println!("{}", "See you again~".yellow());
     Ok(())

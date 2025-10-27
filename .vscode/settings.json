@@ -2,7 +2,10 @@
     "rust-analyzer.linkedProjects": [
         "apps/Cargo.toml",
     ],
+    "rust-analyzer.check.command": "clippy",
     "files.associations": {
         "*.json5": "jsonc"
-    }
+    },
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnSave": true
 }

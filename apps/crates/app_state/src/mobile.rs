@@ -12,6 +12,7 @@ pub struct AppDirector {
 }
 
 /// 全局应用状态
+#[derive(Debug, Default)]
 pub struct AppState {
     pub counter: u32,
     pub app_directory: AppDirector,

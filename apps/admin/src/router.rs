@@ -17,7 +17,9 @@ use tower_http::{
 
 use axum_context::ContextLayer;
 use axum_jwt::JwtLayer;
-use axum_middleware::{cors::cors_layer, empty_wrapper_fn::empty_wrapper_layer};
+use axum_middleware::{
+    constant::AUTH_WHITE_LIST, cors::cors_layer, empty_wrapper_fn::empty_wrapper_layer,
+};
 use service_hub::{
     auth::AuthRouter, debox::DeboxRouter, log::LogRouter, system::SystemRouter, user::UserRouter,
 };
@@ -61,7 +63,10 @@ pub async fn shutdown_signal() {
 pub fn register() -> Router {
     let my_layers = ServiceBuilder::new()
         .layer(ContextLayer::new()) // 上下文
-        .layer(JwtLayer::default()) // JWT 权限
+        .layer(
+            JwtLayer::default()
+                .with_auth_white_list(AUTH_WHITE_LIST.iter().map(|v| v.to_string()).collect()),
+        ) // JWT 权限
         .layer(axum::middleware::from_fn(empty_wrapper_layer)); // 空包装
 
     // 注意中间件加载顺序: Last in, first loading
