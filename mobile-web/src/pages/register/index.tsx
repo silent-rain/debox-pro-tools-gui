@@ -173,6 +173,7 @@ export default function Register(): JSX.Element {
               <div style={{ padding: 12 }}>
                 <CalendarPickerView
                   selectionMode='single'
+                  // min={new Date(1900, 0, 1)}
                   value={
                     dateBirth
                       ? new Date(
