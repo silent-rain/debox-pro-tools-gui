@@ -6,6 +6,9 @@
     "esbenp.prettier-vscode",
     "rvest.vs-code-prettier-eslint",
     "clinyong.vscode-css-modules",
-    "bradlc.vscode-tailwindcss"
+    "bradlc.vscode-tailwindcss",
+    "tencent-cloud.coding-copilot",
+    "tamasfe.even-better-toml",
+    "fill-labs.dependi"
   ]
 }
