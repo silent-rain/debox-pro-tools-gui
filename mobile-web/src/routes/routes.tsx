@@ -19,7 +19,7 @@ const tabBarRoutes: RouteConfig = {
   element: <Layout />,
   children: [
     {
-      path: '',
+      path: 'home',
       element: <Home />,
       meta: {
         title: '首页',

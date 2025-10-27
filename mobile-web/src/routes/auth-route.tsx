@@ -23,7 +23,7 @@ export const AuthRoute = ({ children, auth }: any) => {
 
       navigate('/login');
     } else if (token && isExist) {
-      if (location.pathname === '/' || location.pathname === '/login') {
+      if (location.pathname === '/') {
         navigate('/home');
       } else {
         navigate(location.pathname);
