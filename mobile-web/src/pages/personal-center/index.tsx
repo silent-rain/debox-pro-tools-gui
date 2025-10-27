@@ -1,29 +1,51 @@
 import { useState } from 'react';
-import reactLogo from '@/assets/react.svg';
-import viteLogo from '/vite.svg';
+import { useNavigate } from 'react-router-dom';
+import { Avatar, List } from 'antd-mobile';
 import './index.module.less';
+import {
+  FileOutline,
+  InformationCircleOutline,
+  QuestionCircleOutline,
+  SetOutline,
+  TeamOutline,
+  UserAddOutline,
+} from 'antd-mobile-icons';
 
-export default function Home() {
-  const [count, setCount] = useState(0);
+export const PersonalCenter = () => {
+  const navigate = useNavigate();
+  const [userInfo] = useState({
+    avatar: 'https://example.com/avatar.jpg',
+    name: '用户名',
+    bio: '欢迎来到我的个人中心！',
+  });
+
+  const features = [
+    { title: '导入账号', path: '/import-account', icon: <UserAddOutline /> },
+    { title: '导入群组', path: '/import-group', icon: <TeamOutline /> },
+    { title: '设置', path: '/settings', icon: <SetOutline /> },
+    { title: '日志', path: '/logs', icon: <FileOutline /> },
+    { title: '帮助', path: '/help', icon: <QuestionCircleOutline /> },
+    { title: '关于', path: '/about', icon: <InformationCircleOutline /> },
+  ];
 
   return (
-    <>
-      <div>
-        <a href='https://vite.dev' target='_blank' rel='noreferrer'>
-          <img src={viteLogo} className='logo' alt='Vite logo' />
-        </a>
-        <a href='https://react.dev' target='_blank' rel='noreferrer'>
-          <img src={reactLogo} className='logo react' alt='React logo' />
-        </a>
+    <div className='personal-center'>
+      <div className='user-info' onClick={() => navigate('/user-detail')}>
+        <Avatar src={userInfo.avatar} style={{ '--size': '80px' }} />
+        <div className='user-text'>
+          <h3>{userInfo.name}</h3>
+          <p>{userInfo.bio}</p>
+        </div>
       </div>
-      <h1>Vite + React - TODO</h1>
-      <div className='card'>
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className='read-the-docs'>Click on the Vite and React logos to learn more</p>
-    </>
+      <List>
+        {features.map((item) => (
+          <List.Item key={item.path} prefix={item.icon} onClick={() => navigate(item.path)}>
+            {item.title}
+          </List.Item>
+        ))}
+      </List>
+    </div>
   );
-}
+};
+
+export default PersonalCenter;
