@@ -10,9 +10,9 @@ axum_context = { workspace = true }
 tower = { workspace = true }
 futures = { workspace = true }
 
-jsonwebtoken = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
+jsonwebtoken = { workspace = true, features = ["aws_lc_rs"] }
 chrono = { workspace = true }
 thiserror = { workspace = true }
 tracing = { workspace = true }

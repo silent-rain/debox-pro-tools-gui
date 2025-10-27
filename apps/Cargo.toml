@@ -69,7 +69,7 @@ validator_derive = "0.20"
 mime = "0.3"                  # mime type
 infer = "0.19"                # mime
 listenfd = "1.0"
-
+matchit = "0.9"               # 路由匹配
 
 # 异步相关
 async-std = "1.13"
@@ -104,7 +104,7 @@ base64 = "0.22"
 regex = "1.12"
 chrono = "0.4"
 rust_decimal = "1.36"
-jsonwebtoken = "9.3"
+jsonwebtoken = "10.1"
 time = "0.3"
 once_cell = "1.20"
 dotenv = "0.15"
