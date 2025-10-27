@@ -6,6 +6,7 @@ import styles from './index.module.less';
 import { LoginReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
 import { AuthApi } from '@/api/auto';
+import { useAuthStore } from '@/stores/authStore';
 
 export default function Login(): JSX.Element {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -32,11 +33,9 @@ export default function Login(): JSX.Element {
     try {
       const response = await AuthApi.login(values);
 
-      // 存储 token。生产环境请使用 HttpOnly Cookie 或者后端会话管理，避免在前端存放敏感凭证。
+      // 使用 Zustand 存储用户认证数据
       try {
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user_id', String(response.user_id));
-        localStorage.setItem('username', response.username);
+        useAuthStore.getState().setAuthData(response.token, String(response.user_id), response.username);
       } catch (e) {
         console.log('存储 token 失败', e);
         // 某些隐私模式或受限环境下可能抛出异常，忽略但不要阻止登录流程
