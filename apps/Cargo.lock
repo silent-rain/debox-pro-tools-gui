@@ -624,6 +624,7 @@ dependencies = [
  "serde_json",
  "serde_urlencoded",
  "thiserror 2.0.17",
+ "tracing",
  "validator",
  "validator_derive",
 ]

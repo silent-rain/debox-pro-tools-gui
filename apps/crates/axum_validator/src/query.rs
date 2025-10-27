@@ -1,4 +1,4 @@
-//! Json extractor.
+//! Query extractor.
 use std::ops::Deref;
 
 use axum::{extract::FromRequestParts, http::request::Parts};

@@ -2,7 +2,7 @@
 
 use axum_context::Context;
 use axum_response::{Responder, Response};
-use axum_validator::{Extension, Json, Query};
+use axum_validator::{Extension, Json, Path, Query};
 use log::warn;
 
 use inject::AInjectProvider;
@@ -110,7 +110,7 @@ impl UserBaseController {
     /// 获取用户信息个人信息
     pub async fn profile(
         Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<ProfileReq>,
+        Path(req): Path<ProfileReq>,
         ctx: Context,
     ) -> Responder<ProfileResp> {
         let user_id = ctx.get_user_id();
@@ -118,7 +118,7 @@ impl UserBaseController {
         warn!("profile context user_id: {user_id} username: {username}");
 
         let user_base_service: UserBaseService = provider.provide();
-        let result = user_base_service.profile(req.user_id).await?;
+        let result = user_base_service.profile(req.id).await?;
 
         let resp = Response::data(result).to_json()?;
         Ok(resp)
