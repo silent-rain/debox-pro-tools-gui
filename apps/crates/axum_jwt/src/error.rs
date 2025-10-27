@@ -40,20 +40,6 @@ pub enum Error {
     JsonWebToken(#[from] jsonwebtoken::errors::Error),
 }
 
-impl Error {
-    /// 返回错误码
-    pub fn code(&self) -> u16 {
-        unsafe {
-            let ptr = self as *const Error as *const u16;
-            ptr.read_volatile()
-        }
-    }
-    /// 返回错误码信息
-    pub fn msg(&self) -> String {
-        self.to_string()
-    }
-}
-
 impl Serialize for Error {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
     where
@@ -67,21 +53,21 @@ impl From<Error> for Response<Body> {
     fn from(err: Error) -> Self {
         let err_msg = ErrorMsg {
             code: StatusCode::UNAUTHORIZED.into(),
-            msg: err.msg(),
+            msg: err.to_string(),
         };
 
         let data = serde_json::to_string(&err_msg).unwrap_or_else(|e| {
             error!("转换为JSON字符串失败, error: {:#?}", e);
 
             json!({
-                "code": Error::InternalServer.code(),
-                "msg": Error::InternalServer.msg()
+                "code": Into::<u16>::into(StatusCode::INTERNAL_SERVER_ERROR),
+                "msg": Error::InternalServer.to_string()
             })
             .to_string()
         });
 
         let mut resp = Response::new(Body::from(data));
-        *resp.status_mut() = StatusCode::INTERNAL_SERVER_ERROR;
+        *resp.status_mut() = StatusCode::OK;
 
         resp
     }
