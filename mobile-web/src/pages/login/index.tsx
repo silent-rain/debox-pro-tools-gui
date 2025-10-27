@@ -1,12 +1,15 @@
 import { Button, Form, Input, Toast } from 'antd-mobile';
 import { EyeInvisibleOutline, EyeOutline } from 'antd-mobile-icons';
-import { JSX, useState } from 'react';
+import { JSX, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './index.module.less';
 import { LoginReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
 import { AuthApi } from '@/api/auto';
 import { useAuthStore } from '@/stores/authStore';
+
+const cachedPhoneKey = 'cachedPhone';
+const cachedPasswordKey = 'cachedPassword';
 
 export default function Login(): JSX.Element {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -22,6 +25,20 @@ export default function Login(): JSX.Element {
     captcha_id: '',
     captcha: '',
   };
+
+  const [rememberPassword, setRememberPassword] = useState(false);
+
+  useEffect(() => {
+    // 读取缓存的用户名和密码
+    const cachedPhone = localStorage.getItem(cachedPhoneKey);
+    const cachedPassword = localStorage.getItem(cachedPasswordKey);
+    if (cachedPhone && cachedPassword) {
+      form.setFieldsValue({
+        phone: cachedPhone,
+        password: cachedPassword,
+      });
+    }
+  }, [form]);
 
   const onFinish = async (values: LoginReq) => {
     if (submitting) {
@@ -39,6 +56,15 @@ export default function Login(): JSX.Element {
       } catch (e) {
         console.log('存储 token 失败', e);
         // 某些隐私模式或受限环境下可能抛出异常，忽略但不要阻止登录流程
+      }
+
+      // 如果用户选择记住密码，则缓存用户名和密码
+      if (rememberPassword) {
+        localStorage.setItem(cachedPhoneKey, values.phone!);
+        localStorage.setItem(cachedPasswordKey, values.password);
+      } else {
+        localStorage.removeItem(cachedPhoneKey);
+        localStorage.removeItem(cachedPasswordKey);
       }
 
       Toast.show({ icon: 'success', content: '登录成功' });
@@ -141,6 +167,15 @@ export default function Login(): JSX.Element {
           <Button size='small' fill='none' onClick={() => navigate('/register')}>
             没有账号？去注册
           </Button>
+          <div className={styles.remember}>
+            <input
+              type='checkbox'
+              id='rememberPassword'
+              checked={rememberPassword}
+              onChange={(e) => setRememberPassword(e.target.checked)}
+            />
+            <label htmlFor='rememberPassword'>记住密码</label>
+          </div>
         </div>
       </div>
     </div>
