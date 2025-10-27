@@ -1,5 +1,7 @@
 //! Query extractor.
 
+use std::ops::Deref;
+
 use axum::{extract::FromRequestParts, http::request::Parts};
 use serde::de::DeserializeOwned;
 use validator::Validate;
@@ -9,6 +11,27 @@ use crate::Error;
 /// A wrapper around `Axum Query` that validates the extracted path parameters.
 #[derive(Debug)]
 pub struct Query<T>(pub T);
+
+impl<T> Query<T> {
+    /// Deconstruct to an inner value
+    pub fn into_inner(self) -> T {
+        self.0
+    }
+}
+
+impl<T> AsRef<T> for Query<T> {
+    fn as_ref(&self) -> &T {
+        &self.0
+    }
+}
+
+impl<T> Deref for Query<T> {
+    type Target = T;
+
+    fn deref(&self) -> &T {
+        &self.0
+    }
+}
 
 impl<T, S> FromRequestParts<S> for Query<T>
 where

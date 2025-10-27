@@ -18,7 +18,7 @@ use tower_http::{
 use axum_context::ContextLayer;
 use axum_jwt::JwtLayer;
 use axum_middleware::{
-    constant::AUTH_WHITE_LIST, cors::cors_layer, empty_wrapper_fn::empty_wrapper_layer,
+    constant::AUTH_WHITE_LIST, cors::cors_layer, empty_wrapper::empty_wrapper_layer,
 };
 use service_hub::{
     auth::AuthRouter, debox::DeboxRouter, log::LogRouter, system::SystemRouter, user::UserRouter,
