@@ -5,3 +5,5 @@ dist/*
 
 upload/images/*
 !upload/images/.gitignore
+
+config.yaml

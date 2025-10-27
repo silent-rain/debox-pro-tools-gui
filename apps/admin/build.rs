@@ -7,7 +7,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let target_file = current_dir.join("config.yaml");
     fs::copy(config_file, target_file)?;
 
-
-     tauri_build::build()
     Ok(())
 }
