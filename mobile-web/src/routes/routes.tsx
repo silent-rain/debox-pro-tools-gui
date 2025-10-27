@@ -1,6 +1,7 @@
+// 路由配置
 import { Navigate } from 'react-router-dom';
 import { lazy } from 'react';
-import { RouteObject } from '@/typings/routes';
+import { RouteConfig } from '@/typings/routes';
 
 const Layout = lazy(() => import('@/layouts'));
 const Home = lazy(() => import('@/pages/home'));
@@ -13,7 +14,7 @@ const Login = lazy(() => import('@/pages/login'));
 const Register = lazy(() => import('@/pages/register'));
 
 // TabBar Routes
-const tabBarRoutes: RouteObject = {
+const tabBarRoutes: RouteConfig = {
   path: '/',
   element: <Layout />,
   children: [
@@ -49,7 +50,7 @@ const tabBarRoutes: RouteObject = {
 };
 
 // AI 绘图 Routes
-const aiPaintingRoutes: RouteObject = {
+const aiPaintingRoutes: RouteConfig = {
   path: '/ai-painting',
   element: <Layout />,
   children: [
@@ -70,14 +71,13 @@ const aiPaintingRoutes: RouteObject = {
   ],
 };
 
-export const RootRoutes = (): RouteObject[] => [
+export const RootRoutes: RouteConfig[] = [
   // TabBar Routes
   tabBarRoutes,
   {
     path: '/login',
     element: <Login />,
     meta: {
-      requiresAuth: false,
       title: '登录',
       key: 'login',
     },
@@ -86,9 +86,9 @@ export const RootRoutes = (): RouteObject[] => [
     path: '/register',
     element: <Register />,
     meta: {
-      requiresAuth: false,
       title: '用户注册',
       key: 'register',
+      auth: true,
     },
   },
   // {

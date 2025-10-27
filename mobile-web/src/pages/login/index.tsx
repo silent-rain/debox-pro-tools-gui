@@ -7,9 +7,7 @@ import { LoginReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
 import { AuthApi } from '@/api/auto';
 import { useAuthStore } from '@/stores/authStore';
-
-const cachedPhoneKey = 'cachedPhone';
-const cachedPasswordKey = 'cachedPassword';
+import { cachedPasswordKey, cachedPhoneKey, cacheTokenKey } from '@/constant/auth';
 
 export default function Login(): JSX.Element {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -53,6 +51,7 @@ export default function Login(): JSX.Element {
       // 使用 Zustand 存储用户认证数据
       try {
         useAuthStore.getState().setAuthData(response.token, String(response.user_id), response.username);
+        localStorage.setItem(cacheTokenKey, response.token);
       } catch (e) {
         console.log('存储 token 失败', e);
         // 某些隐私模式或受限环境下可能抛出异常，忽略但不要阻止登录流程
