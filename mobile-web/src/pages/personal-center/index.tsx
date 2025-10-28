@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, List } from 'antd-mobile';
-import './index.module.less';
 import {
   FileOutline,
   InformationCircleOutline,
@@ -10,14 +9,10 @@ import {
   TeamOutline,
   UserAddOutline,
 } from 'antd-mobile-icons';
+import styles from './index.module.less';
 
 export const PersonalCenter = () => {
   const navigate = useNavigate();
-  const [userInfo] = useState({
-    avatar: 'https://example.com/avatar.jpg',
-    name: '用户名',
-    bio: '欢迎来到我的个人中心！',
-  });
 
   const features = [
     { title: '导入账号', path: '/import-account', icon: <UserAddOutline /> },
@@ -30,20 +25,36 @@ export const PersonalCenter = () => {
 
   return (
     <div className='personal-center'>
-      <div className='user-info' onClick={() => navigate('/user-detail')}>
-        <Avatar src={userInfo.avatar} style={{ '--size': '80px' }} />
-        <div className='user-text'>
-          <h3>{userInfo.name}</h3>
-          <p>{userInfo.bio}</p>
-        </div>
-      </div>
-      <List>
+      <UserInfo />
+
+      <List className={styles.features}>
         {features.map((item) => (
           <List.Item key={item.path} prefix={item.icon} onClick={() => navigate(item.path)}>
             {item.title}
           </List.Item>
         ))}
       </List>
+    </div>
+  );
+};
+
+// 用户信息
+const UserInfo = () => {
+  const navigate = useNavigate();
+
+  const [userInfo] = useState({
+    avatar: 'https://example.com/avatar.jpg',
+    name: '用户名',
+    bio: '欢迎来到我的个人中心！',
+  });
+
+  return (
+    <div className={styles.userInfo}>
+      <Avatar src={userInfo.avatar} style={{ '--size': '80px' }} onClick={() => navigate('/user-detail')} />
+      <div className={styles.userText} onClick={() => navigate('/user-detail')}>
+        <h3>{userInfo.name}</h3>
+        <p>{userInfo.bio}</p>
+      </div>
     </div>
   );
 };
