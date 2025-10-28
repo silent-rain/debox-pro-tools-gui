@@ -9,7 +9,7 @@ interface HeaderProps {
 
 // 隐藏头部导航栏的返回按钮
 const hideBackButton = (path: string) => {
-  const titles = ['/', '/home', '/todo', '/message', '/me'];
+  const titles = ['/', '/home', '/todo', '/message', '/personal-center'];
   if (titles.includes(path)) {
     return true;
   }

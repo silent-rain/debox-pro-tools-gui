@@ -31,7 +31,7 @@ const Footer: FC = () => {
       icon: <MessageOutline />,
     },
     {
-      key: '/me',
+      key: '/personal-center',
       title: '我的',
       icon: <UserOutline />,
     },

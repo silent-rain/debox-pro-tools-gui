@@ -16,12 +16,12 @@ export const PersonalCenter = () => {
   const navigate = useNavigate();
 
   const features = [
-    { title: '导入账号', path: '/import-account', icon: <UserAddOutline /> },
-    { title: '导入群组', path: '/import-group', icon: <TeamOutline /> },
-    { title: '设置', path: '/settings', icon: <SetOutline /> },
-    { title: '日志', path: '/logs', icon: <FileOutline /> },
-    { title: '帮助', path: '/help', icon: <QuestionCircleOutline /> },
-    { title: '关于', path: '/about', icon: <InformationCircleOutline /> },
+    { title: '导入账号', path: '/personal-center/import-account', icon: <UserAddOutline /> },
+    { title: '导入群组', path: '/personal-center/import-group', icon: <TeamOutline /> },
+    { title: '设置', path: '/personal-center/settings', icon: <SetOutline /> },
+    { title: '日志', path: '/personal-center/logs', icon: <FileOutline /> },
+    { title: '帮助', path: '/personal-center/help', icon: <QuestionCircleOutline /> },
+    { title: '关于', path: '/personal-center/about', icon: <InformationCircleOutline /> },
   ];
 
   return (
@@ -52,8 +52,12 @@ const UserInfo = () => {
 
   return (
     <div className={styles.userInfo}>
-      <Avatar src={userInfo.avatar} style={{ '--size': '80px' }} onClick={() => navigate('/user-detail')} />
-      <div className={styles.userText} onClick={() => navigate('/user-detail')}>
+      <Avatar
+        src={userInfo.avatar}
+        style={{ '--size': '80px' }}
+        onClick={() => navigate('/personal-center/user-detail')}
+      />
+      <div className={styles.userText} onClick={() => navigate('/personal-center/user-detail')}>
         <h3>{userInfo.username}</h3>
         <p>{userInfo.bio}</p>
       </div>

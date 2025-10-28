@@ -5,7 +5,6 @@ import { Modal } from 'antd-mobile';
 import { RootRoutes } from './routes';
 import { cacheTokenKey } from '@/constant/auth';
 import { useAuthStore } from '@/stores';
-import { UserApi } from '@/api';
 
 export const AuthRoute = ({ children, auth }: any) => {
   const navigate = useNavigate();
@@ -14,30 +13,25 @@ export const AuthRoute = ({ children, auth }: any) => {
   const matches = matchRoutes(RootRoutes, location);
   const authStore = useAuthStore.getState();
 
-  useEffect(() => {
-    const fetchProfile = async () => {
-      console.log('AuthRoute: ', token, auth);
+  const isRouteExist = matches?.some((item) => item.pathname === location.pathname);
 
-      // 鉴权判断
+  useEffect(() => {
+    // 鉴权判断
+    const handleAuthCheck = () => {
       if (token === '' && auth) {
         Modal.show({
           content: '登录过期，请重新登录!',
           closeOnMaskClick: true,
         });
-
         navigate('/login');
-        return;
+        return false;
       }
+      return true;
+    };
 
-      // 用户信息判断
-      if (!authStore.user_id) {
-        const response = await UserApi.profile();
-        authStore.setUser(response.id, response.username, response.avatar);
-      }
-
-      // 路由是否存在
-      const isExist = matches?.some((item) => item.pathname === location.pathname);
-      if (token && isExist) {
+    // 路由是否存在
+    const handleRouteNavigation = () => {
+      if (token && isRouteExist) {
         if (location.pathname === '/') {
           navigate('/home');
         } else {
@@ -46,8 +40,15 @@ export const AuthRoute = ({ children, auth }: any) => {
       }
     };
 
-    fetchProfile();
-  }, [auth, authStore, location.pathname, matches, navigate, token]);
+    console.log('AuthRoute: ', token, auth);
 
+    // 鉴权检查
+    if (!handleAuthCheck()) {
+      return;
+    }
+
+    // 路由跳转
+    handleRouteNavigation();
+  }, [token, auth, authStore.user_id, isRouteExist, location.pathname, navigate, authStore]);
   return children;
 };

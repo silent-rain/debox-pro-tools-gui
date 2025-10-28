@@ -3,15 +3,24 @@ import { Navigate } from 'react-router-dom';
 import { lazy } from 'react';
 import { RouteConfig } from '@/typings/routes';
 
+const Login = lazy(() => import('@/pages/auth/login'));
+const Register = lazy(() => import('@/pages/auth/register'));
+
 const Layout = lazy(() => import('@/layouts'));
 const Home = lazy(() => import('@/pages/home'));
 const Todo = lazy(() => import('@/pages/todo'));
 const Message = lazy(() => import('@/pages/message'));
 const PersonalCenter = lazy(() => import('@/pages/personal-center'));
+
 const AiPainting = lazy(() => import('@/pages/ai-painting'));
 const AiPaintingTextToImageBase = lazy(() => import('@/pages/text-to-image-base'));
-const Login = lazy(() => import('@/pages/auth/login'));
-const Register = lazy(() => import('@/pages/auth/register'));
+const About = lazy(() => import('@/pages/personal-center/about'));
+const Help = lazy(() => import('@/pages/personal-center/help'));
+const Logs = lazy(() => import('@/pages/personal-center/logs'));
+const Settings = lazy(() => import('@/pages/personal-center/settings'));
+const ImportAccount = lazy(() => import('@/pages/personal-center/import-account'));
+const ImportGroup = lazy(() => import('@/pages/personal-center/import-group'));
+const UserDetail = lazy(() => import('@/pages/personal-center/user-detail'));
 
 // TabBar Routes
 const tabBarRoutes: RouteConfig = {
@@ -40,11 +49,68 @@ const tabBarRoutes: RouteConfig = {
       },
     },
     {
-      path: 'me',
+      path: 'personal-center',
       element: <PersonalCenter />,
       meta: {
         title: '我的',
         auth: true,
+      },
+    },
+  ],
+};
+
+// 用户中心 Routes
+const PersonalCenterRoutes: RouteConfig = {
+  path: '/personal-center',
+  element: <Layout />,
+  children: [
+    {
+      path: 'user-detail',
+      element: <UserDetail />,
+      meta: {
+        title: '用户详情',
+      },
+    },
+    {
+      path: 'import-account',
+      element: <ImportAccount />,
+      meta: {
+        title: '导入账号',
+      },
+    },
+    {
+      path: 'import-group',
+      element: <ImportGroup />,
+      meta: {
+        title: '导入群组',
+      },
+    },
+    {
+      path: 'settings',
+      element: <Settings />,
+      meta: {
+        title: '设置',
+      },
+    },
+    {
+      path: 'logs',
+      element: <Logs />,
+      meta: {
+        title: '日志',
+      },
+    },
+    {
+      path: 'help',
+      element: <Help />,
+      meta: {
+        title: '帮助',
+      },
+    },
+    {
+      path: 'about',
+      element: <About />,
+      meta: {
+        title: '关于',
       },
     },
   ],
@@ -73,8 +139,6 @@ const aiPaintingRoutes: RouteConfig = {
 };
 
 export const RootRoutes: RouteConfig[] = [
-  // TabBar Routes
-  tabBarRoutes,
   {
     path: '/login',
     element: <Login />,
@@ -92,11 +156,13 @@ export const RootRoutes: RouteConfig[] = [
       auth: true,
     },
   },
+  tabBarRoutes, // TabBar Routes
+  PersonalCenterRoutes,
+  aiPaintingRoutes,
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,
   // },
-  aiPaintingRoutes,
   {
     path: '*',
     element: <Navigate to='/404' />,

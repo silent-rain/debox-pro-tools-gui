@@ -10,7 +10,7 @@ export interface RouteMeta {
 export interface RouteConfig {
   path?: string;
   element?: React.ReactNode;
-  children?: RouteObject[];
+  children?: RouteConfig[];
   redirect?: string;
   caseSensitive?: boolean;
   index?: false;
