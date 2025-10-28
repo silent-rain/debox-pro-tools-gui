@@ -4,6 +4,7 @@ import { Route } from 'react-router';
 import { RouteConfig } from '@/typings/routes';
 import { RootRoutes } from './routes';
 import { AuthRoute } from './auth-route';
+export { RootRoutes } from './routes';
 
 // 该实现已被替换, 代码可以考虑删除
 export function Router2() {
