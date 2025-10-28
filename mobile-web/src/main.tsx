@@ -1,5 +1,3 @@
-import { StrictMode } from 'react';
-import { BrowserRouter } from 'react-router';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 
@@ -15,10 +13,4 @@ import 'normalize.css';
 // 自定义样式
 import './main.css';
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
-);
+createRoot(document.getElementById('root')!).render(<App />);

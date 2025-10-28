@@ -1,7 +1,18 @@
-import Routes from './routes';
+import { StrictMode } from 'react';
+import { BrowserRouter } from 'react-router';
+import { RouterGuard } from './routes';
 
 function App() {
-  return <Routes />;
+  console.log('App');
+  return (
+    <>
+      <StrictMode>
+        <BrowserRouter>
+          <RouterGuard />
+        </BrowserRouter>
+      </StrictMode>
+    </>
+  );
 }
 
 export default App;
