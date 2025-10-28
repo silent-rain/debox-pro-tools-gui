@@ -4,14 +4,24 @@ import styles from './header.module.less';
 
 interface HeaderProps {
   title: string;
+  path: string;
 }
 
+// 隐藏头部导航栏的返回按钮
+const hideBackButton = (path: string) => {
+  const titles = ['/', '/home', '/todo', '/message', '/me'];
+  if (titles.includes(path)) {
+    return true;
+  }
+  return false;
+};
+
 // 头部导航栏
-const Header = ({ title }: HeaderProps) => {
+const Header = ({ title, path }: HeaderProps) => {
   const navigate = useNavigate();
 
-  // 首页不显示返回按钮
-  if (title === '首页') {
+  // 隐藏头部导航栏的返回按钮
+  if (hideBackButton(path)) {
     return null;
   }
 

@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 
 import Header from './header';
 import Footer from './footer';
@@ -10,11 +10,13 @@ import { useCurrentRouteMeta } from '@/routes/hooks/use-current-route-meta';
 
 const Layout = () => {
   const matchedRouteMeta = useCurrentRouteMeta();
+  const location = useLocation();
+  console.log(location.pathname);
 
   return (
     <Suspense fallback={<PageLoading />}>
       <div className={styles.app}>
-        {matchedRouteMeta ? <Header title={matchedRouteMeta.title} /> : <></>}
+        {matchedRouteMeta ? <Header title={matchedRouteMeta.title} path={location.pathname} /> : <></>}
 
         <div className={styles.content}>
           <Outlet />
