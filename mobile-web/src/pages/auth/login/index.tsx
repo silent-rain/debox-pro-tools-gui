@@ -5,8 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import styles from './index.module.less';
 import { LoginReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
-import { AuthApi } from '@/api/auth';
-import { useAuthStore } from '@/stores/authStore';
+import { AuthApi } from '@/api';
+import { useAuthStore } from '@/stores';
 import { cachedPasswordKey, cachedPhoneKey, cacheTokenKey } from '@/constant/auth';
 
 export default function Login(): JSX.Element {
@@ -14,6 +14,7 @@ export default function Login(): JSX.Element {
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm<LoginReq>();
   const navigate = useNavigate();
+  const authStore = useAuthStore.getState();
 
   // 测试用户
   const initialValues: LoginReq = {
@@ -50,7 +51,8 @@ export default function Login(): JSX.Element {
 
       // 使用 Zustand 存储用户认证数据
       try {
-        useAuthStore.getState().setAuthData(response.token, String(response.user_id), response.username);
+        authStore.setToken(response.token);
+        authStore.setUser(response.user_id, response.username, response.avatar);
         localStorage.setItem(cacheTokenKey, response.token);
       } catch (e) {
         console.log('存储 token 失败', e);

@@ -1,13 +1,14 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Modal } from 'antd-mobile';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore } from '@/stores';
+import { cacheTokenKey } from '@/constant/auth';
 
 function dispatchLogout() {
   Modal.confirm({
     content: '你已被登出, 请重新登录',
     onConfirm: () => {
       // 清除登录信息
-      useAuthStore.getState().clearAuthData();
+      useAuthStore.getState().clearAuth();
     },
   });
 }
@@ -22,7 +23,7 @@ const service = axios.create({
 service.interceptors.request.use(
   (config) => {
     // 请求携带凭证
-    const token = useAuthStore.getState().token;
+    const token = localStorage.getItem(cacheTokenKey);
     if (token) {
       config.headers.Authorization = 'Bearer ' + token;
     }

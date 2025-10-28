@@ -2,7 +2,7 @@ import { Button, Form, Input, Radio, Toast, CalendarPickerView, Popup } from 'an
 import { JSX, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './index.module.less';
-import { AuthApi } from '@/api/auth';
+import { AuthApi } from '@/api';
 import { RegisterReq } from '@/typings/auth';
 
 export default function Register(): JSX.Element {

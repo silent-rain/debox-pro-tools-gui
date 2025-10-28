@@ -44,6 +44,7 @@ const tabBarRoutes: RouteConfig = {
       element: <PersonalCenter />,
       meta: {
         title: '我的',
+        auth: true,
       },
     },
   ],

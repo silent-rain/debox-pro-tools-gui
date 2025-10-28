@@ -10,6 +10,7 @@ import {
   UserAddOutline,
 } from 'antd-mobile-icons';
 import styles from './index.module.less';
+import { useAuthStore } from '@/stores';
 
 export const PersonalCenter = () => {
   const navigate = useNavigate();
@@ -41,10 +42,11 @@ export const PersonalCenter = () => {
 // 用户信息
 const UserInfo = () => {
   const navigate = useNavigate();
+  const { username, avatar } = useAuthStore();
 
   const [userInfo] = useState({
-    avatar: 'https://example.com/avatar.jpg',
-    name: '用户名',
+    avatar: avatar ? avatar : 'https://example.com/avatar.jpg',
+    username: username ? username : '未登录',
     bio: '欢迎来到我的个人中心！',
   });
 
@@ -52,7 +54,7 @@ const UserInfo = () => {
     <div className={styles.userInfo}>
       <Avatar src={userInfo.avatar} style={{ '--size': '80px' }} onClick={() => navigate('/user-detail')} />
       <div className={styles.userText} onClick={() => navigate('/user-detail')}>
-        <h3>{userInfo.name}</h3>
+        <h3>{userInfo.username}</h3>
         <p>{userInfo.bio}</p>
       </div>
     </div>

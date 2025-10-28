@@ -17,6 +17,7 @@ export interface LoginResp {
   user_id: number; // 用户id
   username: string; // 用户名
   token: string; // token
+  avatar: string; // 头像地址
 }
 
 /// 注册用户 请求体
