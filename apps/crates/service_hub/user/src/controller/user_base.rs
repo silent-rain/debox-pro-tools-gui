@@ -2,7 +2,7 @@
 
 use axum_context::Context;
 use axum_response::{Responder, Response};
-use axum_validator::{Extension, Json, Path, Query};
+use axum_validator::{Extension, Json, Query};
 use log::warn;
 
 use inject::AInjectProvider;
@@ -11,8 +11,8 @@ use crate::{
     dto::user_base::{
         CreateUserBaseReq, CreateUserBaseResp, DeleteUserBaseReq, DeleteUserBaseResp,
         GetCheckUsernameReq, GetCheckUsernameResp, GetUserBaseReq, GetUserBaseResp,
-        GetUserBasesReq, GetUserBasesResp, ProfileReq, ProfileResp, RolesReq, RolesResp,
-        UpdateUserBaseReq, UpdateUserBaseResp, UpdateUserBaseStatusReq, UpdateUserBaseStatusResp,
+        GetUserBasesReq, GetUserBasesResp, ProfileResp, RolesReq, RolesResp, UpdateUserBaseReq,
+        UpdateUserBaseResp, UpdateUserBaseStatusReq, UpdateUserBaseStatusResp,
     },
     service::user_base::UserBaseService,
 };
@@ -107,10 +107,10 @@ impl UserBaseController {
         Ok(resp)
     }
 
-    /// 获取用户信息个人信息
+    /// 获取用户个人信息
     pub async fn profile(
         Extension(provider): Extension<AInjectProvider>,
-        Path(req): Path<ProfileReq>,
+        // Path(req): Path<ProfileReq>,
         ctx: Context,
     ) -> Responder<ProfileResp> {
         let user_id = ctx.get_user_id();
@@ -118,7 +118,7 @@ impl UserBaseController {
         warn!("profile context user_id: {user_id} username: {username}");
 
         let user_base_service: UserBaseService = provider.provide();
-        let result = user_base_service.profile(req.id).await?;
+        let result = user_base_service.profile(user_id).await?;
 
         let resp = Response::data(result).to_json()?;
         Ok(resp)
