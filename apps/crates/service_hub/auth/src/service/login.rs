@@ -41,12 +41,12 @@ impl LoginService {
             error!("{} 生成Token失败, err: {:#?}", user.id, e);
             Error::AxumJwt(e).into_err_with_msg("生成Token失败")
         })?;
-        println!("token: {:?}", token);
 
         // 返回Token
         Ok(LoginResp {
             user_id: user.id,
             username: user.username,
+            avatar: user.avatar,
             token,
         })
     }

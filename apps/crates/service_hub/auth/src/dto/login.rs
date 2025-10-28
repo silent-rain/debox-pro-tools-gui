@@ -33,6 +33,7 @@ pub struct LoginResp {
     pub user_id: i32,
     pub username: String,
     pub token: String,
+    pub avatar: Option<String>,
 }
 
 /// 浏览器信息
