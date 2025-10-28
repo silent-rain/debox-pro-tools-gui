@@ -11,7 +11,6 @@ import { useCurrentRouteMeta } from '@/routes/hooks/use-current-route-meta';
 const Layout = () => {
   const matchedRouteMeta = useCurrentRouteMeta();
   const location = useLocation();
-  console.log(location.pathname);
 
   return (
     <Suspense fallback={<PageLoading />}>

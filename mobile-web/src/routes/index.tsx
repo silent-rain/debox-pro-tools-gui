@@ -45,6 +45,7 @@ export default function Router() {
     });
   };
 
+  console.log(RouteAuthFun(RootRoutes));
   return <Routes>{RouteAuthFun(RootRoutes)}</Routes>;
 }
 // 拼接完整路径

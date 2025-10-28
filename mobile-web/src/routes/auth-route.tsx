@@ -40,8 +40,6 @@ export const AuthRoute = ({ children, auth }: any) => {
       }
     };
 
-    console.log('AuthRoute: ', token, auth);
-
     // 鉴权检查
     if (!handleAuthCheck()) {
       return;
