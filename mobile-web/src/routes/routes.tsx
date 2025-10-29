@@ -19,6 +19,7 @@ const Help = lazy(() => import('@/pages/personal-center/help'));
 const Logs = lazy(() => import('@/pages/personal-center/logs'));
 const Settings = lazy(() => import('@/pages/personal-center/settings'));
 const ImportAccount = lazy(() => import('@/pages/personal-center/import-account'));
+const ImportAccountForm = lazy(() => import('@/pages/personal-center/import-account/form'));
 const ImportGroup = lazy(() => import('@/pages/personal-center/import-group'));
 const UserDetail = lazy(() => import('@/pages/personal-center/user-detail'));
 
@@ -76,6 +77,13 @@ const PersonalCenterRoutes: RouteConfig = {
       element: <ImportAccount />,
       meta: {
         title: '导入账号',
+      },
+    },
+    {
+      path: 'import-account/form',
+      element: <ImportAccountForm />,
+      meta: {
+        title: '账号表单',
       },
     },
     {

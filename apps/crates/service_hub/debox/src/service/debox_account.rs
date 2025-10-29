@@ -2,7 +2,7 @@
 
 use log::error;
 use nject::injectable;
-use sea_orm::{DbErr::RecordNotUpdated, Set};
+use sea_orm::{ActiveValue::NotSet, DbErr::RecordNotUpdated, IntoActiveModel};
 
 use entity::debox::debox_account;
 use err_code::{Error, ErrorMsg};
@@ -66,21 +66,27 @@ impl DeboxAccountService {
         &self,
         req: CreateDeboxAccountReq,
     ) -> Result<debox_account::Model, ErrorMsg> {
-        let model = debox_account::ActiveModel {
-            user_id: Set(req.user_id),
-            api_key: Set(req.api_key),
-            app_secret: Set(req.app_secret),
-            access_token: Set(req.access_token),
-            web_token: Set(req.web_token),
-            debox_user_id: Set(req.debox_user_id),
-            wallet_address: Set(req.wallet_address),
-            api_key_status: Set(req.api_key_status),
-            access_token_status: Set(req.access_token_status),
-            web_token_status: Set(req.web_token_status),
-            desc: Set(req.desc),
-            status: Set(true),
-            ..Default::default()
-        };
+        // let model = debox_account::ActiveModel {
+        //     user_id: Set(req.user_id),
+        //     api_key: Set(req.api_key.clone()),
+        //     app_secret: Set(req.app_secret.clone()),
+        //     access_token: Set(req.access_token.clone()),
+        //     web_token: Set(req.web_token.clone()),
+        //     debox_user_id: Set(req.debox_user_id.clone()),
+        //     wallet_address: Set(req.wallet_address.clone()),
+        //     api_key_status: Set(req.api_key_status),
+        //     access_token_status: Set(req.access_token_status),
+        //     web_token_status: Set(req.web_token_status),
+        //     desc: Set(req.desc.clone()),
+        //     status: Set(true),
+        //     ..Default::default()
+        // };
+
+        let mut model = req.model.into_active_model();
+        model.id = NotSet;
+        model.created_at = NotSet;
+        model.updated_at = NotSet;
+
         let result = self.debox_account_dao.create(model).await.map_err(|err| {
             error!("添加DeBox账号信息失败, err: {:#?}", err);
             Error::DbAddError.into_err_with_msg("添加DeBox账号信息失败")
@@ -91,22 +97,25 @@ impl DeboxAccountService {
 
     /// 更新DeBox账号
     pub async fn update(&self, req: UpdateDeboxAccountReq) -> Result<u64, ErrorMsg> {
-        let model = debox_account::ActiveModel {
-            id: Set(req.id),
-            user_id: Set(req.user_id),
-            api_key: Set(req.api_key),
-            app_secret: Set(req.app_secret),
-            access_token: Set(req.access_token),
-            web_token: Set(req.web_token),
-            debox_user_id: Set(req.debox_user_id),
-            wallet_address: Set(req.wallet_address),
-            api_key_status: Set(req.api_key_status),
-            access_token_status: Set(req.access_token_status),
-            web_token_status: Set(req.web_token_status),
-            desc: Set(req.desc),
-            status: Set(req.status),
-            ..Default::default()
-        };
+        // let model = debox_account::ActiveModel {
+        //     id: Set(req.id),
+        //     user_id: Set(req.user_id),
+        //     api_key: Set(req.api_key.clone()),
+        //     app_secret: Set(req.app_secret.clone()),
+        //     access_token: Set(req.access_token.clone()),
+        //     web_token: Set(req.web_token.clone()),
+        //     debox_user_id: Set(req.debox_user_id.clone()),
+        //     wallet_address: Set(req.wallet_address.clone()),
+        //     api_key_status: Set(req.api_key_status),
+        //     access_token_status: Set(req.access_token_status),
+        //     web_token_status: Set(req.web_token_status),
+        //     desc: Set(req.desc.clone()),
+        //     status: Set(req.status),
+        //     ..Default::default()
+        // };
+        let mut model = req.model.into_active_model();
+        model.created_at = NotSet;
+        model.updated_at = NotSet;
 
         let result = self.debox_account_dao.update(model).await.map_err(|err| {
             error!("更新DeBox账号失败, err: {:#?}", err);

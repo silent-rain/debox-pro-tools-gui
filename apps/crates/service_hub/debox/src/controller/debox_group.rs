@@ -27,7 +27,7 @@ impl DeboxGroupController {
         let debox_group_service: DeboxGroupService = provider.provide();
         let (results, total) = debox_group_service.list(req).await?;
 
-        let resp = Response::data_list(results, total).to_json()?;
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
@@ -39,7 +39,7 @@ impl DeboxGroupController {
         let debox_group_service: DeboxGroupService = provider.provide();
         let result = debox_group_service.info(req).await?;
 
-        let resp = Response::data(result).to_json()?;
+        let resp = Response::data(result.into());
         Ok(resp)
     }
 
@@ -51,7 +51,7 @@ impl DeboxGroupController {
         let debox_group_service: DeboxGroupService = provider.provide();
         let _result = debox_group_service.create(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -63,7 +63,7 @@ impl DeboxGroupController {
         let debox_group_service: DeboxGroupService = provider.provide();
         let _result = debox_group_service.update(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -75,7 +75,7 @@ impl DeboxGroupController {
         let debox_group_service: DeboxGroupService = provider.provide();
         debox_group_service.update_status(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 
@@ -87,7 +87,7 @@ impl DeboxGroupController {
         let debox_group_service: DeboxGroupService = provider.provide();
         let _result = debox_group_service.delete(req).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }

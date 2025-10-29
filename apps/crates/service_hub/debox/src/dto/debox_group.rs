@@ -30,6 +30,12 @@ pub struct GetDeboxGroupsResp {
     pub total: u64,
 }
 
+impl From<(Vec<debox_group::Model>, u64)> for GetDeboxGroupsResp {
+    fn from((data_list, total): (Vec<debox_group::Model>, u64)) -> Self {
+        Self { data_list, total }
+    }
+}
+
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetDeboxGroupReq {
@@ -40,7 +46,13 @@ pub struct GetDeboxGroupReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GetDeboxGroupResp {
     #[serde(flatten)]
-    data: debox_group::Model,
+    model: debox_group::Model,
+}
+
+impl From<debox_group::Model> for GetDeboxGroupResp {
+    fn from(model: debox_group::Model) -> Self {
+        Self { model }
+    }
 }
 
 /// 添加DeBox群组 请求体

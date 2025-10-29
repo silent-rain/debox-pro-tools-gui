@@ -11,7 +11,7 @@ use serde::{Deserialize, Serialize};
 use crate::user::user_base;
 
 /// DeBox账号表
-#[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
 #[sea_orm(table_name = "t_debox_account")]
 pub struct Model {
     /// 账号ID
@@ -19,6 +19,10 @@ pub struct Model {
     pub id: i32,
     /// 用户ID
     pub user_id: i32,
+    /// 账号名称
+    pub name: String,
+    /// 账号头像
+    pub avatar: Option<String>,
     /// 开发者 API Key，在DeBox开放平台获取
     pub api_key: String,
     /// 开发者 App Secret，在DeBox开放平台获取
@@ -31,12 +35,12 @@ pub struct Model {
     pub debox_user_id: String,
     /// 用户钱包地址
     pub wallet_address: String,
-    /// ApiKey 状态(0:无效,1:有效)
-    pub api_key_status: String,
-    /// Access Token 状态(0:无效,1:有效)
-    pub access_token_status: String,
-    /// Web Token 状态(0:无效,1:有效)
-    pub web_token_status: String,
+    /// ApiKey 状态(false:无效,true:有效)
+    pub api_key_status: bool,
+    /// Access Token 状态(false:无效,true:有效)
+    pub access_token_status: bool,
+    /// Web Token 状态(false:无效,true:有效)
+    pub web_token_status: bool,
     /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)

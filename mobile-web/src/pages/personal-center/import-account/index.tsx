@@ -1,22 +1,46 @@
-import { Avatar, Button, List, ActionSheet, Tag, Modal } from 'antd-mobile';
+import { Avatar, Button, List, ActionSheet, Tag, Modal, ErrorBlock, DotLoading } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
 import { AddOutline, MoreOutline } from 'antd-mobile-icons';
 import './index.module.less';
 import { Action } from 'antd-mobile/es/components/action-sheet';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { DeboxAccountApi } from '@/api/debox-account';
+import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
+import { useAuthStore } from '@/stores';
 
 // 用户列表
 const AccountList = () => {
   const navigate = useNavigate();
-
-  // Mock data for account list
-  const accountList = [
-    { id: 1, name: 'Account 1', status: 'Active' },
-    { id: 2, name: 'Account 2', status: 'Inactive' },
-  ];
+  const authStore = useAuthStore();
 
   const [visible, setVisible] = useState(false);
   const [currentAccountId, setCurrentAccountId] = useState<number | null>(null);
+
+  const [accountList, setAccountList] = useState<DeboxAccount[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchAccounts = async () => {
+      setLoading(true);
+      try {
+        const data: GetDeboxAccountsReq = {
+          page: 0,
+          page_size: 0,
+          user_id: authStore.user_id!,
+          all: true,
+        };
+        const response = await DeboxAccountApi.list(data);
+        setLoading(false);
+        setAccountList(response.data_list);
+      } catch (err) {
+        console.error('Failed to fetch accounts:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAccounts();
+  }, [authStore.user_id]);
 
   const actions: Action[] = [
     { text: '更新', key: 'update', onClick: () => handleMenuAction('update', currentAccountId!) },
@@ -50,6 +74,50 @@ const AccountList = () => {
     setVisible(false);
   };
 
+  const accountStatus = (account: DeboxAccount) => {
+    if (!account.status) {
+      return (
+        <Tag color='default' style={{ marginLeft: '8px' }}>
+          禁用
+        </Tag>
+      );
+    }
+
+    const apiKeyStatus = !account.api_key_status ? (
+      <Tag color='danger' style={{ marginLeft: '8px' }}>
+        Api Key
+      </Tag>
+    ) : null;
+
+    const accessTokenStatus = !account.access_token_status ? (
+      <Tag color='warning' style={{ marginLeft: '8px' }}>
+        Access Token
+      </Tag>
+    ) : null;
+
+    const webTokenStatus = !account.web_token_status ? (
+      <Tag color='danger' style={{ marginLeft: '8px' }}>
+        Web Token
+      </Tag>
+    ) : null;
+
+    return (
+      <>
+        {apiKeyStatus}
+        {accessTokenStatus}
+        {webTokenStatus}
+      </>
+    );
+  };
+
+  if (loading) {
+    return <DotLoading color='primary' />;
+  }
+
+  if (accountList.length === 0) {
+    return <ErrorBlock status='empty' />;
+  }
+
   return (
     <div className='account-list'>
       <List>
@@ -70,9 +138,7 @@ const AccountList = () => {
             }
           >
             {account.name}
-            <Tag color={account.status === 'Active' ? 'success' : 'default'} style={{ marginLeft: '8px' }}>
-              {account.status}
-            </Tag>
+            {accountStatus(account)}
           </List.Item>
         ))}
       </List>

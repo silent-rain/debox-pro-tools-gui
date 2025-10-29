@@ -13,7 +13,9 @@ impl DeboxRouter {
     pub fn register() -> Router {
         Router::new().nest(
             "/debox",
-            Router::new().merge(debox_account::DeboxAccountRouter::register()), // DeBox账号管理
+            Router::new()
+                .merge(debox_account::DeboxAccountRouter::register()) // DeBox账号管理
+                .merge(debox_group::DeboxGroupRouter::register()), // DeBox群组管理
         )
     }
 }

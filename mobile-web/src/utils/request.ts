@@ -39,7 +39,7 @@ service.interceptors.response.use(
 
     if (res.code !== 0) {
       Modal.show({
-        content: res.message || 'Error',
+        content: res.msg || 'Error',
         closeOnMaskClick: true,
       });
       // 50008：非法token，50012：其他客户端登录，50014：token失效了

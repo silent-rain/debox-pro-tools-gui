@@ -38,6 +38,20 @@ impl MigrationTrait for Migration {
                             .comment("用户ID"),
                     )
                     .col(
+                        ColumnDef::new(DeboxAccount::Name)
+                            .string()
+                            .string_len(50)
+                            .not_null()
+                            .comment("账号名称"),
+                    )
+                    .col(
+                        ColumnDef::new(DeboxAccount::Avatar)
+                            .string()
+                            .string_len(250)
+                            .default("")
+                            .comment("账号头像"),
+                    )
+                    .col(
                         ColumnDef::new(DeboxAccount::ApiKey)
                             .string()
                             .string_len(30)
@@ -191,6 +205,8 @@ pub enum DeboxAccount {
     Table,
     Id,
     UserId,
+    Name,
+    Avatar,
     ApiKey,
     AppSecret,
     AccessToken,

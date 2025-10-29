@@ -20,7 +20,7 @@ export interface LoginResp {
   avatar: string; // 头像地址
 }
 
-/// 注册用户 请求体
+// 注册用户 请求体
 export interface RegisterReq {
   register_type: UserType; // 注册用户类型
   phone?: string; // 手机号码
@@ -40,6 +40,6 @@ export interface RegisterReq {
   captcha: string; // 验证码
 }
 
-/// 注册用户 响应体
+// 注册用户 响应体
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface RegisterResp {}
