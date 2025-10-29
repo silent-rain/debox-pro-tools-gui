@@ -58,40 +58,9 @@ impl From<debox_account::Model> for GetDeboxAccountResp {
 /// 添加DeBox账号 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct CreateDeboxAccountReq {
-    // /// 用户ID
-    // pub user_id: i32,
-    // /// 开发者 API Key，在DeBox开放平台获取
-    // pub api_key: String,
-    // /// 开发者 App Secret，在DeBox开放平台获取
-    // pub app_secret: String,
-    // /// 登录授权, 有效期较短
-    // pub access_token: String,
-    // /// WEB登录授权
-    // pub web_token: String,
-    // /// DeBox 用户ID
-    // pub debox_user_id: String,
-    // /// 用户钱包地址
-    // pub wallet_address: String,
-    // /// ApiKey 状态(bool:无效,true:有效)
-    // pub api_key_status: bool,
-    // /// Access Token 状态(bool:无效,true:有效)
-    // pub access_token_status: bool,
-    // /// Web Token 状态(bool:无效,true:有效)
-    // pub web_token_status: bool,
-    // /// 描述信息
-    // pub desc: Option<String>,
-    /// 状态(false:停用,true:正常)
     #[serde(flatten)]
     pub model: debox_account::Model,
 }
-
-// impl Deref for CreateDeboxAccountReq {
-//     type Target = debox_account::Model;
-
-//     fn deref(&self) -> &Self::Target {
-//         &self.model
-//     }
-// }
 
 /// 添加DeBox账号 响应体
 #[derive(Debug, Serialize, Deserialize)]
@@ -100,49 +69,9 @@ pub struct CreateDeboxAccountResp {}
 /// 更新数据 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDeboxAccountReq {
-    // /// DeBox账号ID
-    // pub id: i32,
-    // /// 用户ID
-    // pub user_id: i32,
-    // /// 开发者 API Key，在DeBox开放平台获取
-    // pub api_key: String,
-    // /// 开发者 App Secret，在DeBox开放平台获取
-    // pub app_secret: String,
-    // /// 登录授权, 有效期较短
-    // pub access_token: String,
-    // /// WEB登录授权
-    // pub web_token: String,
-    // /// DeBox 用户ID
-    // pub debox_user_id: String,
-    // /// 用户钱包地址
-    // pub wallet_address: String,
-    // /// ApiKey 状态(bool:无效,true:有效)
-    // pub api_key_status: bool,
-    // /// Access Token 状态(bool:无效,true:有效)
-    // pub access_token_status: bool,
-    // /// Web Token 状态(bool:无效,true:有效)
-    // pub web_token_status: bool,
-    // /// 描述信息
-    // pub desc: Option<String>,
-    // /// 状态(false:停用,true:正常)
-    // pub status: bool,
     #[serde(flatten)]
     pub model: debox_account::Model,
 }
-
-// impl Deref for UpdateDeboxAccountReq {
-//     type Target = debox_account::Model;
-
-//     fn deref(&self) -> &Self::Target {
-//         &self.model
-//     }
-// }
-
-// impl DerefMut for UpdateDeboxAccountReq {
-//     fn deref_mut(&mut self) -> &mut Self::Target {
-//         &mut self.model
-//     }
-// }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateDeboxAccountResp {}

@@ -24,7 +24,7 @@ impl LogoutController {
         let login_service: Logoutervice = provider.provide();
         login_service.logout(ctx).await?;
 
-        let resp = Response::<()>::ok().to_json()?;
+        let resp = Response::ok();
         Ok(resp)
     }
 }
