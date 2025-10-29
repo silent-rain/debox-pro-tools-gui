@@ -26,7 +26,7 @@ impl ConfigController {
         let config_service: ConfigService = provider.provide();
         let (results, total) = config_service.list(req).await?;
 
-         let resp = Response::data((results, total).into());
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 

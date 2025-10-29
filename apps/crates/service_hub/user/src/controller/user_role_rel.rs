@@ -25,7 +25,7 @@ impl UserRoleRelController {
         let user_role_rel_service: UserRoleRelService = provider.provide();
         let (results, total) = user_role_rel_service.list(req).await?;
 
-         let resp = Response::data((results, total).into());
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 

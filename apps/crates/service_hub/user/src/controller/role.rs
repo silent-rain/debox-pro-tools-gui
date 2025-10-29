@@ -26,7 +26,7 @@ impl RoleController {
         let role_service: RoleService = provider.provide();
         let (results, total) = role_service.list(req).await?;
 
-         let resp = Response::data((results, total).into());
+        let resp = Response::data((results, total).into());
         Ok(resp)
     }
 
