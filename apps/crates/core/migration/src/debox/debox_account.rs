@@ -33,7 +33,6 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(DeboxAccount::UserId)
                             .integer()
-                            .unique_key()
                             .not_null()
                             .comment("用户ID"),
                     )
@@ -161,6 +160,25 @@ impl MigrationTrait for Migration {
                         .name("idx_user_id")
                         .table(DeboxAccount::Table)
                         .col(DeboxAccount::UserId)
+                        .to_owned(),
+                )
+                .await?;
+        }
+
+        // 添加联合唯一索引
+        if !manager
+            .has_index(DeboxAccount::Table.to_string(), "idx_user_id_debox_user_id")
+            .await?
+        {
+            manager
+                .create_index(
+                    Index::create()
+                        .if_not_exists()
+                        .name("idx_user_id_debox_user_id")
+                        .table(DeboxAccount::Table)
+                        .col(DeboxAccount::UserId)
+                        .col(DeboxAccount::DeboxUserId)
+                        .unique()
                         .to_owned(),
                 )
                 .await?;

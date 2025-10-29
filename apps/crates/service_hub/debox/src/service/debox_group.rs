@@ -1,8 +1,8 @@
 //! DeBox群组管理
 
-use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
+use tracing::error;
 
 use entity::debox::debox_group;
 use err_code::{Error, ErrorMsg};

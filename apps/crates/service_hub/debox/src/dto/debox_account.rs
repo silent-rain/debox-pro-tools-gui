@@ -80,8 +80,7 @@ pub struct CreateDeboxAccountReq {
     // pub web_token_status: bool,
     // /// 描述信息
     // pub desc: Option<String>,
-    // /// 状态(false:停用,true:正常)
-    // pub status: bool,
+    /// 状态(false:停用,true:正常)
     #[serde(flatten)]
     pub model: debox_account::Model,
 }

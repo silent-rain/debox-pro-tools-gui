@@ -13,6 +13,7 @@ use crate::user::user_base;
 /// DeBox账号表
 #[derive(Debug, Default, Clone, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
 #[sea_orm(table_name = "t_debox_account")]
+#[serde(default)]
 pub struct Model {
     /// 账号ID
     #[sea_orm(primary_key)]

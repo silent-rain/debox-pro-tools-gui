@@ -1527,12 +1527,12 @@ dependencies = [
  "entity",
  "err_code",
  "inject",
- "log 0.4.28",
  "nject",
  "sea-orm",
  "serde",
  "serde_repr",
  "thiserror 2.0.17",
+ "tracing",
  "validator",
 ]
 
