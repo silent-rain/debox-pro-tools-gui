@@ -1,9 +1,9 @@
 //! JSON 序列化与反序列化转换
 
-use crate::error::Error;
-
+use log::error;
 use serde::{Deserialize, Deserializer, Serializer};
-use tracing::error;
+
+use crate::error::Error;
 
 /// 反序列化 vec 转 string
 pub fn vec_to_string<'de, D: Deserializer<'de>>(deserializer: D) -> Result<String, D::Error> {

@@ -2,7 +2,7 @@
 
 use nject::injectable;
 use sea_orm::{ActiveValue::NotSet, DbErr::RecordNotUpdated, IntoActiveModel};
-use tracing::error;
+use log::error;
 
 use entity::debox::debox_account;
 use err_code::{Error, ErrorMsg};

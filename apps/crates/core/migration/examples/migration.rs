@@ -8,9 +8,9 @@ use migration::Migrator;
 
 use colored::Colorize;
 use dotenv::dotenv;
+use log::info;
 use sea_orm_migration::MigratorTrait;
 use sqlx::{Executor, mysql::MySqlPoolOptions};
-use tracing::info;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {

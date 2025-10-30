@@ -4,7 +4,7 @@ use axum::{
     body::Body,
     http::{Response, StatusCode},
 };
-use tracing::error;
+use log::error;
 
 use axum_response::ResponseErr;
 use err_code::{Error, ErrorMsg};

@@ -16,7 +16,7 @@ tower-http = { workspace = true, features = ["cors"] }
 
 
 futures = { workspace = true }
-tracing = { workspace = true }
+log = { workspace = true }
 serde_json = { workspace = true }
 bytes = { workspace = true }
 

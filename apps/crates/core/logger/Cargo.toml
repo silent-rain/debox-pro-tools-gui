@@ -19,8 +19,8 @@ tracing-subscriber = { workspace = true, features = [
     "env-filter",
     "time",
     "local-time",
-    "tracing-log",
 ] }
+tracing-log = { workspace = true }
 tracing-appender = { workspace = true }
 tracing-error = { workspace = true }
 tracing-bunyan-formatter = { workspace = true }

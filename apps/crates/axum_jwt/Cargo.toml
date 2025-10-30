@@ -17,4 +17,4 @@ serde_json = { workspace = true }
 jsonwebtoken = { workspace = true, features = ["aws_lc_rs"] }
 chrono = { workspace = true }
 thiserror = { workspace = true }
-tracing = { workspace = true }
+log = { workspace = true }

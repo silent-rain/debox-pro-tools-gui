@@ -553,11 +553,11 @@ version = "0.1.0"
 dependencies = [
  "axum",
  "futures",
+ "log 0.4.28",
  "serde",
  "serde_json",
  "thiserror 2.0.17",
  "tower",
- "tracing",
 ]
 
 [[package]]
@@ -569,11 +569,11 @@ dependencies = [
  "chrono",
  "futures",
  "jsonwebtoken",
+ "log 0.4.28",
  "serde",
  "serde_json",
  "thiserror 2.0.17",
  "tower",
- "tracing",
 ]
 
 [[package]]
@@ -586,11 +586,11 @@ dependencies = [
  "bytes",
  "err_code",
  "futures",
+ "log 0.4.28",
  "serde_json",
  "tokio",
  "tower",
  "tower-http",
- "tracing",
 ]
 
 [[package]]
@@ -643,12 +643,12 @@ name = "axum_validator"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "log 0.4.28",
  "mime",
  "serde",
  "serde_json",
  "serde_urlencoded",
  "thiserror 2.0.17",
- "tracing",
  "validator",
  "validator_derive",
 ]
@@ -1527,12 +1527,12 @@ dependencies = [
  "entity",
  "err_code",
  "inject",
+ "log 0.4.28",
  "nject",
  "sea-orm",
  "serde",
  "serde_repr",
  "thiserror 2.0.17",
- "tracing",
  "validator",
 ]
 
@@ -3325,6 +3325,7 @@ dependencies = [
  "tracing-appender",
  "tracing-bunyan-formatter",
  "tracing-error",
+ "tracing-log 0.2.0",
  "tracing-subscriber",
 ]
 
@@ -3440,13 +3441,13 @@ dependencies = [
  "database",
  "dotenv",
  "entity",
+ "log 0.4.28",
  "logger",
  "sea-orm",
  "sea-orm-migration",
  "serde",
  "sqlx",
  "tokio",
- "tracing",
 ]
 
 [[package]]
@@ -7386,13 +7387,13 @@ version = "0.1.0"
 dependencies = [
  "captcha-rs",
  "chrono",
+ "log 0.4.28",
  "rust-embed",
  "serde",
  "serde_json",
  "sha2",
  "thiserror 2.0.17",
  "tokio",
- "tracing",
  "uap-rust",
 ]
 
