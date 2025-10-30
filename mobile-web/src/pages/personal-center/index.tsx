@@ -9,19 +9,20 @@ import {
   TeamOutline,
   UserAddOutline,
 } from 'antd-mobile-icons';
-import styles from './index.module.less';
 import { useAuthStore } from '@/stores';
+import { ROUTES } from '@/constants/routes';
+import styles from './index.module.less';
 
 export const PersonalCenter = () => {
   const navigate = useNavigate();
 
   const features = [
-    { title: '导入账号', path: '/personal-center/import-account', icon: <UserAddOutline /> },
-    { title: '导入群组', path: '/personal-center/import-group', icon: <TeamOutline /> },
-    { title: '设置', path: '/personal-center/settings', icon: <SetOutline /> },
-    { title: '日志', path: '/personal-center/logs', icon: <FileOutline /> },
-    { title: '帮助', path: '/personal-center/help', icon: <QuestionCircleOutline /> },
-    { title: '关于', path: '/personal-center/about', icon: <InformationCircleOutline /> },
+    { title: '导入账号', path: ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT, icon: <UserAddOutline /> },
+    { title: '导入群组', path: ROUTES.PERSONAL_CENTER_IMPORT_GROUP, icon: <TeamOutline /> },
+    { title: '设置', path: ROUTES.PERSONAL_CENTER_SETTINGS, icon: <SetOutline /> },
+    { title: '日志', path: ROUTES.PERSONAL_CENTER_LOGS, icon: <FileOutline /> },
+    { title: '帮助', path: ROUTES.PERSONAL_CENTER_HELP, icon: <QuestionCircleOutline /> },
+    { title: '关于', path: ROUTES.PERSONAL_CENTER_ABOUT, icon: <InformationCircleOutline /> },
   ];
 
   return (
@@ -55,9 +56,9 @@ const UserInfo = () => {
       <Avatar
         src={userInfo.avatar}
         style={{ '--size': '80px' }}
-        onClick={() => navigate('/personal-center/user-detail')}
+        onClick={() => navigate(ROUTES.PERSONAL_CENTER_USER_DETAIL)}
       />
-      <div className={styles.userText} onClick={() => navigate('/personal-center/user-detail')}>
+      <div className={styles.userText} onClick={() => navigate(ROUTES.PERSONAL_CENTER_USER_DETAIL)}>
         <h3>{userInfo.username}</h3>
         <p>{userInfo.bio}</p>
       </div>

@@ -2,11 +2,12 @@
 import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Modal } from 'antd-mobile';
-import { RootRoutes } from './routes';
 import { cacheTokenKey } from '@/constant/auth';
-import { flattenedRoutes } from './hooks/use-flattened-routes';
 import { RouteConfig } from '@/typings/routes';
 import { useAuthStore } from '@/stores';
+import { ROUTES } from '@/constants/routes';
+import { RootRoutes } from './routes';
+import { flattenedRoutes } from './hooks/use-flattened-routes';
 
 // 全局路由组件
 export const RouterGuard = () => {
@@ -33,7 +34,7 @@ export const RouterGuard = () => {
         content: '未登录，重定向到登录页',
         closeOnMaskClick: true,
       });
-      navigate('/login', { replace: true });
+      navigate(ROUTES.LOGIN, { replace: true });
     }
   }, [location, navigate]); // 监听路由变化
 

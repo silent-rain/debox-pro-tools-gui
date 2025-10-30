@@ -6,6 +6,7 @@ import styles from './index.module.less';
 import { AuthApi } from '@/api';
 import { RegisterReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
+import { ROUTES } from '@/constants/routes';
 import UsernameRegister from './components/UsernameRegister';
 import PhoneRegister from './components/PhoneRegister';
 import EmailRegister from './components/EmailRegister';
@@ -72,7 +73,7 @@ export default function Register(): JSX.Element {
 
       Toast.show({ icon: 'success', content: '注册成功' });
       // 注册成功后跳转到登录页或首页
-      navigate('/login', { replace: true });
+      navigate(ROUTES.LOGIN, { replace: true });
     } catch (e) {
       console.log('注册失败, err:', e);
       Toast.show({ icon: 'fail', content: '注册失败，请稍后重试' });
@@ -197,7 +198,7 @@ export default function Register(): JSX.Element {
         </Form>
 
         <div className={styles.tips}>
-          <Button size='small' fill='none' onClick={() => navigate('/login')}>
+          <Button size='small' fill='none' onClick={() => navigate(ROUTES.LOGIN)}>
             已有账号？去登录
           </Button>
         </div>

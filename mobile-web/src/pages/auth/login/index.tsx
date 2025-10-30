@@ -5,6 +5,7 @@ import { LoginReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
 import { AuthApi } from '@/api';
 import { useAuthStore } from '@/stores';
+import { ROUTES } from '@/constants/routes';
 import styles from './index.module.less';
 import PhoneLogin from './components/PhoneLogin';
 import BaseLogin from './components/BaseLogin';
@@ -41,7 +42,7 @@ export default function Login(): JSX.Element {
         }
 
         Toast.show({ icon: 'success', content: '登录成功' });
-        navigate('/', { replace: true });
+        navigate(ROUTES.HOME, { replace: true });
       } catch (e) {
         console.log('登录失败, err: ', e);
         Toast.show({ icon: 'fail', content: '登录失败，请稍后重试' });
@@ -85,7 +86,7 @@ export default function Login(): JSX.Element {
         </div>
 
         <div className={styles.tips}>
-          <Button size='mini' color='primary' fill='none' onClick={() => navigate('/register')}>
+          <Button size='mini' color='primary' fill='none' onClick={() => navigate(ROUTES.REGISTER)}>
             没有账号？去注册
           </Button>
         </div>

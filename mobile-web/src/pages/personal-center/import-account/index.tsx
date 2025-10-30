@@ -1,12 +1,13 @@
 import { Avatar, Button, List, ActionSheet, Tag, Modal, ErrorBlock, DotLoading } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
 import { AddOutline, MoreOutline } from 'antd-mobile-icons';
-import './index.module.less';
 import { Action } from 'antd-mobile/es/components/action-sheet';
 import { useState, useRef, useEffect } from 'react';
 import { DeboxAccountApi } from '@/api/debox-account';
 import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 import { useAuthStore } from '@/stores';
+import { ROUTES } from '@/constants/routes';
+import './index.module.less';
 
 // 用户列表
 const AccountList = () => {
@@ -56,7 +57,7 @@ const AccountList = () => {
         alert(`Account ${accountId} updated successfully!`);
         break;
       case 'edit':
-        navigate('/personal-center/import-account/form', { state: { mode: 'edit', accountId } });
+        navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT_FORM, { state: { mode: 'edit', accountId } });
         break;
       case 'copy':
         // Simulate copying account data
@@ -165,7 +166,7 @@ const ImportAccount = () => {
   };
 
   const handleFormImport = () => {
-    navigate('/personal-center/import-account/form', { state: { mode: 'add' } });
+    navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT_FORM, { state: { mode: 'add' } });
   };
 
   const handleFileImport = () => {
