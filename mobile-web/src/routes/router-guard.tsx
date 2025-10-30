@@ -36,6 +36,11 @@ export const RouterGuard = () => {
       });
       navigate(ROUTES.LOGIN, { replace: true });
     }
+
+    // 路由跳转
+    if (location.pathname === '/') {
+      navigate(ROUTES.HOME, { replace: true });
+    }
   }, [location, navigate]); // 监听路由变化
 
   const authRouteNodes = (routeList: RouteConfig[], parentPath: string = ''): React.ReactNode => {

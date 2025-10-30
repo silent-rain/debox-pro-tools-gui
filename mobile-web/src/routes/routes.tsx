@@ -7,14 +7,14 @@ const Login = lazy(() => import('@/pages/auth/login'));
 const Register = lazy(() => import('@/pages/auth/register'));
 const Error404 = lazy(() => import('@/pages/error404'));
 
+// TabBar
 const Layout = lazy(() => import('@/layouts'));
 const Home = lazy(() => import('@/pages/home'));
 const Todo = lazy(() => import('@/pages/todo'));
 const Message = lazy(() => import('@/pages/message'));
 const PersonalCenter = lazy(() => import('@/pages/personal-center'));
 
-const AiPainting = lazy(() => import('@/pages/ai-painting'));
-const AiPaintingTextToImageBase = lazy(() => import('@/pages/text-to-image-base'));
+// 用户中心
 const About = lazy(() => import('@/pages/personal-center/about'));
 const Help = lazy(() => import('@/pages/personal-center/help'));
 const Logs = lazy(() => import('@/pages/personal-center/logs'));
@@ -125,29 +125,11 @@ const PersonalCenterRoutes: RouteConfig = {
   ],
 };
 
-// AI 绘图 Routes
-const aiPaintingRoutes: RouteConfig = {
-  path: '/ai-painting',
-  element: <Layout />,
-  children: [
-    {
-      path: '',
-      element: <AiPainting />,
-      meta: {
-        title: 'AI绘图',
-      },
-    },
-    {
-      path: '/ai-painting/text-to-image-base',
-      element: <AiPaintingTextToImageBase />,
-      meta: {
-        title: '文生图',
-      },
-    },
-  ],
-};
-
 export const RootRoutes: RouteConfig[] = [
+  // {
+  //   path: '',
+  //   element: <Navigate to='/home' />,
+  // },
   {
     path: '/login',
     element: <Login />,
@@ -166,8 +148,7 @@ export const RootRoutes: RouteConfig[] = [
     },
   },
   tabBarRoutes, // TabBar Routes
-  PersonalCenterRoutes,
-  aiPaintingRoutes,
+  PersonalCenterRoutes, // 用户中心 Routes
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,
