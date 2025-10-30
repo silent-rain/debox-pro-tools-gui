@@ -17,7 +17,7 @@ import {
 } from 'antd-mobile';
 import styles from './index.module.less';
 import { useEffect, useState } from 'react';
-import { comfyuiAddPrompt, comfyuiHistory, comfyuiQueue, comfyuiView } from '@/api';
+import { comfyuiAddPrompt, comfyuiHistory, comfyuiQueue, comfyuiView } from '@/api/comfyui';
 import { AddPromptReq, QueueRsp } from '@/typings/api';
 
 // 绘图风格
