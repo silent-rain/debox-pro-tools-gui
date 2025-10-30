@@ -253,7 +253,7 @@ export default function AiPaintingTextToImageBase() {
           <div>
             <h2 className='text-xl mb-2'>图像尺寸:</h2>
             <Dropdown>
-              <Dropdown.Item className='!flex-none' key='sorter' title='预制尺寸'>
+              <Dropdown.Item className='flex-none' key='sorter' title='预制尺寸'>
                 <div style={{ padding: 12 }}>
                   <Radio.Group defaultValue='512x512' onChange={handleImageSize}>
                     <Space direction='vertical' block>
