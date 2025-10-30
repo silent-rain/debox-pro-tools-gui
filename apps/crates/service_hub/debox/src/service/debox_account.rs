@@ -10,8 +10,10 @@ use sea_orm::{
 
 use debox_pro_rs::{
     Config as DeBoxConfig, DeBoxClient, UserApi, UserExtApi,
-    dto::user::{IsUserFollowReq, UserInfoReq},
-    dto::user_ext,
+    dto::{
+        user::{IsUserFollowReq, UserInfoReq},
+        user_ext::{self, UserInfo},
+    },
 };
 use entity::debox::debox_account;
 use err_code::{Error, ErrorMsg};
@@ -82,7 +84,17 @@ impl DeboxAccountService {
     }
 
     /// 检查 Web Token 状态
-    async fn check_web_token_status(&self, req: &CreateDeboxAccountReq) -> Result<(), ErrorMsg> {
+    async fn _check_web_token_status(&self, req: &CreateDeboxAccountReq) -> Result<(), ErrorMsg> {
+        let _resp = self.get_debox_account(req).await.map_err(|e| {
+            error!(", err: {:#?}", e);
+            e
+        })?;
+
+        Ok(())
+    }
+
+    /// 获取 debox 账号信息
+    async fn get_debox_account(&self, req: &CreateDeboxAccountReq) -> Result<UserInfo, ErrorMsg> {
         let client = self.debox_client(req)?;
 
         let data = user_ext::UserInfoReq {
@@ -91,12 +103,11 @@ impl DeboxAccountService {
             use_menu: 1,
         };
         let resp = UserExtApi::user_info(&client, data).await.map_err(|e| {
-            error!("Web Token 状态检查失败, err: {:#?}", e);
-            Error::DeboxProRs(e).into_err_with_msg("Web Token 状态检查失败")
+            error!("获取 DeBox 账号信息失败, err: {:#?}", e);
+            Error::DeboxProRs(e).into_err_with_msg("获取 DeBox 账号信息失败")
         })?;
-        println!("{:#?}", resp);
 
-        Ok(())
+        Ok(resp)
     }
 }
 
@@ -158,8 +169,12 @@ impl DeboxAccountService {
         if self.check_access_token_status(&req).await.is_ok() {
             model.access_token_status = Set(true)
         }
-        if self.check_web_token_status(&req).await.is_ok() {
-            model.web_token_status = Set(true)
+
+        if let Ok(user_info) = self.get_debox_account(&req).await {
+            model.web_token_status = Set(true);
+            model.name = Set(user_info.name);
+            model.avatar = Set(Some(user_info.pic));
+            model.wallet_address = Set(user_info.address);
         }
 
         let result = self.debox_account_dao.create(model).await.map_err(|err| {
