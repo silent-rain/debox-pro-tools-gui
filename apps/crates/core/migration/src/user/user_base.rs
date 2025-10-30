@@ -188,9 +188,9 @@ impl MigrationTrait for Migration {
             // Use `execute_unprepared` if the SQL statement doesn't have value bindings
             db.execute_unprepared(
                 r#"INSERT INTO `t_user_base` (`username`, `password`, `status`) VALUES
-                    ('SR', '123456', true),
-                    ('ZS', '123456', true),
-                    ('LS', '123456', true)
+                    ('SR', 'da023f7090dd831097f8a534475b1c4fba2a9a6419968e52be7459e2533ac819', true),
+                    ('ZS', 'da023f7090dd831097f8a534475b1c4fba2a9a6419968e52be7459e2533ac819', true),
+                    ('LS', 'da023f7090dd831097f8a534475b1c4fba2a9a6419968e52be7459e2533ac819', true)
                 "#,
             )
             .await?;

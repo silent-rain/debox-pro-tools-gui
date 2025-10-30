@@ -8,6 +8,7 @@ use entity::user::user_base;
 use err_code::{Error, ErrorMsg};
 
 use user::{EmailDao, PhoneDao, UserBaseDao, enums::user_base::UserType};
+use utils::crypto::sha2_256;
 
 use crate::dto::login::{LoginReq, LoginResp};
 
@@ -29,8 +30,11 @@ impl LoginService {
             error!("{} 用户已被禁用", user.id);
             return Err(Error::LoginUserDisableError.into_err_with_msg("用户已被禁用"));
         }
+
+        // 密码加密
+        let password_hash = sha2_256(&req.password);
         // 检测密码
-        if user.password != req.password {
+        if user.password != password_hash {
             error!("{} 账号或密码错误", user.id);
 
             return Err(Error::LoginPasswordError.into_err_with_msg("账号或密码错误"));
