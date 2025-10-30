@@ -91,3 +91,17 @@ export interface DeleteDeboxAccountReq {
 // 删除数据 响应体
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DeleteDeboxAccountResp {}
+
+export interface UpdateAllAccountsInfoReq {
+  user_id: number; // 用户ID
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface UpdateAllAccountsInfoResp {}
+
+export interface UpdateAccountInfoReq {
+  id: number; // 账号ID
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface UpdateAccountInfoResp {}

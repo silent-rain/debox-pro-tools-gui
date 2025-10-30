@@ -8,8 +8,9 @@ use crate::{
     dto::debox_account::{
         CreateDeboxAccountReq, CreateDeboxAccountResp, DeleteDeboxAccountReq,
         DeleteDeboxAccountResp, GetDeboxAccountReq, GetDeboxAccountResp, GetDeboxAccountsReq,
-        GetDeboxAccountsResp, UpdateDeboxAccountReq, UpdateDeboxAccountResp,
-        UpdateDeboxAccountStatusReq, UpdateDeboxAccountStatusResp,
+        GetDeboxAccountsResp, UpdateAccountInfoReq, UpdateAccountInfoResp,
+        UpdateAllAccountsInfoReq, UpdateAllAccountsInfoResp, UpdateDeboxAccountReq,
+        UpdateDeboxAccountResp, UpdateDeboxAccountStatusReq, UpdateDeboxAccountStatusResp,
     },
     service::debox_account::DeboxAccountService,
 };
@@ -85,6 +86,32 @@ impl DeboxAccountController {
     ) -> Responder<DeleteDeboxAccountResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
         let _result = debox_account_service.delete(req).await?;
+
+        let resp = Response::ok();
+        Ok(resp)
+    }
+}
+
+impl DeboxAccountController {
+    /// 更新所有账户信息
+    pub async fn update_all_accounts_info(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateAllAccountsInfoReq>,
+    ) -> Responder<UpdateAllAccountsInfoResp> {
+        let debox_account_service: DeboxAccountService = provider.provide();
+        debox_account_service.update_all_accounts_info(req).await?;
+
+        let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 更新账户信息
+    pub async fn update_account_info(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<UpdateAccountInfoReq>,
+    ) -> Responder<UpdateAccountInfoResp> {
+        let debox_account_service: DeboxAccountService = provider.provide();
+        debox_account_service.update_account_info(req).await?;
 
         let resp = Response::ok();
         Ok(resp)

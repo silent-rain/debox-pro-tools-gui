@@ -11,6 +11,10 @@ import {
   GetDeboxAccountResp,
   GetDeboxAccountsReq,
   GetDeboxAccountsResp,
+  UpdateAccountInfoReq,
+  UpdateAccountInfoResp,
+  UpdateAllAccountsInfoReq,
+  UpdateAllAccountsInfoResp,
   UpdateDeboxAccountReq,
   UpdateDeboxAccountResp,
   UpdateDeboxAccountStatusReq,
@@ -74,6 +78,26 @@ export const DeboxAccountApi = {
       url: `${server}/debox/debox-accounts/${data.id}`,
       method: 'DELETE',
       data: {},
+    });
+    return response.data;
+  },
+
+  // 更新所有账户信息
+  update_all_accounts_info: async (data: UpdateAllAccountsInfoReq): Promise<UpdateAllAccountsInfoResp> => {
+    const response = await request({
+      url: `${server}/debox/debox-accounts/update-all-accounts-info`,
+      method: 'PUT',
+      data,
+    });
+    return response.data;
+  },
+
+  // 更新账户信息
+  update_account_info: async (data: UpdateAccountInfoReq): Promise<UpdateAccountInfoResp> => {
+    const response = await request({
+      url: `${server}/debox/debox-accounts/update-account-info`,
+      method: 'PUT',
+      data,
     });
     return response.data;
   },

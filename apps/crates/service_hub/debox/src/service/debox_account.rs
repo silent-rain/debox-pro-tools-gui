@@ -22,7 +22,8 @@ use crate::{
     dao::debox_account::DeboxAccountDao,
     dto::debox_account::{
         CreateDeboxAccountReq, DeleteDeboxAccountReq, GetDeboxAccountReq, GetDeboxAccountsReq,
-        UpdateDeboxAccountReq, UpdateDeboxAccountStatusReq,
+        UpdateAccountInfoReq, UpdateAllAccountsInfoReq, UpdateDeboxAccountReq,
+        UpdateDeboxAccountStatusReq,
     },
 };
 
@@ -34,14 +35,14 @@ pub struct DeboxAccountService {
 
 impl DeboxAccountService {
     /// 获取DeBox客户端
-    fn debox_client(&self, req: &CreateDeboxAccountReq) -> Result<DeBoxClient, ErrorMsg> {
+    fn debox_client(&self, model: &debox_account::Model) -> Result<DeBoxClient, ErrorMsg> {
         let config = DeBoxConfig {
-            app_id: req.model.app_id.clone(),
-            api_key: req.model.api_key.clone(),
-            app_secret: req.model.app_secret.clone(),
-            access_token: req.model.access_token.clone(),
-            web_token: req.model.web_token.clone(),
-            user_id: req.model.debox_user_id.clone(),
+            app_id: model.app_id.clone(),
+            api_key: model.api_key.clone(),
+            app_secret: model.app_secret.clone(),
+            access_token: model.access_token.clone(),
+            web_token: model.web_token.clone(),
+            user_id: model.debox_user_id.clone(),
             ..Default::default()
         };
 
@@ -53,8 +54,8 @@ impl DeboxAccountService {
     }
 
     /// 检查 ApiKey 状态
-    async fn check_api_key_status(&self, req: &CreateDeboxAccountReq) -> Result<(), ErrorMsg> {
-        let client = self.debox_client(req)?;
+    async fn check_api_key_status(&self, model: &debox_account::Model) -> Result<(), ErrorMsg> {
+        let client = self.debox_client(model)?;
 
         let data = IsUserFollowReq {
             wallet_address: "0xe409b19729ed02ca6a2b05f4d2cdae86b6a0ddbd".to_string(),
@@ -69,8 +70,11 @@ impl DeboxAccountService {
     }
 
     /// 检查 Access Token 状态
-    async fn check_access_token_status(&self, req: &CreateDeboxAccountReq) -> Result<(), ErrorMsg> {
-        let client = self.debox_client(req)?;
+    async fn check_access_token_status(
+        &self,
+        model: &debox_account::Model,
+    ) -> Result<(), ErrorMsg> {
+        let client = self.debox_client(model)?;
 
         let data = UserInfoReq {
             user_id: "2y9u8fkw".to_string(),
@@ -84,8 +88,8 @@ impl DeboxAccountService {
     }
 
     /// 检查 Web Token 状态
-    async fn _check_web_token_status(&self, req: &CreateDeboxAccountReq) -> Result<(), ErrorMsg> {
-        let _resp = self.get_debox_account(req).await.map_err(|e| {
+    async fn _check_web_token_status(&self, model: &debox_account::Model) -> Result<(), ErrorMsg> {
+        let _resp = self.get_debox_account(model).await.map_err(|e| {
             error!(", err: {:#?}", e);
             e
         })?;
@@ -94,8 +98,8 @@ impl DeboxAccountService {
     }
 
     /// 获取 debox 账号信息
-    async fn get_debox_account(&self, req: &CreateDeboxAccountReq) -> Result<UserInfo, ErrorMsg> {
-        let client = self.debox_client(req)?;
+    async fn get_debox_account(&self, model: &debox_account::Model) -> Result<UserInfo, ErrorMsg> {
+        let client = self.debox_client(model)?;
 
         let data = user_ext::UserInfoReq {
             user_id: "621674807658095".to_string(),
@@ -163,14 +167,14 @@ impl DeboxAccountService {
         model.updated_at = NotSet;
 
         // 账号检测
-        if self.check_api_key_status(&req).await.is_ok() {
+        if self.check_api_key_status(&req.model).await.is_ok() {
             model.api_key_status = Set(true)
         }
-        if self.check_access_token_status(&req).await.is_ok() {
+        if self.check_access_token_status(&req.model).await.is_ok() {
             model.access_token_status = Set(true)
         }
 
-        if let Ok(user_info) = self.get_debox_account(&req).await {
+        if let Ok(user_info) = self.get_debox_account(&req.model).await {
             model.web_token_status = Set(true);
             model.name = Set(user_info.name);
             model.avatar = Set(Some(user_info.pic));
@@ -225,5 +229,86 @@ impl DeboxAccountService {
         })?;
 
         Ok(result)
+    }
+}
+
+impl DeboxAccountService {
+    /// 更新所有账户信息
+    pub async fn update_all_accounts_info(
+        &self,
+        req: UpdateAllAccountsInfoReq,
+    ) -> Result<(), ErrorMsg> {
+        let (mut accounts, _) = self
+            .debox_account_dao
+            .accounts_by_user_id(req.user_id)
+            .await
+            .map_err(|err| {
+                error!("查询DeBox账号列表失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号列表失败")
+            })?;
+
+        let total = accounts.len();
+        let mut failed_count = 0;
+        for account in accounts.iter_mut() {
+            if self.check_api_key_status(account).await.is_ok() {
+                account.api_key_status = true;
+            }
+            if self.check_access_token_status(account).await.is_ok() {
+                account.access_token_status = true;
+            }
+
+            if let Ok(user_info) = self.get_debox_account(account).await {
+                account.web_token_status = true;
+                account.name = user_info.name;
+                account.avatar = Some(user_info.pic);
+                account.wallet_address = user_info.address;
+            }
+
+            if let Err(e) = self
+                .update(UpdateDeboxAccountReq {
+                    model: account.clone(),
+                })
+                .await
+            {
+                error!("更新DeBox账号失败, err: {e:#?}");
+                failed_count += 1;
+            }
+        }
+
+        if failed_count > 0 {
+            error!("更新DeBox账号失败, 总数量: {total:?}, 失败数量: {failed_count:?}");
+        }
+
+        Ok(())
+    }
+
+    /// 更新账户信息
+    pub async fn update_account_info(&self, req: UpdateAccountInfoReq) -> Result<(), ErrorMsg> {
+        let mut account = self.info(GetDeboxAccountReq { id: req.id }).await?;
+
+        if self.check_api_key_status(&account).await.is_ok() {
+            account.api_key_status = true;
+        }
+        if self.check_access_token_status(&account).await.is_ok() {
+            account.access_token_status = true;
+        }
+
+        if let Ok(user_info) = self.get_debox_account(&account).await {
+            account.web_token_status = true;
+            account.name = user_info.name;
+            account.avatar = Some(user_info.pic);
+            account.wallet_address = user_info.address;
+        }
+
+        self.update(UpdateDeboxAccountReq {
+            model: account.clone(),
+        })
+        .await
+        .map_err(|err| {
+            error!("更新DeBox账号失败, err: {:#?}", err);
+            Error::DbUpdateError.into_err_with_msg("更新DeBox账号失败")
+        })?;
+
+        Ok(())
     }
 }

@@ -38,7 +38,7 @@ impl From<(Vec<debox_account::Model>, u64)> for GetDeboxAccountsResp {
 /// 查询DeBox账号信息 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetDeboxAccountReq {
-    /// DeBox账号ID
+    /// 账号ID
     pub id: i32,
 }
 
@@ -79,7 +79,7 @@ pub struct UpdateDeboxAccountResp {}
 /// 更新数据状态 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDeboxAccountStatusReq {
-    /// DeBox账号ID
+    /// 账号ID
     pub id: i32,
     /// 状态(false:停用,true:正常)
     pub status: bool,
@@ -92,10 +92,32 @@ pub struct UpdateDeboxAccountStatusResp {}
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteDeboxAccountReq {
-    /// DeBox账号ID
+    /// 账号ID
     pub id: i32,
 }
 
 /// 删除数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DeleteDeboxAccountResp {}
+
+/// 更新所有账户信息 请求体
+#[derive(Default, Deserialize, Validate)]
+pub struct UpdateAllAccountsInfoReq {
+    /// 用户ID
+    pub user_id: i32,
+}
+
+/// 更新所有账户信息 响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateAllAccountsInfoResp {}
+
+/// 更新账户信息 请求体
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+pub struct UpdateAccountInfoReq {
+    /// 账号ID
+    pub id: i32,
+}
+
+/// 更新账户信息 响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UpdateAccountInfoResp {}

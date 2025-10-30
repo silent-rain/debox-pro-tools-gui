@@ -108,3 +108,24 @@ impl DeboxAccountDao {
         Ok(result.rows_affected)
     }
 }
+
+impl DeboxAccountDao {
+    /// 获取所有的账号
+    pub async fn accounts_by_user_id(
+        &self,
+        user_id: i32,
+    ) -> Result<(Vec<debox_account::Model>, u64), DbErr> {
+        let states = DeboxAccountEntity::find()
+            .filter(debox_account::Column::Status.eq(true))
+            .filter(debox_account::Column::UserId.eq(user_id));
+
+        let results = states
+            .order_by_desc(debox_account::Column::Id)
+            .all(self.db.db())
+            .await?;
+
+        let total = results.len() as u64;
+
+        Ok((results, total))
+    }
+}
