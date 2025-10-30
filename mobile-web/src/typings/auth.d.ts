@@ -22,7 +22,7 @@ export interface LoginResp {
 
 // 注册用户 请求体
 export interface RegisterReq {
-  register_type: UserType; // 注册用户类型
+  user_type: UserType; // 注册用户类型
   phone?: string; // 手机号码
   email?: string; // 邮箱
   blockchain_wallet?: string; // 区块链钱包
@@ -41,5 +41,5 @@ export interface RegisterReq {
 }
 
 // 注册用户 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface RegisterResp {}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
+export interface RegisterResp { }

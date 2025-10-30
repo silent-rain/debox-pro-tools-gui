@@ -9,7 +9,7 @@ use user::enums::user_base::UserType;
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct RegisterReq {
     /// 注册用户类型
-    pub register_type: UserType,
+    pub user_type: UserType,
     /// 手机号码
     pub phone: Option<String>,
     /// 邮箱

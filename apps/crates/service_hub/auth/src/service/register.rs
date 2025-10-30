@@ -22,7 +22,7 @@ impl RegisterService {
     /// 根据不同的注册类型进行注册用户
     pub async fn register(&self, req: RegisterReq) -> Result<(), ErrorMsg> {
         // 参数校验, 防止被空刷验证码
-        match req.register_type {
+        match req.user_type {
             UserType::Base => {
                 if req.phone.is_none() {
                     error!("请输入用户名");
@@ -47,7 +47,7 @@ impl RegisterService {
         self.check_username(req.username.clone()).await?;
 
         // 根据不同注册类型进行注册检查
-        match req.register_type {
+        match req.user_type {
             UserType::Base => self.check_username(req.username.clone()).await?,
             UserType::Phone => self.check_phone(req.clone()).await?,
             UserType::Email => self.check_email(req.clone()).await?,

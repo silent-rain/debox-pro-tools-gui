@@ -74,17 +74,15 @@ pub mod enums {
     }
 
     /// 注册用户类型
-    #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+    #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize_repr, Deserialize_repr)]
+    #[repr(i8)]
     pub enum UserType {
         /// 用户名
-        #[serde(rename = "base")]
-        Base,
+        Base = 0,
         /// 手机号码
-        #[serde(rename = "phone")]
-        Phone,
+        Phone = 1,
         /// 邮箱
-        #[serde(rename = "email")]
-        Email,
+        Email = 2,
     }
 
     impl Default for UserType {

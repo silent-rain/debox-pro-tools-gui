@@ -52,7 +52,7 @@ export default function Login(): JSX.Element {
       // 使用 Zustand 存储用户认证数据
       try {
         authStore.setToken(response.token);
-        authStore.setUser(response.user_id, response.username, response.avatar);
+        authStore.setUser();
         localStorage.setItem(cacheTokenKey, response.token);
       } catch (e) {
         console.log('存储 token 失败', e);
