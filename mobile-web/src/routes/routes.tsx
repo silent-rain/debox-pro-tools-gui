@@ -5,6 +5,7 @@ import { RouteConfig } from '@/typings/routes';
 
 const Login = lazy(() => import('@/pages/auth/login'));
 const Register = lazy(() => import('@/pages/auth/register'));
+const Error404 = lazy(() => import('@/pages/error404'));
 
 const Layout = lazy(() => import('@/layouts'));
 const Home = lazy(() => import('@/pages/home'));
@@ -171,6 +172,14 @@ export const RootRoutes: RouteConfig[] = [
   //   path: '/',
   //   element: <Navigate to='/login' />,
   // },
+  {
+    path: '/404',
+    element: <Error404 />,
+    meta: {
+      title: '404',
+      key: 'error404',
+    },
+  },
   {
     path: '*',
     element: <Navigate to='/404' />,
