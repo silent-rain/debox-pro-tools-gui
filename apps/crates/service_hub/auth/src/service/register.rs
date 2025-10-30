@@ -24,7 +24,7 @@ impl RegisterService {
         // 参数校验, 防止被空刷验证码
         match req.user_type {
             UserType::Base => {
-                if req.phone.is_none() {
+                if req.username.is_empty() {
                     error!("请输入用户名");
                     return Err(Error::InvalidParameter("请输入用户名".to_string()).into_err());
                 }

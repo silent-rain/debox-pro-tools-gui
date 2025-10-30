@@ -1,9 +1,31 @@
 import { Button, Form, Input, Radio, Toast, CalendarPickerView, Popup } from 'antd-mobile';
-import { JSX, useState } from 'react';
+import { JSX, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './index.module.less';
 import { AuthApi } from '@/api';
 import { RegisterReq } from '@/typings/auth';
+import { UserType } from '@/enums/auth';
+
+// 根据出生日期计算年龄（按年）
+const computedAge = (dateBirth: string) => {
+  if (!dateBirth) return undefined;
+
+  const str = dateBirth;
+  if (!str) return undefined;
+  const parts = str.split('-');
+  if (parts.length !== 3) return undefined;
+  const y = Number(parts[0]);
+  const m = Number(parts[1]) - 1;
+  const d = Number(parts[2]);
+  const dob = new Date(y, m, d);
+  if (Number.isNaN(dob.getTime())) return undefined;
+  const today = new Date();
+  let age = today.getFullYear() - dob.getFullYear();
+  const hasBirthdayPassed =
+    today.getMonth() > dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
+  if (!hasBirthdayPassed) age -= 1;
+  return age >= 0 ? age : undefined;
+};
 
 export default function Register(): JSX.Element {
   const [submitting, setSubmitting] = useState(false);
@@ -11,6 +33,19 @@ export default function Register(): JSX.Element {
   const navigate = useNavigate();
   const [calendarVisible, setCalendarVisible] = useState(false);
   const dateBirth = Form.useWatch('date_birth', form);
+
+  const initialValues: RegisterReq = useMemo(
+    () => ({
+      user_type: UserType.Base,
+      username: '',
+      password: '',
+      password2: '',
+      gender: 0,
+      captcha_id: '',
+      captcha: '',
+    }),
+    [],
+  );
 
   const onFinish = async (values: RegisterReq) => {
     if (submitting) return;
@@ -23,25 +58,7 @@ export default function Register(): JSX.Element {
       }
 
       // 根据出生日期计算年龄（按年）
-      const computedAge = (() => {
-        const str = values.date_birth;
-        if (!str) return undefined;
-        const parts = str.split('-');
-        if (parts.length !== 3) return undefined;
-        const y = Number(parts[0]);
-        const m = Number(parts[1]) - 1;
-        const d = Number(parts[2]);
-        const dob = new Date(y, m, d);
-        if (Number.isNaN(dob.getTime())) return undefined;
-        const today = new Date();
-        let age = today.getFullYear() - dob.getFullYear();
-        const hasBirthdayPassed =
-          today.getMonth() > dob.getMonth() ||
-          (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
-        if (!hasBirthdayPassed) age -= 1;
-        return age >= 0 ? age : undefined;
-      })();
-      values.age = computedAge;
+      values.age = computedAge(values.date_birth!);
 
       await AuthApi.register(values);
       console.log('注册成功: ', values);
@@ -67,6 +84,7 @@ export default function Register(): JSX.Element {
           form={form}
           layout='horizontal'
           mode='card'
+          initialValues={initialValues}
           onFinish={onFinish}
           footer={
             <div className={styles.actions}>
@@ -76,6 +94,16 @@ export default function Register(): JSX.Element {
             </div>
           }
         >
+          <Form.Item name='user_type' hidden>
+            <Input type='hidden' />
+          </Form.Item>
+          <Form.Item name='captcha_id' hidden>
+            <Input type='hidden' />
+          </Form.Item>
+          <Form.Item name='captcha' hidden>
+            <Input type='hidden' />
+          </Form.Item>
+
           <Form.Item
             name='username'
             label='用户名'
@@ -97,7 +125,7 @@ export default function Register(): JSX.Element {
             />
           </Form.Item>
 
-          <Form.Item name='gender' label='性别' rules={[{ required: true, message: '请选择性别' }]}>
+          <Form.Item name='gender' label='性别'>
             <Radio.Group defaultValue={0} onChange={(val) => form.setFieldsValue({ gender: val as 0 | 1 | 2 })}>
               <Radio value={0}>保密</Radio>
               <Radio value={1}>女</Radio>
