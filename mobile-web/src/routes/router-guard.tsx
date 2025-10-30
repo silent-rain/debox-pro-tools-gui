@@ -17,10 +17,10 @@ export const RouterGuard = () => {
   const authStore = useAuthStore();
 
   useEffect(() => {
-    if (!authStore.user_id) {
+    if (location.pathname !== ROUTES.LOGIN && !authStore.user_id) {
       authStore.setUser();
     }
-  }, [authStore]);
+  }, [authStore, location.pathname]);
 
   useEffect(() => {
     // 获取扁平化路由
