@@ -32,8 +32,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.38.0",
-    "@tailwindcss/vite": "^4.1.16",
     "@tailwindcss/postcss": "^4.1.16",
+    "@tailwindcss/vite": "^4.1.16",
     "@types/crypto-js": "^4.2.2",
     "@types/js-cookie": "^3.0.6",
     "@types/node": "^24.9.1",
