@@ -14,27 +14,22 @@ export interface BaseLoginProps {
 export default function BaseLogin({ submitting, onSubmit }: BaseLoginProps): JSX.Element {
   const [form] = Form.useForm<LoginReq>();
   const [passwordVisible, setPasswordVisible] = useState(false);
-
-  // 只读取一次本地缓存，避免在 effect 中同步 setState 造成级联渲染
-  const initialCache = useMemo(() => {
-    const username = localStorage.getItem(cachedUsernameKey) || '';
-    const pwd = localStorage.getItem(cachedPasswordUsernameKey) || '';
-    return { username, pwd };
-  }, []);
-  const [rememberPassword, setRememberPassword] = useState<boolean>(() =>
-    Boolean(initialCache.username || initialCache.pwd),
-  );
+  const [rememberPassword, setRememberPassword] = useState<boolean>(false);
 
   const initialValues: LoginReq = useMemo(
     () => ({
       user_type: UserType.Base,
-      username: initialCache.username || 'SR',
-      password: initialCache.pwd || '123456',
+      username: localStorage.getItem(cachedUsernameKey) || 'SR',
+      password: localStorage.getItem(cachedPasswordUsernameKey) || '123456',
       captcha_id: '',
       captcha: '',
     }),
-    [initialCache],
+    [],
   );
+
+  useMemo(() => {
+    setRememberPassword(Boolean(initialValues.username || initialValues.password));
+  }, [initialValues]);
 
   const handlePasswordEnter = useCallback(() => {
     form.submit();
