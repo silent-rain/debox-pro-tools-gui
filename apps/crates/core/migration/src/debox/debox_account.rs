@@ -56,6 +56,13 @@ impl MigrationTrait for Migration {
                             .comment("账号头像"),
                     )
                     .col(
+                        ColumnDef::new(DeboxAccount::AppId)
+                            .string()
+                            .string_len(30)
+                            .not_null()
+                            .comment("应用唯一标识，在DeBox开放平台申请"),
+                    )
+                    .col(
                         ColumnDef::new(DeboxAccount::ApiKey)
                             .string()
                             .string_len(30)
@@ -80,7 +87,7 @@ impl MigrationTrait for Migration {
                         ColumnDef::new(DeboxAccount::WebToken)
                             .string()
                             .string_len(250)
-                            .default("")
+                            .not_null()
                             .comment("WEB登录授权"),
                     )
                     .col(
@@ -207,6 +214,7 @@ pub enum DeboxAccount {
     UserId,
     Name,
     Avatar,
+    AppId,
     ApiKey,
     AppSecret,
     AccessToken,

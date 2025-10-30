@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 axum_response = { workspace = true }
 axum_jwt = { workspace = true }
+debox-pro-rs = { workspace = true }
 
 thiserror = { workspace = true }
 anyhow = { workspace = true }

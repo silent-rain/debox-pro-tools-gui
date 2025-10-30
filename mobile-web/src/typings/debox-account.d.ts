@@ -48,6 +48,7 @@ export type GetDeboxAccountResp = DeboxAccount;
 // 添加DeBox账号 请求体
 export interface CreateDeboxAccountReq {
   user_id: number; // 用户ID
+  app_id: string; // 应用唯一标识，在DeBox开放平台申请
   api_key: string; // 开发者 API Key，在DeBox开放平台获取
   app_secret: string; // 开发者 App Secret，在DeBox开放平台获取
   access_token: string; // 登录授权, 有效期较短

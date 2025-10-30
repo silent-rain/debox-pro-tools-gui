@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Form, Input, TextArea, Switch, NoticeBar } from 'antd-mobile';
 import { ROUTES } from '@/constants/routes';
 import { DeboxAccountApi } from '@/api/debox-account';
+import { useAuthStore } from '@/stores';
 import { CreateDeboxAccountReq } from '@/typings/debox-account';
 import './index.module.less';
 
@@ -10,12 +11,15 @@ const { Item } = Form;
 
 const AddAccountForm = () => {
   const navigate = useNavigate();
+  const authStore = useAuthStore.getState();
   const [form] = Form.useForm();
   const [showSuccessNotice, setShowSuccessNotice] = useState(false); // 控制通告栏显示状态
 
   const handleSubmit = async (values: CreateDeboxAccountReq) => {
     // Handle form submission logic here
     console.log('Form values:', values);
+
+    values.user_id = authStore.user_id!;
     await DeboxAccountApi.create(values);
 
     setShowSuccessNotice(true);
@@ -56,13 +60,16 @@ const AddAccountForm = () => {
         {/* <Item name='user_id' label='用户ID' rules={[{ required: false }]}>
           <Input placeholder='请输入用户ID' type='number' />
         </Item> */}
+        <Item name='app_id' label='App Id' rules={[{ required: true }]}>
+          <Input placeholder=' 请输入 AppId，在DeBox开放平台获取' />
+        </Item>
         <Item name='api_key' label='API Key' rules={[{ required: true }]}>
           <Input placeholder=' 请输入 API Key，在DeBox开放平台获取' />
         </Item>
         <Item name='app_secret' label='App Secret' rules={[{ required: true }]}>
           <Input placeholder='请输入 App Secret，在DeBox开放平台获取' />
         </Item>
-        <Item name='access_token' label='登录授权' rules={[{ required: false }]}>
+        <Item name='access_token' label='Access登录授权' rules={[{ required: false }]}>
           <Input placeholder='请输入登录授权' />
         </Item>
         <Item name='web_token' label='WEB登录授权' rules={[{ required: true }]}>

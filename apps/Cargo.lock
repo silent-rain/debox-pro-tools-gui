@@ -1834,6 +1834,7 @@ dependencies = [
  "axum_jwt",
  "axum_response",
  "color-eyre",
+ "debox-pro-rs",
  "serde",
  "tauri",
  "thiserror 2.0.17",

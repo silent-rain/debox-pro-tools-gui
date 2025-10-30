@@ -24,6 +24,8 @@ pub struct Model {
     pub name: String,
     /// 账号头像
     pub avatar: Option<String>,
+    /// 应用唯一标识，在DeBox开放平台申请
+    pub app_id: String,
     /// 开发者 API Key，在DeBox开放平台获取
     pub api_key: String,
     /// 开发者 App Secret，在DeBox开放平台获取

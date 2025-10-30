@@ -190,6 +190,8 @@ pub enum Error {
     Tauri(#[from] tauri::Error),
     #[error(transparent)]
     AxumJwt(#[from] axum_jwt::Error),
+    #[error(transparent)]
+    DeboxProRs(#[from] debox_pro_rs::Error),
 
     #[error(transparent)]
     ColorEyreReport(#[from] color_eyre::Report),
