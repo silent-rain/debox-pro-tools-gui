@@ -10,6 +10,8 @@ err_code = { workspace = true }
 inject = { workspace = true }
 axum_response = { workspace = true }
 axum_validator = { workspace = true }
+debox-pro-rs = { workspace = true }
+
 
 axum = { workspace = true }
 validator = { workspace = true, features = ["derive"] }

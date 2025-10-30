@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{ActiveValue::NotSet, DbErr::RecordNotUpdated, IntoActiveModel};
 
+use debox_pro_rs::DeBoxClient;
 use entity::debox::debox_account;
 use err_code::{Error, ErrorMsg};
 

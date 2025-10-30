@@ -39,7 +39,7 @@ axum_jwt = { path = "crates/axum_jwt" }
 axum_context = { path = "crates/axum_context" }
 axum_middleware = { path = "crates/axum_middleware" }
 service_hub = { path = "crates/service_hub" }
-debox-pro-rs = { git = "https://github.com/silent-rain/debox-pro-rs.git" }
+debox-pro-rs = { git = "https://github.com/silent-rain/debox-pro-rs.git", branch = "master" }
 
 
 # Inject 依赖注入
