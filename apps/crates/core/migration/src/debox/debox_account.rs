@@ -1,13 +1,18 @@
 //! DeBox账号表
-//! Entity: [`entity::prelude::UserBase`]
 
 use sea_orm::{
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
-use crate::user::user_base::UserBase;
+use crate::{
+    user::user_base::UserBase,
+    utils::{
+        if_not_exists_create_index, if_not_exists_create_trigger_for_updated_at,
+        if_not_exists_create_unique_index,
+    },
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -145,65 +150,42 @@ impl MigrationTrait for Migration {
                             })
                             .comment("更新时间"),
                     )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                DeboxAccount::Table.to_string(),
+                                DeboxAccount::UserId.to_string()
+                            ))
+                            .from_col(DeboxAccount::UserId)
+                            .to(UserBase::Table, UserBase::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await?;
 
-        if !manager
-            .has_index(DeboxAccount::Table.to_string(), "idx_user_id")
-            .await?
+        // create index
         {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_user_id")
-                        .table(DeboxAccount::Table)
-                        .col(DeboxAccount::UserId)
-                        .to_owned(),
-                )
+            if_not_exists_create_index(manager, DeboxAccount::Table, vec![DeboxAccount::UserId])
                 .await?;
+            if_not_exists_create_unique_index(
+                manager,
+                DeboxAccount::Table,
+                vec![DeboxAccount::UserId, DeboxAccount::DeboxUserId],
+            )
+            .await?;
         }
 
-        // 添加联合唯一索引
-        if !manager
-            .has_index(DeboxAccount::Table.to_string(), "idx_user_id_debox_user_id")
-            .await?
+        // create trigger
         {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_user_id_debox_user_id")
-                        .table(DeboxAccount::Table)
-                        .col(DeboxAccount::UserId)
-                        .col(DeboxAccount::DeboxUserId)
-                        .unique()
-                        .to_owned(),
-                )
-                .await?;
-        }
-
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
-
-        if !manager
-            .has_index(DeboxAccount::Table.to_string(), "fk_user_account_user_id")
+            if_not_exists_create_trigger_for_updated_at(
+                manager,
+                DeboxAccount::Table,
+                DeboxAccount::UpdatedAt,
+            )
             .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_user_account_user_id")
-                        .from(DeboxAccount::Table, DeboxAccount::UserId)
-                        .to(UserBase::Table, UserBase::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
         }
 
         Ok(())

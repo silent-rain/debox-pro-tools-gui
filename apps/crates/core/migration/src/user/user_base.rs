@@ -2,7 +2,7 @@
 //! Entity: [`entity::user::UserBase`]
 
 use sea_orm::{
-    DeriveIden, DeriveMigrationName,
+    ConnectionTrait, DeriveIden, DeriveMigrationName,
     sea_query::{ColumnDef, Expr, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
@@ -174,10 +174,27 @@ impl MigrationTrait for Migration {
             )
             .await?;
 
+        // create index
+        // 兼容SQLite, SQLite 的索引语法通常是在表创建后通过 CREATE INDEX 语句单独定义的，而不是在 CREATE TABLE 语句中直接定义。
         if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::Username]).await?;
         if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::RealName]).await?;
         if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::Password]).await?;
         if_not_exists_create_index(manager, UserBase::Table, vec![UserBase::ShareCode]).await?;
+
+        // Add your own migration scripts here
+        {
+            let db = manager.get_connection();
+
+            // Use `execute_unprepared` if the SQL statement doesn't have value bindings
+            db.execute_unprepared(
+                r#"INSERT INTO `t_user_base` (`username`, `password`, `status`) VALUES
+                    ('SR', '123456', true),
+                    ('ZS', '123456', true),
+                    ('LS', '123456', true)
+                "#,
+            )
+            .await?;
+        }
         Ok(())
     }
 
