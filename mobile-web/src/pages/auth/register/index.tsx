@@ -1,51 +1,56 @@
-import { Button, Form, Input, Radio, Toast, CalendarPickerView, Popup } from 'antd-mobile';
-import { JSX, useMemo, useState } from 'react';
+import { Button, Form, Input, Radio, Toast, Selector, DatePickerRef, DatePicker } from 'antd-mobile';
+import { JSX, RefObject, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import dayjs from 'dayjs';
 import styles from './index.module.less';
 import { AuthApi } from '@/api';
 import { RegisterReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
-
-// 根据出生日期计算年龄（按年）
-const computedAge = (dateBirth: string) => {
-  if (!dateBirth) return undefined;
-
-  const str = dateBirth;
-  if (!str) return undefined;
-  const parts = str.split('-');
-  if (parts.length !== 3) return undefined;
-  const y = Number(parts[0]);
-  const m = Number(parts[1]) - 1;
-  const d = Number(parts[2]);
-  const dob = new Date(y, m, d);
-  if (Number.isNaN(dob.getTime())) return undefined;
-  const today = new Date();
-  let age = today.getFullYear() - dob.getFullYear();
-  const hasBirthdayPassed =
-    today.getMonth() > dob.getMonth() || (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
-  if (!hasBirthdayPassed) age -= 1;
-  return age >= 0 ? age : undefined;
-};
+import UsernameRegister from './components/UsernameRegister';
+import PhoneRegister from './components/PhoneRegister';
+import EmailRegister from './components/EmailRegister';
+import { getAgeByBirthday } from '@/utils/date';
 
 export default function Register(): JSX.Element {
   const [submitting, setSubmitting] = useState(false);
   const [form] = Form.useForm<RegisterReq>();
   const navigate = useNavigate();
-  const [calendarVisible, setCalendarVisible] = useState(false);
-  const dateBirth = Form.useWatch('date_birth', form);
+  const [userType, setUserType] = useState<UserType>(UserType.Base);
 
   const initialValues: RegisterReq = useMemo(
     () => ({
-      user_type: UserType.Base,
+      user_type: userType,
       username: '',
+      phone: '',
+      email: '',
       password: '',
       password2: '',
       gender: 0,
+      date_birth: undefined,
       captcha_id: '',
       captcha: '',
     }),
+    [userType],
+  );
+
+  const tabs = useMemo(
+    () => [
+      { key: UserType.Base, label: '用户名' },
+      { key: UserType.Phone, label: '手机号' },
+      { key: UserType.Email, label: '邮箱' },
+    ],
     [],
   );
+
+  // 处理注册方式选择变化（Selector 单选模式）
+  const onUserTypeChange = useCallback((arr: string[]) => {
+    const first = arr?.[0];
+    if (first === undefined || first === null) return;
+    const next = Number(first);
+    if (!Number.isNaN(next)) {
+      setUserType(next as UserType);
+    }
+  }, []);
 
   const onFinish = async (values: RegisterReq) => {
     if (submitting) return;
@@ -57,8 +62,10 @@ export default function Register(): JSX.Element {
         return;
       }
 
+      // 格式化出生日期为 YYYY-MM-DD 格式
+      values.date_birth = values.date_birth ? dayjs(values.date_birth).format('YYYY-MM-DD') : undefined;
       // 根据出生日期计算年龄（按年）
-      values.age = computedAge(values.date_birth!);
+      values.age = getAgeByBirthday(values.date_birth!);
 
       await AuthApi.register(values);
       console.log('注册成功: ', values);
@@ -78,7 +85,17 @@ export default function Register(): JSX.Element {
     <div className={styles.register_container}>
       <div className={styles.card}>
         <h1 className={styles.title}>用户注册</h1>
-        <div className={styles.subtitle}>请填写以下信息</div>
+        <div className={styles.subtitle}>请选择注册方式，并请填写以下信息</div>
+
+        {/* 登录方式切换 - 使用 Selector 单选模式 */}
+        <div>
+          <Selector
+            className={styles.user_type}
+            options={tabs.map((t) => ({ label: t.label, value: String(t.key) }))}
+            value={[String(userType)]}
+            onChange={onUserTypeChange}
+          />
+        </div>
 
         <Form
           form={form}
@@ -104,34 +121,9 @@ export default function Register(): JSX.Element {
             <Input type='hidden' />
           </Form.Item>
 
-          <Form.Item
-            name='username'
-            label='用户名'
-            rules={[
-              { required: true, message: '请输入用户名' },
-              { min: 3, message: '用户名至少3位' },
-            ]}
-          >
-            <Input
-              clearable
-              placeholder='请输入用户名'
-              onBlur={() => {
-                const val = (form.getFieldValue('username') || '').toString();
-                const trimmed = val.trim();
-                if (trimmed !== val) form.setFieldsValue({ username: trimmed });
-              }}
-              aria-label='用户名'
-              autoComplete='username'
-            />
-          </Form.Item>
-
-          <Form.Item name='gender' label='性别'>
-            <Radio.Group defaultValue={0} onChange={(val) => form.setFieldsValue({ gender: val as 0 | 1 | 2 })}>
-              <Radio value={0}>保密</Radio>
-              <Radio value={1}>女</Radio>
-              <Radio value={2}>男</Radio>
-            </Radio.Group>
-          </Form.Item>
+          {userType === UserType.Base && <UsernameRegister />}
+          {userType === UserType.Phone && <PhoneRegister />}
+          {userType === UserType.Email && <EmailRegister />}
 
           <Form.Item
             name='password'
@@ -180,41 +172,27 @@ export default function Register(): JSX.Element {
             <Input aria-hidden='true' />
           </Form.Item>
 
-          <Form.Item label='出生日期'>
-            <Button size='small' onClick={() => setCalendarVisible(true)}>
-              {dateBirth || '选择日期（可选）'}
-            </Button>
-            <Popup
-              visible={calendarVisible}
-              onMaskClick={() => setCalendarVisible(false)}
-              bodyStyle={{ borderRadius: 12, minHeight: '320px' }}
-            >
-              <div style={{ padding: 12 }}>
-                <CalendarPickerView
-                  selectionMode='single'
-                  // min={new Date(1900, 0, 1)}
-                  value={
-                    dateBirth
-                      ? new Date(
-                          Number(dateBirth.split('-')[0]),
-                          Number(dateBirth.split('-')[1]) - 1,
-                          Number(dateBirth.split('-')[2]),
-                        )
-                      : null
-                  }
-                  onChange={(val) => {
-                    if (!val) return;
-                    const d = val as Date;
-                    const yyyy = d.getFullYear();
-                    const mm = String(d.getMonth() + 1).padStart(2, '0');
-                    const dd = String(d.getDate()).padStart(2, '0');
-                    const formatted = `${yyyy}-${mm}-${dd}`;
-                    form.setFieldsValue({ date_birth: formatted });
-                    setCalendarVisible(false);
-                  }}
-                />
-              </div>
-            </Popup>
+          <Form.Item name='gender' label='性别'>
+            <Radio.Group defaultValue={0} onChange={(val) => form.setFieldsValue({ gender: val as 0 | 1 | 2 })}>
+              <Radio value={0}>保密</Radio>
+              <Radio value={1}>女</Radio>
+              <Radio value={2}>男</Radio>
+            </Radio.Group>
+          </Form.Item>
+
+          <Form.Item
+            name='date_birth'
+            label='出生日期'
+            trigger='onConfirm'
+            onClick={(_e, datePickerRef: RefObject<DatePickerRef>) => {
+              datePickerRef.current?.open();
+            }}
+          >
+            <DatePicker>
+              {(value) => {
+                return value ? dayjs(value).format('YYYY-MM-DD') : '请选择日期';
+              }}
+            </DatePicker>
           </Form.Item>
         </Form>
 
