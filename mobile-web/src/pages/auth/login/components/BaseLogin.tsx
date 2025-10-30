@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
+import { JSX, useCallback, useMemo, useState } from 'react';
 import { Form, Input, Button, Checkbox } from 'antd-mobile';
 import { EyeInvisibleOutline, EyeOutline } from 'antd-mobile-icons';
 import { LoginReq } from '@/typings/auth';
@@ -25,26 +25,15 @@ export default function BaseLogin({ submitting, onSubmit }: BaseLoginProps): JSX
     Boolean(initialCache.username || initialCache.pwd),
   );
 
-  // 初始化：从缓存回填（仅同步到表单）
-  useEffect(() => {
-    form.setFieldsValue({
-      user_type: UserType.Base,
-      username: initialCache.username,
-      password: initialCache.pwd,
-      captcha_id: '',
-      captcha: '',
-    });
-  }, [form, initialCache]);
-
   const initialValues: LoginReq = useMemo(
     () => ({
       user_type: UserType.Base,
-      username: 'SR',
-      password: '123456',
+      username: initialCache.username || 'SR',
+      password: initialCache.pwd || '123456',
       captcha_id: '',
       captcha: '',
     }),
-    [],
+    [initialCache],
   );
 
   const handlePasswordEnter = useCallback(() => {
@@ -101,13 +90,13 @@ export default function BaseLogin({ submitting, onSubmit }: BaseLoginProps): JSX
           label='用户名'
           rules={[
             { required: true, message: '请输入用户名' },
-            { min: 3, message: '用户名至少3位' },
+            { min: 2, message: '用户名至少2位' },
           ]}
         >
           <Input
             clearable
             placeholder='请输入用户名'
-            autoComplete='username'
+            autoComplete='off'
             onBlur={() => {
               const val = (form.getFieldValue('username') || '').toString();
               const trimmed = val.trim();
@@ -139,7 +128,7 @@ export default function BaseLogin({ submitting, onSubmit }: BaseLoginProps): JSX
             placeholder='请输入密码'
             clearable
             maxLength={64}
-            autoComplete='current-password'
+            autoComplete='off'
             aria-label='密码'
             onEnterPress={handlePasswordEnter}
           />

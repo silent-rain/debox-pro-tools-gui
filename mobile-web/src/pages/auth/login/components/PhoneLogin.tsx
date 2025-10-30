@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useMemo, useState } from 'react';
+import { JSX, useCallback, useMemo, useState } from 'react';
 import { Form, Input, Button, Checkbox } from 'antd-mobile';
 import { EyeInvisibleOutline, EyeOutline } from 'antd-mobile-icons';
 import { LoginReq } from '@/typings/auth';
@@ -24,17 +24,6 @@ export default function PhoneLogin({ submitting, onSubmit }: PhoneLoginProps): J
   const [rememberPassword, setRememberPassword] = useState<boolean>(() =>
     Boolean(initialCache.username || initialCache.pwd),
   );
-
-  // 初始化：从缓存回填（仅同步到表单）
-  useEffect(() => {
-    form.setFieldsValue({
-      user_type: UserType.Base,
-      username: initialCache.username,
-      password: initialCache.pwd,
-      captcha_id: '',
-      captcha: '',
-    });
-  }, [form, initialCache]);
 
   const initialValues: LoginReq = useMemo(
     () => ({
