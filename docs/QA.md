@@ -39,3 +39,23 @@ failed to bundle project `failed to run linuxdeploy`
 # AppImage 打包
 NO_STRIP=true cargo tauri build
 ```
+
+## git 私库拉取失败
+
+### 配置 Git 凭据
+
+运行以下命令配置 Git 凭据：
+
+```sh
+git config --global credential.helper store
+```
+
+### 使用 `net.git-fetch-with-cli`
+
+- 在 Cargo 配置中启用 `net.git-fetch-with-cli` ：
+- 编辑 `~/.cargo/config.toml` 文件，添加以下内容
+
+```toml
+[net]
+git-fetch-with-cli = true
+```

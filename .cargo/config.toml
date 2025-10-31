@@ -30,3 +30,6 @@ rustflags = [
     # https://github.com/huggingface/candle/issues/1625
     "target-feature=+fp16",
 ]
+
+[net]
+git-fetch-with-cli = true # 强制 Cargo 使用 Git CLI 而不是内置的 Git 实现，可能会解决认证问题。
