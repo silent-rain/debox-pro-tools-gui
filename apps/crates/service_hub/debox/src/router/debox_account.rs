@@ -2,7 +2,7 @@
 
 use axum::{
     Router,
-    routing::{get, put},
+    routing::{get, post, put},
 };
 
 use crate::controller::debox_account::DeboxAccountController;
@@ -37,7 +37,11 @@ impl DeboxAccountRouter {
                 )
                 .route(
                     "/{id}/download-config",
-                    get(DeboxAccountController::download_config),
+                    get(DeboxAccountController::download_config_file),
+                )
+                .route(
+                    "/upload-config",
+                    post(DeboxAccountController::upload_config_file),
                 ),
         )
     }

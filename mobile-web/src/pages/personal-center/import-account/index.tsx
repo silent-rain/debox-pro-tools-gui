@@ -225,6 +225,7 @@ const AccountList = () => {
 
 const ImportAccount = () => {
   const navigate = useNavigate();
+  const authStore = useAuthStore();
   const [modalVisible, setModalVisible] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -240,11 +241,22 @@ const ImportAccount = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      // Handle file import logic here
-      alert(`File ${file.name} selected for import!`);
+    if (!file) {
+      console.error('请选择文件');
+      Modal.show({
+        content: '请选择文件',
+        closeOnMaskClick: true,
+      });
+      return;
+    }
+
+    try {
+      await DeboxAccountApi.uploadConfigFile(file, String(authStore.user_id));
+      navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT);
+    } catch (error) {
+      console.error('上传失败:', error);
     }
   };
 
@@ -263,17 +275,11 @@ const ImportAccount = () => {
         onClose={() => setModalVisible(false)}
         actions={[
           { key: 'form', text: '表单填写', onClick: handleFormImport },
-          { key: 'file', text: '从文件导入', onClick: handleFileImport },
+          { key: 'file', text: '配置导入', onClick: handleFileImport },
         ]}
       />
 
-      <input
-        type='file'
-        ref={fileInputRef}
-        style={{ display: 'none' }}
-        accept='.xlsx, .xls'
-        onChange={handleFileChange}
-      />
+      <input type='file' ref={fileInputRef} style={{ display: 'none' }} accept='.json' onChange={handleFileChange} />
 
       <AccountList />
     </div>

@@ -1,6 +1,8 @@
 //! DeBox账号管理
 
+use axum_typed_multipart::{FieldData, TryFromMultipart};
 use serde::{Deserialize, Serialize};
+use tempfile::NamedTempFile;
 use validator::Validate;
 
 use entity::debox::debox_account;
@@ -124,7 +126,25 @@ pub struct UpdateAccountInfoResp {}
 
 /// 下载配置文件 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
-pub struct DownloadConfigReq {
+pub struct DownloadConfigFileReq {
     /// 账号ID
     pub id: i32,
 }
+
+/// 单文件上传 请求体
+#[derive(TryFromMultipart)]
+pub struct UploadConfigFileReq {
+    // The `unlimited arguments` means that this field will be limited to the
+    // total size of the request body. If you want to limit the size of this
+    // field to a specific value you can also specify a limit in bytes, like
+    // '5MiB' or '1GiB' or 'unlimited'.
+    #[form_data(limit = "5MiB")]
+    pub file: FieldData<NamedTempFile>,
+
+    // This field will be limited to the default size of 1MiB.
+    pub author: String,
+}
+
+/// 单文件上传 响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UploadConfigFileResp {}

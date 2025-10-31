@@ -23,6 +23,11 @@ pub enum Error {
     #[error("结构序列化为JSON字符串错误, {0}")]
     JsonSerialization(String),
 
+    #[error("parse file extension failed, {0}")]
+    ParseFileExtension(String),
+    #[error("convert type failed, {0}")]
+    ConvertType(String),
+
     #[error("User-Agent解析错误, {0}")]
     UserAgentParserError(String),
     #[error("Uuid解析失败, {0}")]

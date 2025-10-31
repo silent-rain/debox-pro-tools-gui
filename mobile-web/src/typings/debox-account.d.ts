@@ -114,3 +114,5 @@ export interface DownloadConfigReq {
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
 export interface DownloadConfigResp { }
+
+export type UploadConfigResp = DeboxAccount;

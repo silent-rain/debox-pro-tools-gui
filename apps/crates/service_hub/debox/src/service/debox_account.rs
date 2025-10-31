@@ -1,4 +1,5 @@
 //! DeBox账号管理
+use std::io::Read;
 
 use log::error;
 use nject::injectable;
@@ -23,7 +24,7 @@ use crate::{
     dto::debox_account::{
         CreateDeboxAccountReq, DeleteDeboxAccountReq, GetDeboxAccountReq, GetDeboxAccountsReq,
         UpdateAccountInfoReq, UpdateAllAccountsInfoReq, UpdateDeboxAccountReq,
-        UpdateDeboxAccountStatusReq,
+        UpdateDeboxAccountStatusReq, UploadConfigFileReq,
     },
 };
 
@@ -160,6 +161,27 @@ impl DeboxAccountService {
         &self,
         req: CreateDeboxAccountReq,
     ) -> Result<debox_account::Model, ErrorMsg> {
+        // 判断是否已存在
+        if self
+            .debox_account_dao
+            .account_by_user_id_and_debox_user_id(
+                req.model.user_id,
+                req.model.debox_user_id.clone(),
+            )
+            .await
+            .map_err(|err| {
+                error!("查询DeBox账号信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号信息失败")
+            })?
+            .is_some()
+        {
+            error!(
+                "DeBox账号已存在, user_id: {:#?}, debox_user_id: {:#?}",
+                req.model.user_id, req.model.debox_user_id
+            );
+            return Err(Error::DbDataExistError.into_err_with_msg("DeBox账号已存在"));
+        }
+
         // 创建用户
         let mut model = req.model.clone().into_active_model();
         model.id = NotSet;
@@ -310,5 +332,38 @@ impl DeboxAccountService {
         })?;
 
         Ok(())
+    }
+
+    /// 上传配置文件
+    ///
+    /// 上传 json 文件
+    pub async fn upload_config_file(
+        &self,
+        mut req: UploadConfigFileReq,
+        user_id: i32,
+    ) -> Result<debox_account::Model, ErrorMsg> {
+        // 读取json文件数据
+        let mut buffer = vec![];
+        req.file
+            .contents
+            .read_to_end(&mut buffer)
+            .map_err(|err| Error::UploadFileError(err.to_string()).into_err())?;
+
+        let file_content = String::from_utf8(buffer.clone()).map_err(|e| {
+            error!("文件内容转换失败, err: {:#?}", e);
+            Error::FromUtf8(e).into_err_with_msg("文件内容转换失败")
+        })?;
+
+        let mut model: debox_account::Model = serde_json::from_str(&file_content).map_err(|e| {
+            error!("文件内容转换失败, err: {:#?}", e);
+            Error::ConvertType(e.to_string()).into_err_with_msg("文件内容转换失败")
+        })?;
+        model.user_id = user_id;
+
+        // 添加
+        let data = CreateDeboxAccountReq { model };
+        let result = self.create(data).await?;
+
+        Ok(result)
     }
 }

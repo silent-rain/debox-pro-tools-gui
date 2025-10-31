@@ -1,6 +1,8 @@
 //! DeBox账号管理
 
 use axum::{body::Body, http::header};
+use axum_context::Context;
+use axum_typed_multipart::TypedMultipart;
 use bytes::Bytes;
 use serde_json::json;
 
@@ -12,10 +14,11 @@ use inject::AInjectProvider;
 use crate::{
     dto::debox_account::{
         CreateDeboxAccountReq, CreateDeboxAccountResp, DeleteDeboxAccountReq,
-        DeleteDeboxAccountResp, DownloadConfigReq, GetDeboxAccountReq, GetDeboxAccountResp,
+        DeleteDeboxAccountResp, DownloadConfigFileReq, GetDeboxAccountReq, GetDeboxAccountResp,
         GetDeboxAccountsReq, GetDeboxAccountsResp, UpdateAccountInfoReq, UpdateAccountInfoResp,
         UpdateAllAccountsInfoReq, UpdateAllAccountsInfoResp, UpdateDeboxAccountReq,
         UpdateDeboxAccountResp, UpdateDeboxAccountStatusReq, UpdateDeboxAccountStatusResp,
+        UploadConfigFileReq, UploadConfigFileResp,
     },
     service::debox_account::DeboxAccountService,
 };
@@ -123,9 +126,10 @@ impl DeboxAccountController {
     }
 
     /// 下载配置文件
-    pub async fn download_config(
+    /// TODO 可能需要放开权限管控或前端进行特性处理, 放开code检验
+    pub async fn download_config_file(
         Extension(provider): Extension<AInjectProvider>,
-        Path(req): Path<DownloadConfigReq>,
+        Path(req): Path<DownloadConfigFileReq>,
     ) -> Result<axum::response::Response<Body>, ResponseErr> {
         let debox_account_service: DeboxAccountService = provider.provide();
         let result = debox_account_service
@@ -156,6 +160,22 @@ impl DeboxAccountController {
             .header(header::CONTENT_DISPOSITION, content_disposition)
             .body(Body::from(file_bytes))
             .map_err(|err| Error::InternalServer(err.to_string()).into_err())?;
+        Ok(resp)
+    }
+
+    /// 上传配置文件
+    pub async fn upload_config_file(
+        Extension(provider): Extension<AInjectProvider>,
+        ctx: Context,
+        TypedMultipart(req): TypedMultipart<UploadConfigFileReq>,
+    ) -> Responder<UploadConfigFileResp> {
+        let user_id = ctx.get_user_id();
+        let debox_account_service: DeboxAccountService = provider.provide();
+        let _result = debox_account_service
+            .upload_config_file(req, user_id)
+            .await?;
+
+        let resp = Response::ok();
         Ok(resp)
     }
 }

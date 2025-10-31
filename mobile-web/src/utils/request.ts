@@ -47,7 +47,7 @@ service.interceptors.response.use(
         // 尝试重新登录
         dispatchLogout();
       }
-      return Promise.reject(res.message || 'Error');
+      return Promise.reject(res.msg || 'Error');
     } else {
       return res;
     }

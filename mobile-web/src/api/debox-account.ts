@@ -21,6 +21,7 @@ import {
   UpdateDeboxAccountResp,
   UpdateDeboxAccountStatusReq,
   UpdateDeboxAccountStatusResp,
+  UploadConfigResp,
 } from '@/typings/debox-account';
 
 export const DeboxAccountApi = {
@@ -111,6 +112,23 @@ export const DeboxAccountApi = {
       method: 'GET',
       params: {},
       responseType: 'blob', // 关键：指定响应类型为 blob
+    });
+    return response.data;
+  },
+
+  // 上传配置文件
+  uploadConfigFile: async (file: File, author: string): Promise<UploadConfigResp> => {
+    const formData = new FormData();
+    formData.append('file', file); // 文件字段名需与后端约定（如 'file'）
+    formData.append('author', author);
+
+    const response = await request({
+      url: `${server}/debox/debox-accounts/upload-config`,
+      method: 'POST',
+      // headers: { // 取消headers，让 axios 自动处理 Content-Type 的设置
+      //   'Content-Type': 'multipart/form-data',
+      // },
+      data: formData,
     });
     return response.data;
   },

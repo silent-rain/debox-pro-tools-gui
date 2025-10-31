@@ -110,6 +110,20 @@ impl DeboxAccountDao {
 }
 
 impl DeboxAccountDao {
+    /// 根据user_id和debox_user_id获取账号信息
+    pub async fn account_by_user_id_and_debox_user_id(
+        &self,
+        user_id: i32,
+        debox_user_id: String,
+    ) -> Result<Option<debox_account::Model>, DbErr> {
+        let result = DeboxAccountEntity::find()
+            .filter(debox_account::Column::UserId.eq(user_id))
+            .filter(debox_account::Column::DeboxUserId.eq(debox_user_id))
+            .one(self.db.db())
+            .await?;
+        Ok(result)
+    }
+
     /// 获取所有的账号
     pub async fn accounts_by_user_id(
         &self,
