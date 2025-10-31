@@ -124,7 +124,7 @@ impl DeboxAccountService {
     ) -> Result<(Vec<debox_account::Model>, u64), ErrorMsg> {
         // 获取所有数据
         if let Some(true) = req.all {
-            return self.debox_account_dao.all().await.map_err(|err| {
+            return self.debox_account_dao.all(req).await.map_err(|err| {
                 error!("查询DeBox账号列表失败, err: {:#?}", err);
                 Error::DbQueryError.into_err_with_msg("查询DeBox账号列表失败")
             });
@@ -315,12 +315,11 @@ impl DeboxAccountService {
             account.access_token_status = true;
         }
 
-        if let Ok(user_info) = self.get_debox_account(&account).await {
-            account.web_token_status = true;
-            account.name = user_info.name;
-            account.avatar = Some(user_info.pic);
-            account.wallet_address = user_info.address;
-        }
+        let user_info = self.get_debox_account(&account).await?;
+        account.web_token_status = true;
+        account.name = user_info.name;
+        account.avatar = Some(user_info.pic);
+        account.wallet_address = user_info.address;
 
         self.update(UpdateDeboxAccountReq {
             model: account.clone(),

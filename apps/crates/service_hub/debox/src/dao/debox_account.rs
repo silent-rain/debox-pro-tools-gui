@@ -20,9 +20,15 @@ pub struct DeboxAccountDao {
 
 impl DeboxAccountDao {
     /// 获取所有数据
-    pub async fn all(&self) -> Result<(Vec<debox_account::Model>, u64), DbErr> {
+    pub async fn all(
+        &self,
+        req: GetDeboxAccountsReq,
+    ) -> Result<(Vec<debox_account::Model>, u64), DbErr> {
         let results = DeboxAccountEntity::find()
-            .filter(debox_account::Column::Status.eq(true))
+            .apply_if(req.user_id, |query, v| {
+                println!("user_id: {}", v);
+                query.filter(debox_account::Column::UserId.eq(v))
+            })
             .order_by_asc(debox_account::Column::Id)
             .all(self.db.db())
             .await?;
@@ -40,7 +46,7 @@ impl DeboxAccountDao {
         let states = DeboxAccountEntity::find()
             .filter(debox_account::Column::Status.eq(true))
             .apply_if(req.user_id, |query, v| {
-                query.filter(debox_account::Column::UserId.ne(v))
+                query.filter(debox_account::Column::UserId.eq(v))
             })
             .apply_if(req.start_time, |query, v| {
                 query.filter(debox_account::Column::CreatedAt.gte(v))
