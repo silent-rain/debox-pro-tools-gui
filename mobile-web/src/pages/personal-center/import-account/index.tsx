@@ -46,7 +46,6 @@ const AccountList = () => {
   const actions: Action[] = [
     { text: '更新', key: 'update', onClick: () => handleMenuAction('update', currentAccountId!) },
     { text: '编辑', key: 'edit', onClick: () => handleMenuAction('edit', currentAccountId!) },
-    { text: '复制', key: 'copy', onClick: () => handleMenuAction('copy', currentAccountId!) },
     { text: '删除', key: 'delete', onClick: () => handleMenuAction('delete', currentAccountId!) },
   ];
 
@@ -58,10 +57,6 @@ const AccountList = () => {
         break;
       case 'edit':
         navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT_FORM, { state: { mode: 'edit', accountId } });
-        break;
-      case 'copy':
-        // Simulate copying account data
-        alert(`Account ${accountId} copied to clipboard!`);
         break;
       case 'delete':
         // Handle delete logic
@@ -91,7 +86,7 @@ const AccountList = () => {
     ) : null;
 
     const accessTokenStatus = !account.access_token_status ? (
-      <Tag color='warning' style={{ marginLeft: '8px' }}>
+      <Tag color='warning' style={{ marginLeft: '8px' }} aria-hidden='true'>
         Access Token
       </Tag>
     ) : null;
