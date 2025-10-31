@@ -20,5 +20,7 @@ nject = { workspace = true }
 
 log = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 serde_repr = { workspace = true }
 thiserror = { workspace = true }
+bytes = { workspace = true }

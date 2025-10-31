@@ -34,6 +34,10 @@ impl DeboxAccountRouter {
                 .route(
                     "/update-account-info",
                     put(DeboxAccountController::update_account_info),
+                )
+                .route(
+                    "/{id}/download-config",
+                    get(DeboxAccountController::download_config),
                 ),
         )
     }

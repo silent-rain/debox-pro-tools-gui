@@ -7,6 +7,8 @@ import {
   CreateDeboxAccountResp,
   DeleteDeboxAccountReq,
   DeleteDeboxAccountResp,
+  DownloadConfigReq,
+  DownloadConfigResp,
   GetDeboxAccountReq,
   GetDeboxAccountResp,
   GetDeboxAccountsReq,
@@ -63,7 +65,7 @@ export const DeboxAccountApi = {
   },
 
   // 更新账号信息
-  update_status: async (data: UpdateDeboxAccountStatusReq): Promise<UpdateDeboxAccountStatusResp> => {
+  updateStatus: async (data: UpdateDeboxAccountStatusReq): Promise<UpdateDeboxAccountStatusResp> => {
     const response = await request({
       url: `${server}/debox/debox-accounts/${data.id}/status`,
       method: 'PUT',
@@ -83,7 +85,7 @@ export const DeboxAccountApi = {
   },
 
   // 更新所有账户信息
-  update_all_accounts_info: async (data: UpdateAllAccountsInfoReq): Promise<UpdateAllAccountsInfoResp> => {
+  updateAllAccountsInfo: async (data: UpdateAllAccountsInfoReq): Promise<UpdateAllAccountsInfoResp> => {
     const response = await request({
       url: `${server}/debox/debox-accounts/update-all-accounts-info`,
       method: 'PUT',
@@ -93,11 +95,22 @@ export const DeboxAccountApi = {
   },
 
   // 更新账户信息
-  update_account_info: async (data: UpdateAccountInfoReq): Promise<UpdateAccountInfoResp> => {
+  updateAccountInfo: async (data: UpdateAccountInfoReq): Promise<UpdateAccountInfoResp> => {
     const response = await request({
       url: `${server}/debox/debox-accounts/update-account-info`,
       method: 'PUT',
       data,
+    });
+    return response.data;
+  },
+
+  // 下载配置
+  downloadConfig: async (data: DownloadConfigReq): Promise<DownloadConfigResp> => {
+    const response = await request({
+      url: `${server}/debox/debox-accounts/${data.id}/download-config`,
+      method: 'GET',
+      params: {},
+      responseType: 'blob', // 关键：指定响应类型为 blob
     });
     return response.data;
   },

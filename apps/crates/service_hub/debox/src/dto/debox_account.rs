@@ -121,3 +121,10 @@ pub struct UpdateAccountInfoReq {
 /// 更新账户信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateAccountInfoResp {}
+
+/// 下载配置文件 请求体
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
+pub struct DownloadConfigReq {
+    /// 账号ID
+    pub id: i32,
+}

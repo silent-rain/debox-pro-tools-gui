@@ -1,14 +1,19 @@
 //! DeBox账号管理
 
-use axum_response::{Responder, Response};
+use axum::{body::Body, http::header};
+use bytes::Bytes;
+use serde_json::json;
+
+use axum_response::{Responder, Response, ResponseErr};
 use axum_validator::{Extension, Json, Path, Query};
+use err_code::Error;
 use inject::AInjectProvider;
 
 use crate::{
     dto::debox_account::{
         CreateDeboxAccountReq, CreateDeboxAccountResp, DeleteDeboxAccountReq,
-        DeleteDeboxAccountResp, GetDeboxAccountReq, GetDeboxAccountResp, GetDeboxAccountsReq,
-        GetDeboxAccountsResp, UpdateAccountInfoReq, UpdateAccountInfoResp,
+        DeleteDeboxAccountResp, DownloadConfigReq, GetDeboxAccountReq, GetDeboxAccountResp,
+        GetDeboxAccountsReq, GetDeboxAccountsResp, UpdateAccountInfoReq, UpdateAccountInfoResp,
         UpdateAllAccountsInfoReq, UpdateAllAccountsInfoResp, UpdateDeboxAccountReq,
         UpdateDeboxAccountResp, UpdateDeboxAccountStatusReq, UpdateDeboxAccountStatusResp,
     },
@@ -114,6 +119,43 @@ impl DeboxAccountController {
         debox_account_service.update_account_info(req).await?;
 
         let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 下载配置文件
+    pub async fn download_config(
+        Extension(provider): Extension<AInjectProvider>,
+        Path(req): Path<DownloadConfigReq>,
+    ) -> Result<axum::response::Response<Body>, ResponseErr> {
+        let debox_account_service: DeboxAccountService = provider.provide();
+        let result = debox_account_service
+            .info(GetDeboxAccountReq { id: req.id })
+            .await?;
+
+        let filename = if result.name.is_empty() {
+            "config".to_string()
+        } else {
+            result.name
+        };
+        let extension = "json";
+        let file_bytes = Bytes::from(serde_json::to_vec(&json!({
+            "app_id": result.app_id,
+            "api_key": result.api_key,
+            "app_secret": result.app_secret,
+            "access_token": result.access_token,
+            "web_token": result.web_token,
+            "debox_user_id": result.debox_user_id,
+        }))?);
+
+        // 文件名称
+        let content_disposition =
+            format!("attachment; filename=\"{:?}.{:?}\"", filename, extension);
+
+        let resp = axum::response::Response::builder()
+            .header("Content-Type", "application/json")
+            .header(header::CONTENT_DISPOSITION, content_disposition)
+            .body(Body::from(file_bytes))
+            .map_err(|err| Error::InternalServer(err.to_string()).into_err())?;
         Ok(resp)
     }
 }
