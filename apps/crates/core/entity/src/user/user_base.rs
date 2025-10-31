@@ -74,21 +74,16 @@ pub mod enums {
     }
 
     /// 注册用户类型
-    #[derive(Debug, Clone, PartialEq, PartialOrd, Serialize_repr, Deserialize_repr)]
+    #[derive(Debug, Default, Clone, PartialEq, PartialOrd, Serialize_repr, Deserialize_repr)]
     #[repr(i8)]
     pub enum UserType {
         /// 用户名
         Base = 0,
         /// 手机号码
+        #[default]
         Phone = 1,
         /// 邮箱
         Email = 2,
-    }
-
-    impl Default for UserType {
-        fn default() -> Self {
-            Self::Phone
-        }
     }
 
     /// 实现FromStr trait来定义如何从字符串解析为RegisterType
