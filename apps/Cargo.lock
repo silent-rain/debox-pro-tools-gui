@@ -551,7 +551,7 @@ dependencies = [
 [[package]]
 name = "axum_context"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "axum",
  "futures",
@@ -565,7 +565,7 @@ dependencies = [
 [[package]]
 name = "axum_jwt"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "axum",
  "axum_context",
@@ -599,7 +599,7 @@ dependencies = [
 [[package]]
 name = "axum_response"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "axum",
  "serde",
@@ -645,7 +645,7 @@ dependencies = [
 [[package]]
 name = "axum_validator"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "axum",
  "log 0.4.28",
@@ -1557,7 +1557,7 @@ dependencies = [
 [[package]]
 name = "database"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "async-trait",
  "colored",
@@ -1871,7 +1871,7 @@ dependencies = [
 [[package]]
 name = "entity"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "chrono",
  "database",
@@ -1916,7 +1916,7 @@ dependencies = [
 [[package]]
 name = "err_code"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "anyhow",
  "axum_response",
@@ -2810,7 +2810,7 @@ dependencies = [
  "tokio",
  "tokio-rustls",
  "tower-service",
- "webpki-roots 1.0.3",
+ "webpki-roots 1.0.4",
 ]
 
 [[package]]
@@ -2880,7 +2880,7 @@ dependencies = [
  "js-sys",
  "log 0.4.28",
  "wasm-bindgen",
- "windows-core",
+ "windows-core 0.62.2",
 ]
 
 [[package]]
@@ -3093,7 +3093,7 @@ dependencies = [
 [[package]]
 name = "inject"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "database",
  "nject",
@@ -3474,7 +3474,7 @@ dependencies = [
 [[package]]
 name = "logger"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "chrono",
  "color-eyre",
@@ -3940,7 +3940,7 @@ version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff32365de1b6743cb203b710788263c44a03de03802daf96092f2da4fe6ba4d7"
 dependencies = [
- "proc-macro-crate 1.3.1",
+ "proc-macro-crate 3.4.0",
  "proc-macro2",
  "quote",
  "syn 2.0.108",
@@ -5276,7 +5276,7 @@ dependencies = [
  "wasm-bindgen-futures",
  "wasm-streams",
  "web-sys",
- "webpki-roots 1.0.3",
+ "webpki-roots 1.0.4",
 ]
 
 [[package]]
@@ -6662,7 +6662,7 @@ dependencies = [
  "unicode-segmentation",
  "url",
  "windows",
- "windows-core",
+ "windows-core 0.61.2",
  "windows-version",
  "x11-dl",
 ]
@@ -7689,7 +7689,7 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 [[package]]
 name = "utils"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#eba6dfd85f003b489cb5d9d66e893aee936ce041"
+source = "git+https://github.com/silent-rain/axum-admin-web.git?branch=dev#b1642f85bd4f4f590c8c9a4be16f487df0ad0fe1"
 dependencies = [
  "captcha-rs",
  "chrono",
@@ -8006,14 +8006,14 @@ version = "0.26.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "521bc38abb08001b01866da9f51eb7c5d647a19260e00054a8c7fd5f9e57f7a9"
 dependencies = [
- "webpki-roots 1.0.3",
+ "webpki-roots 1.0.4",
 ]
 
 [[package]]
 name = "webpki-roots"
-version = "1.0.3"
+version = "1.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "32b130c0d2d49f8b6889abc456e795e82525204f27c42cf767cf0d7734e089b8"
+checksum = "b2878ef029c47c6e8cf779119f20fcf52bde7ad42a731b2a304bc221df17571e"
 dependencies = [
  "rustls-pki-types",
 ]
@@ -8027,7 +8027,7 @@ dependencies = [
  "webview2-com-macros",
  "webview2-com-sys",
  "windows",
- "windows-core",
+ "windows-core 0.61.2",
  "windows-implement",
  "windows-interface",
 ]
@@ -8051,7 +8051,7 @@ checksum = "36695906a1b53a3bf5c4289621efedac12b73eeb0b89e7e1a89b517302d5d75c"
 dependencies = [
  "thiserror 2.0.17",
  "windows",
- "windows-core",
+ "windows-core 0.61.2",
 ]
 
 [[package]]
@@ -8139,7 +8139,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9babd3a767a4c1aef6900409f85f5d53ce2544ccdfaa86dad48c91782c6d6893"
 dependencies = [
  "windows-collections",
- "windows-core",
+ "windows-core 0.61.2",
  "windows-future",
  "windows-link 0.1.3",
  "windows-numerics",
@@ -8151,7 +8151,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3beeceb5e5cfd9eb1d76b381630e82c4241ccd0d27f1a39ed41b2760b255c5e8"
 dependencies = [
- "windows-core",
+ "windows-core 0.61.2",
 ]
 
 [[package]]
@@ -8163,8 +8163,21 @@ dependencies = [
  "windows-implement",
  "windows-interface",
  "windows-link 0.1.3",
- "windows-result",
- "windows-strings",
+ "windows-result 0.3.4",
+ "windows-strings 0.4.2",
+]
+
+[[package]]
+name = "windows-core"
+version = "0.62.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b8e83a14d34d0623b51dce9581199302a221863196a1dde71a7663a4c2be9deb"
+dependencies = [
+ "windows-implement",
+ "windows-interface",
+ "windows-link 0.2.1",
+ "windows-result 0.4.1",
+ "windows-strings 0.5.1",
 ]
 
 [[package]]
@@ -8173,7 +8186,7 @@ version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc6a41e98427b19fe4b73c550f060b59fa592d7d686537eebf9385621bfbad8e"
 dependencies = [
- "windows-core",
+ "windows-core 0.61.2",
  "windows-link 0.1.3",
  "windows-threading",
 ]
@@ -8218,7 +8231,7 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9150af68066c4c5c07ddc0ce30421554771e528bde427614c61038bc2c92c2b1"
 dependencies = [
- "windows-core",
+ "windows-core 0.61.2",
  "windows-link 0.1.3",
 ]
 
@@ -8229,8 +8242,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5b8a9ed28765efc97bbc954883f4e6796c33a06546ebafacbabee9696967499e"
 dependencies = [
  "windows-link 0.1.3",
- "windows-result",
- "windows-strings",
+ "windows-result 0.3.4",
+ "windows-strings 0.4.2",
 ]
 
 [[package]]
@@ -8243,12 +8256,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "windows-result"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7781fa89eaf60850ac3d2da7af8e5242a5ea78d1a11c49bf2910bb5a73853eb5"
+dependencies = [
+ "windows-link 0.2.1",
+]
+
+[[package]]
 name = "windows-strings"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56e6c93f3a0c3b36176cb1327a4958a0353d5d166c2a35cb268ace15e91d3b57"
 dependencies = [
  "windows-link 0.1.3",
+]
+
+[[package]]
+name = "windows-strings"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7837d08f69c77cf6b07689544538e017c1bfcf57e34b4c0ff58e6c2cd3b37091"
+dependencies = [
+ "windows-link 0.2.1",
 ]
 
 [[package]]
@@ -8646,7 +8677,7 @@ dependencies = [
  "webkit2gtk-sys",
  "webview2-com",
  "windows",
- "windows-core",
+ "windows-core 0.61.2",
  "windows-version",
  "x11-dl",
 ]
