@@ -198,7 +198,11 @@ impl DeboxAccountService {
 
         if let Ok(user_info) = self.get_debox_account(&req.model).await {
             model.web_token_status = Set(true);
-            model.name = Set(user_info.name);
+            if user_info.name.is_empty() {
+                model.name = Set(user_info.address[user_info.address.len() - 8..].to_string());
+            } else {
+                model.name = Set(user_info.name);
+            }
             model.avatar = Set(Some(user_info.pic));
             model.wallet_address = Set(user_info.address);
         }
@@ -281,7 +285,11 @@ impl DeboxAccountService {
 
             if let Ok(user_info) = self.get_debox_account(account).await {
                 account.web_token_status = true;
-                account.name = user_info.name;
+                if user_info.name.is_empty() {
+                    account.name = user_info.address[user_info.address.len() - 8..].to_string();
+                } else {
+                    account.name = user_info.name;
+                }
                 account.avatar = Some(user_info.pic);
                 account.wallet_address = user_info.address;
             }
@@ -317,7 +325,11 @@ impl DeboxAccountService {
 
         let user_info = self.get_debox_account(&account).await?;
         account.web_token_status = true;
-        account.name = user_info.name;
+        if user_info.name.is_empty() {
+            account.name = user_info.address[user_info.address.len() - 8..].to_string();
+        } else {
+            account.name = user_info.name;
+        }
         account.avatar = Some(user_info.pic);
         account.wallet_address = user_info.address;
 
