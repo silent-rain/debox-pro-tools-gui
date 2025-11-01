@@ -3,11 +3,11 @@
 
 use sea_orm::{
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
-    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Index, Table},
+    sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
-use crate::debox::debox_account::DeboxAccount;
+use crate::{debox::debox_account::DeboxAccount, utils::if_not_exists_create_index};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -93,50 +93,24 @@ impl MigrationTrait for Migration {
                             })
                             .comment("更新时间"),
                     )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                DeboxGroup::Table.to_string(),
+                                DeboxGroup::AccountId.to_string()
+                            ))
+                            .from_col(DeboxGroup::AccountId)
+                            .to(DeboxAccount::Table, DeboxAccount::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
                     .to_owned(),
             )
             .await?;
 
-        if !manager
-            .has_index(DeboxGroup::Table.to_string(), "idx_account_id")
-            .await?
-        {
-            manager
-                .create_index(
-                    Index::create()
-                        .if_not_exists()
-                        .name("idx_account_id")
-                        .table(DeboxGroup::Table)
-                        .col(DeboxGroup::AccountId)
-                        .to_owned(),
-                )
-                .await?;
-        }
-
-        // Sqlite 不支持外键
-        if manager.get_database_backend() == DatabaseBackend::Sqlite {
-            return Ok(());
-        }
-
-        if !manager
-            .has_index(
-                DeboxGroup::Table.to_string(),
-                "fk_user_debox_group_account_id",
-            )
-            .await?
-        {
-            manager
-                .create_foreign_key(
-                    ForeignKey::create()
-                        .name("fk_user_debox_group_account_id")
-                        .from(DeboxGroup::Table, DeboxGroup::AccountId)
-                        .to(DeboxAccount::Table, DeboxAccount::Id)
-                        .on_update(ForeignKeyAction::Cascade)
-                        .on_delete(ForeignKeyAction::Cascade)
-                        .to_owned(),
-                )
-                .await?;
-        }
+        // create index
+        if_not_exists_create_index(manager, DeboxGroup::Table, vec![DeboxGroup::AccountId]).await?;
 
         Ok(())
     }
