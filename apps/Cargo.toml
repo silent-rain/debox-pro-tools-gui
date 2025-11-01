@@ -3,20 +3,10 @@ resolver = "2"
 members = [
     # 核心组件
     "crates/core/err_code",
-    "crates/core/database",
     "crates/core/entity",
     "crates/core/migration",
-    "crates/core/logger",
-    "crates/core/inject",
-    "crates/core/requests",
-    "crates/core/utils",
 
     # 组件
-    "crates/axum_context",
-    "crates/axum_jwt",
-    "crates/axum_response",
-    "crates/axum_validator",
-
     "crates/config",
     "crates/app_state",
     "crates/service_hub",
@@ -30,20 +20,23 @@ members = [
 [workspace.dependencies]
 # 本地组件
 err_code = { path = "crates/core/err_code" }
-database = { path = "crates/core/database" }
 entity = { path = "crates/core/entity" }
 migration = { path = "crates/core/migration" }
-axum_response = { path = "crates/axum_response" }
-axum_validator = { path = "crates/axum_validator" }
-axum_jwt = { path = "crates/axum_jwt" }
-axum_context = { path = "crates/axum_context" }
 axum_middleware = { path = "crates/axum_middleware" }
 service_hub = { path = "crates/service_hub" }
 debox-pro-rs = { git = "https://github.com/silent-rain/debox-pro-rs.git", branch = "master" }
 
+database = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "database" }
+logger = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "logger" }
+requests = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "requests" }
+utils = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "utils" }
+inject = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "inject" }
+axum_validator = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "axum_validator" }
+axum_response = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "axum_response" }
+axum_context = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "axum_context" }
+axum_jwt = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "axum_jwt" }
 
 # Inject 依赖注入
-inject = { path = "crates/core/inject" }
 nject = "0.4"
 
 # Tauri

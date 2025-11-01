@@ -4,8 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-logger = { path = "../crates/core/logger" }
-utils = { path = "../crates/core/utils" }
 app_state = { path = "../crates/app_state" }
 config = { path = "../crates/config" }
 
@@ -13,6 +11,8 @@ config = { path = "../crates/config" }
 err_code = { workspace = true }
 database = { workspace = true }
 inject = { workspace = true }
+logger = { workspace = true }
+utils = { workspace = true }
 axum_response = { workspace = true }
 axum_context = { workspace = true }
 axum_jwt = { workspace = true }

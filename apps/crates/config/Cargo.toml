@@ -4,11 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-logger = { path = "../core/logger" }
-
-
 database = { workspace = true }
 err_code = { workspace = true }
+logger = { workspace = true }
 
 
 serde = { workspace = true, features = ["derive"] }
