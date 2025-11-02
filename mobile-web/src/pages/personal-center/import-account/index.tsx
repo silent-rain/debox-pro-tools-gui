@@ -192,7 +192,7 @@ const AccountList = () => {
         {accounts.map((account) => (
           <List.Item
             key={account.id}
-            prefix={<Avatar src='https://example.com/avatar.png' style={{ '--size': '32px' }} />}
+            prefix={<Avatar src={account.avatar} style={{ '--size': '32px' }} />}
             extra={
               <Button
                 fill='none'

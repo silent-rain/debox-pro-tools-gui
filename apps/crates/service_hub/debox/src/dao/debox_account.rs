@@ -149,3 +149,52 @@ impl DeboxAccountDao {
         Ok((results, total))
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use entity::debox::{DeboxAccountEntity, debox_account};
+    use sea_orm::{
+        ActiveValue::Set, ColumnTrait, DbBackend, EntityTrait, IntoActiveModel, QueryFilter,
+        QueryTrait,
+    };
+
+    #[test]
+    fn test_update() {
+        let model = debox_account::Model {
+            id: 3,
+            user_id: 1,
+            name: "f7641fa0-dr".to_string(),
+            avatar: Some(
+                "https://data.debox.pro/static/2025/10/31/peqt8jxu/c9ae4783c39a68f709bdaa79769fcf0fe710549ade9dc0ac358bd43d08c1829c.png".to_string(),
+            ),
+            app_id: "5aoxGwhO2kK1gzj2".to_string(),
+            api_key: "s6jAJDvviJCAMH61".to_string(),
+            app_secret: "qRnzlagd6vN68UxaJzOoPhd0iIqZqHh5".to_string(),
+            access_token: "".to_string(),
+            web_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjY3MDE4MzYwODM2MjE3MywibG9naW5fc291cmNlIjoid2ViIiwicmVtZW1iZXIiOnRydWUsInZlcnNpb24iOjEwMDAwLCJpc3MiOiJkZWJveCIsIm5iZiI6MTc2MTg0MzU4MH0.KHZK-HPMYkFoE0B9xp6BfVFM0MWRb7c-jWmVjeEKdvQ".to_string(),
+            debox_user_id: "670183608362173".to_string(),
+            wallet_address: "0x8b55e1eab5a0d07d2864e86c49860353f7641fa0".to_string(),
+            api_key_status: false,
+            access_token_status: false,
+            web_token_status: true,
+            desc: None,
+            status: true,
+            ..Default::default()
+        };
+        let mut active_model = model.into_active_model();
+        active_model.name = Set("sr".to_string());
+
+        println!("active_model: {:#?}", active_model);
+
+        let id: i32 = *(active_model.id.clone().as_ref());
+        let result = DeboxAccountEntity::update_many()
+            .set(active_model)
+            .filter(debox_account::Column::Id.eq(id))
+            .build(DbBackend::MySql)
+            .to_string();
+
+        let sql = r#"UPDATE `t_debox_account` SET `name` = 'sr' WHERE `t_debox_account`.`id` = 3"#;
+
+        assert_eq!(result, sql);
+    }
+}

@@ -3,11 +3,7 @@ use std::io::Read;
 
 use log::error;
 use nject::injectable;
-use sea_orm::{
-    ActiveValue::{NotSet, Set},
-    DbErr::RecordNotUpdated,
-    IntoActiveModel,
-};
+use sea_orm::{ActiveValue::Set, DbErr::RecordNotUpdated};
 
 use debox_pro_rs::{
     Config as DeBoxConfig, DeBoxClient, UserApi, UserExtApi,
@@ -103,7 +99,7 @@ impl DeboxAccountService {
         let client = self.debox_client(model)?;
 
         let data = user_ext::UserInfoReq {
-            user_id: "621674807658095".to_string(),
+            user_id: model.debox_user_id.clone(),
             iversion: 1,
             use_menu: 1,
         };
@@ -183,48 +179,84 @@ impl DeboxAccountService {
         }
 
         // 创建用户
-        let mut model = req.model.clone().into_active_model();
-        model.id = NotSet;
-        model.created_at = NotSet;
-        model.updated_at = NotSet;
+        let mut active_model = debox_account::ActiveModel {
+            user_id: Set(req.model.user_id),
+            name: Set(req.model.name.clone()),
+            avatar: Set(req.model.avatar.clone()),
+            app_id: Set(req.model.app_id.clone()),
+            api_key: Set(req.model.api_key.clone()),
+            app_secret: Set(req.model.app_secret.clone()),
+            access_token: Set(req.model.access_token.clone()),
+            web_token: Set(req.model.web_token.clone()),
+            debox_user_id: Set(req.model.debox_user_id.clone()),
+            wallet_address: Set(req.model.wallet_address.clone()),
+            desc: Set(req.model.desc.clone()),
+            status: Set(req.model.status),
+            ..Default::default()
+        };
 
         // 账号检测
         if self.check_api_key_status(&req.model).await.is_ok() {
-            model.api_key_status = Set(true)
+            active_model.api_key_status = Set(true)
         }
         if self.check_access_token_status(&req.model).await.is_ok() {
-            model.access_token_status = Set(true)
+            active_model.access_token_status = Set(true)
         }
 
         if let Ok(user_info) = self.get_debox_account(&req.model).await {
-            model.web_token_status = Set(true);
+            active_model.web_token_status = Set(true);
             if user_info.name.is_empty() {
-                model.name = Set(user_info.address[user_info.address.len() - 8..].to_string());
+                active_model.name =
+                    Set(user_info.address[user_info.address.len() - 8..].to_string());
             } else {
-                model.name = Set(user_info.name);
+                active_model.name = Set(user_info.name);
             }
-            model.avatar = Set(Some(user_info.pic));
-            model.wallet_address = Set(user_info.address);
+            active_model.avatar = Set(Some(user_info.pic));
+            active_model.wallet_address = Set(user_info.address);
         }
 
-        let result = self.debox_account_dao.create(model).await.map_err(|err| {
-            error!("添加DeBox账号信息失败, err: {:#?}", err);
-            Error::DbAddError.into_err_with_msg("添加DeBox账号信息失败")
-        })?;
+        let result = self
+            .debox_account_dao
+            .create(active_model)
+            .await
+            .map_err(|err| {
+                error!("添加DeBox账号信息失败, err: {:#?}", err);
+                Error::DbAddError.into_err_with_msg("添加DeBox账号信息失败")
+            })?;
 
         Ok(result)
     }
 
     /// 更新DeBox账号
     pub async fn update(&self, req: UpdateDeboxAccountReq) -> Result<u64, ErrorMsg> {
-        let mut model = req.model.into_active_model();
-        model.created_at = NotSet;
-        model.updated_at = NotSet;
+        let active_model = debox_account::ActiveModel {
+            id: Set(req.model.id),
+            user_id: Set(req.model.user_id),
+            name: Set(req.model.name.clone()),
+            avatar: Set(req.model.avatar.clone()),
+            app_id: Set(req.model.app_id.clone()),
+            api_key: Set(req.model.api_key.clone()),
+            app_secret: Set(req.model.app_secret.clone()),
+            access_token: Set(req.model.access_token.clone()),
+            web_token: Set(req.model.web_token.clone()),
+            debox_user_id: Set(req.model.debox_user_id.clone()),
+            wallet_address: Set(req.model.wallet_address.clone()),
+            api_key_status: Set(req.model.api_key_status),
+            access_token_status: Set(req.model.access_token_status),
+            web_token_status: Set(req.model.web_token_status),
+            desc: Set(req.model.desc.clone()),
+            status: Set(req.model.status),
+            ..Default::default()
+        };
 
-        let result = self.debox_account_dao.update(model).await.map_err(|err| {
-            error!("更新DeBox账号失败, err: {:#?}", err);
-            Error::DbUpdateError.into_err_with_msg("更新DeBox账号失败")
-        })?;
+        let result = self
+            .debox_account_dao
+            .update(active_model)
+            .await
+            .map_err(|err| {
+                error!("更新DeBox账号失败, err: {:#?}", err);
+                Error::DbUpdateError.into_err_with_msg("更新DeBox账号失败")
+            })?;
 
         Ok(result)
     }

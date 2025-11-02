@@ -16,7 +16,7 @@ function dispatchLogout() {
 // 创建axios的实例
 const service = axios.create({
   baseURL: import.meta.env.BASE_URL,
-  timeout: 5000,
+  timeout: 30000,
 });
 
 // 请求拦截器
