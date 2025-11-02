@@ -4,7 +4,7 @@ use log::error;
 use nject::injectable;
 
 use err_code::{Error, ErrorMsg};
-use user::{EmailDao, PhoneDao, UserBaseDao, enums::user_base::UserType};
+use service_hub_git::user::{EmailDao, PhoneDao, UserBaseDao, enums::user_base::UserType};
 use utils::crypto::sha2_256;
 
 use crate::{dao::register::RegisterDao, dto::register::RegisterReq};
@@ -41,6 +41,7 @@ impl RegisterService {
                     return Err(Error::InvalidParameter("请输入邮箱".to_string()).into_err());
                 }
             }
+            UserType::UserBlockchainWallet => panic!("暂不支持用户链上钱包注册"),
         }
 
         // 检查用户名, 查看用户名是否已注册
@@ -51,6 +52,7 @@ impl RegisterService {
             UserType::Base => self.check_username(req.username.clone()).await?,
             UserType::Phone => self.check_phone(req.clone()).await?,
             UserType::Email => self.check_email(req.clone()).await?,
+            UserType::UserBlockchainWallet => panic!("暂不支持用户链上钱包注册"),
         };
 
         let mut data = req.clone();

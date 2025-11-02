@@ -1,11 +1,7 @@
 use sea_orm_migration::{MigrationTrait, MigratorTrait, async_trait};
 
-mod utils;
-
 mod debox;
-mod log;
-mod system;
-mod user;
+pub use migration_git::*;
 
 pub struct Migrator;
 
@@ -15,8 +11,8 @@ impl MigratorTrait for Migrator {
         vec![
             // 用户管理
             Box::new(user::user_base::Migration),
-            Box::new(user::phone::Migration),
-            Box::new(user::email::Migration),
+            Box::new(user::user_phone::Migration),
+            Box::new(user::user_email::Migration),
             Box::new(user::role::Migration),
             Box::new(user::user_role_rel::Migration),
             // DeBox 管理

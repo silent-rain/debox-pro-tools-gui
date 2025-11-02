@@ -7,7 +7,7 @@ use axum_jwt::Claims;
 use entity::user::user_base;
 use err_code::{Error, ErrorMsg};
 
-use user::{EmailDao, PhoneDao, UserBaseDao, enums::user_base::UserType};
+use service_hub_git::user::{EmailDao, PhoneDao, UserBaseDao, enums::user_base::UserType};
 use utils::crypto::sha2_256;
 
 use crate::dto::login::{LoginReq, LoginResp};
@@ -61,6 +61,7 @@ impl LoginService {
             UserType::Base => self.get_user_base(data).await?,
             UserType::Phone => self.get_user_phone(data).await?,
             UserType::Email => self.get_user_email(data).await?,
+            UserType::UserBlockchainWallet => panic!("暂不支持用户链上钱包登陆"),
         };
 
         // 查询用户

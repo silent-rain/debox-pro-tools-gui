@@ -27,6 +27,8 @@ service_hub = { path = "crates/service_hub" }
 debox-pro-rs = { git = "https://github.com/silent-rain/debox-pro-rs.git", branch = "master" }
 
 database = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "database" }
+entity_git = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "entity" }
+migration_git = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "migration" }
 logger = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "logger" }
 requests = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "requests" }
 utils = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "utils" }
@@ -35,6 +37,7 @@ axum_validator = { git = "https://github.com/silent-rain/axum-admin-web.git", br
 axum_response = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "axum_response" }
 axum_context = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "axum_context" }
 axum_jwt = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "axum_jwt" }
+service_hub_git = { git = "https://github.com/silent-rain/axum-admin-web.git", branch = "dev", package = "service_hub" }
 
 # Inject 依赖注入
 nject = "0.4"

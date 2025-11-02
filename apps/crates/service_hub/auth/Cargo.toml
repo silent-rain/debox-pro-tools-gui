@@ -4,14 +4,13 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-user = { path = "../user" }
-
 database = { workspace = true }
 entity = { workspace = true }
 err_code = { workspace = true }
 inject = { workspace = true }
 utils = { workspace = true }
 axum_response = { workspace = true }
+service_hub_git = { workspace = true }
 
 axum = { workspace = true }
 axum_context = { workspace = true }

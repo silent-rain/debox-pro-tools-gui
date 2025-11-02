@@ -3,7 +3,7 @@
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use user::enums::user_base::UserType;
+use service_hub_git::user::enums::user_base::UserType;
 
 /// 登陆 请求体
 #[derive(Default, Clone, Deserialize, Validate)]

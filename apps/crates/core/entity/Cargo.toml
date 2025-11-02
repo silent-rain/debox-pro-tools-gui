@@ -8,6 +8,8 @@ publish = false
 path = "src/lib.rs"
 
 [dependencies]
+entity_git = { workspace = true }
+
 sea-orm = { workspace = true }
 database = { workspace = true }
 validator = { workspace = true, features = ["derive"] }

@@ -2,6 +2,7 @@
 
 pub use auth;
 pub use debox;
-pub use log;
-pub use system;
-pub use user;
+
+pub use service_hub_git::log;
+pub use service_hub_git::system;
+pub use service_hub_git::user;
