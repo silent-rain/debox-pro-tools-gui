@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, Form, Input, TextArea, Switch, NoticeBar } from 'antd-mobile';
+import { Button, Form, Input, TextArea, Switch, Toast } from 'antd-mobile';
 import { ROUTES } from '@/constants/routes';
 import { DeboxAccountApi } from '@/api/debox-account';
 import { useAuthStore } from '@/stores';
@@ -13,7 +12,6 @@ const AddAccountForm = () => {
   const navigate = useNavigate();
   const authStore = useAuthStore.getState();
   const [form] = Form.useForm();
-  const [showSuccessNotice, setShowSuccessNotice] = useState(false); // 控制通告栏显示状态
 
   const handleSubmit = async (values: CreateDeboxAccountReq) => {
     // Handle form submission logic here
@@ -22,32 +20,17 @@ const AddAccountForm = () => {
     values.user_id = authStore.user_id!;
     await DeboxAccountApi.create(values);
 
-    setShowSuccessNotice(true);
-    setTimeout(() => {
-      setShowSuccessNotice(false);
-    }, 2000);
+    Toast.show({
+      icon: 'success',
+      content: '添加成功',
+    });
 
-    navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT);
+    form.resetFields();
+    navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT, { replace: true });
   };
 
   return (
     <div className='add-account-form'>
-      {showSuccessNotice && (
-        <NoticeBar
-          bordered
-          color='success'
-          wrap
-          content='提交成功！'
-          style={{
-            position: 'fixed',
-            top: '50px',
-            left: 0,
-            right: 0,
-            zIndex: 9999,
-          }}
-        />
-      )}
-
       <Form
         form={form}
         onFinish={handleSubmit}
