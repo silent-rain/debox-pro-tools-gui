@@ -45,7 +45,7 @@ pub struct Model {
     /// Web Token 状态(false:无效,true:有效)
     pub web_token_status: bool,
     /// 描述信息
-    pub desc: Option<String>,
+    pub desc: String,
     /// 状态(false:停用,true:正常)
     pub status: bool,
     /// 创建时间

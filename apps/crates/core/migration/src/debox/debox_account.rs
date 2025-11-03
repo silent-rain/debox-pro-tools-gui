@@ -127,7 +127,7 @@ impl MigrationTrait for Migration {
                             .string()
                             .string_len(200)
                             .default("")
-                            .null()
+                            .not_null()
                             .default("")
                             .comment("描述信息"),
                     )
