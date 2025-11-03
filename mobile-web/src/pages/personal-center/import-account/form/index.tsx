@@ -1,9 +1,10 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Form, Input, TextArea, Switch, Toast } from 'antd-mobile';
 import { ROUTES } from '@/constants/routes';
 import { DeboxAccountApi } from '@/api/debox-account';
 import { useAuthStore } from '@/stores';
-import { CreateDeboxAccountReq } from '@/typings/debox-account';
+import { DeboxAccount } from '@/typings/debox-account';
 import './index.module.less';
 
 const { Item } = Form;
@@ -12,21 +13,56 @@ const AddAccountForm = () => {
   const navigate = useNavigate();
   const authStore = useAuthStore.getState();
   const [form] = Form.useForm();
+  const location = useLocation();
+  const [isEditMode, setIsEditMode] = useState(false);
 
-  const handleSubmit = async (values: CreateDeboxAccountReq) => {
-    // Handle form submission logic here
-    console.log('Form values:', values);
+  useEffect(() => {
+    const { mode, accountId } = location.state || {};
 
+    const fetchAccountData = async (id: string) => {
+      try {
+        const data = await DeboxAccountApi.info({ id: Number(id) });
+        form.setFieldsValue(data);
+      } catch (error) {
+        console.error('获取账号数据失败, err: ', error);
+        Toast.show({
+          icon: 'fail',
+          content: '获取账号数据失败',
+        });
+      }
+    };
+
+    if (mode === 'edit' && accountId) {
+      setIsEditMode(true);
+      fetchAccountData(accountId);
+    }
+  }, [form, location.state]);
+
+  const handleSubmit = async (values: DeboxAccount) => {
     values.user_id = authStore.user_id!;
-    await DeboxAccountApi.create(values);
-
-    Toast.show({
-      icon: 'success',
-      content: '添加成功',
-    });
-
-    form.resetFields();
-    navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT, { replace: true });
+    try {
+      if (isEditMode) {
+        await DeboxAccountApi.update(values);
+        Toast.show({
+          icon: 'success',
+          content: '更新成功',
+        });
+      } else {
+        await DeboxAccountApi.create(values);
+        Toast.show({
+          icon: 'success',
+          content: '添加成功',
+        });
+      }
+      form.resetFields();
+      navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT, { replace: true });
+    } catch (error) {
+      console.error('添加账号失败, err: ', error);
+      Toast.show({
+        icon: 'fail',
+        content: '操作失败',
+      });
+    }
   };
 
   return (
@@ -77,7 +113,7 @@ const AddAccountForm = () => {
           <TextArea placeholder='请输入描述信息' />
         </Item>
         <Item name='status' label='启用状态' initialValue={true}>
-          <Switch />
+          <Switch checked={form.getFieldValue('status')} />
         </Item>
       </Form>
     </div>
