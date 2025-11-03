@@ -1,4 +1,4 @@
-import { Avatar, Button, List, ActionSheet, Tag, Modal, ErrorBlock, DotLoading } from 'antd-mobile';
+import { Avatar, Button, List, ActionSheet, Tag, Modal, DotLoading } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
 import { AddOutline, MoreOutline } from 'antd-mobile-icons';
 import { Action } from 'antd-mobile/es/components/action-sheet';
@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores';
 import { ROUTES } from '@/constants/routes';
 import { saveAs } from 'file-saver';
 import './index.module.less';
+import Empty from '@/components/empty';
 
 // 获取账号列表
 const fetchAccounts = async (userId: number): Promise<DeboxAccount[]> => {
@@ -183,7 +184,7 @@ const AccountList = () => {
   }
 
   if (accounts.length === 0) {
-    return <ErrorBlock status='empty' />;
+    return <Empty />;
   }
 
   return (
