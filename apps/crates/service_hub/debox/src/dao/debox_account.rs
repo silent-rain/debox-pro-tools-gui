@@ -177,7 +177,7 @@ mod tests {
             api_key_status: false,
             access_token_status: false,
             web_token_status: true,
-            desc: None,
+            desc: "".to_string(),
             status: true,
             ..Default::default()
         };

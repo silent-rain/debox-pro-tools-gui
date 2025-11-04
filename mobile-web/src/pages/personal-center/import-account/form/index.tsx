@@ -112,8 +112,8 @@ const AddAccountForm = () => {
         <Item name='desc' label='描述信息'>
           <TextArea placeholder='请输入描述信息' />
         </Item>
-        <Item name='status' label='启用状态' initialValue={true}>
-          <Switch checked={form.getFieldValue('status')} />
+        <Item name='status' label='启用状态' valuePropName='checked'>
+          <Switch />
         </Item>
       </Form>
     </div>
