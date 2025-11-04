@@ -9,10 +9,10 @@ const Home = () => {
 
   const menuItems = [
     { title: '账号管理', path: ROUTES.ACCOUNT_MANAGEMENT, icon: <UserOutline /> },
-    { title: '群组同步', path: '/group-management', icon: <TeamOutline /> },
-    { title: '群员同步', path: '/group-member-management', icon: <UserAddOutline /> },
-    { title: '批量聊天', path: '/chat', icon: <MessageOutline /> },
-    { title: '一键拉群', path: '/create-group', icon: <TruckOutline /> },
+    { title: '同步群组', path: ROUTES.SYNC_GROUP, icon: <TeamOutline /> },
+    { title: '同步群员', path: ROUTES.SYNC_GROUP_MEMBER, icon: <UserAddOutline /> },
+    { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline /> },
+    { title: '一键拉群', path: ROUTES.CREATE_GROUP, icon: <TruckOutline /> },
   ];
 
   return (

@@ -15,7 +15,7 @@ const Footer: FC = () => {
   };
 
   const tabs = tabBarRoutes.children!.map((item) => ({
-    key: item.path,
+    key: tabBarRoutes.path! + item.path,
     title: item.meta?.title,
     icon: item.meta?.icon,
   }));

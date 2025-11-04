@@ -17,4 +17,5 @@ export interface RouteConfig {
   index?: false;
   meta?: RouteMeta;
   isLink?: string;
+  isLayout?: boolean;
 }

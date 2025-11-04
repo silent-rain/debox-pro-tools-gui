@@ -20,15 +20,21 @@ const About = lazy(() => import('@/pages/personal-center/about'));
 const Help = lazy(() => import('@/pages/personal-center/help'));
 const Logs = lazy(() => import('@/pages/personal-center/logs'));
 const Settings = lazy(() => import('@/pages/personal-center/settings'));
-const AccountManagement = lazy(() => import('@/pages/account-management'));
-const AccountManagementForm = lazy(() => import('@/pages/account-management/form'));
 const ImportGroup = lazy(() => import('@/pages/personal-center/import-group'));
 const UserDetail = lazy(() => import('@/pages/personal-center/user-detail'));
+
+// 账号管理
+const AccountManagement = lazy(() => import('@/pages/account-management'));
+const AccountManagementForm = lazy(() => import('@/pages/account-management/form'));
+
+// 同步群组
+const SyncGroup = lazy(() => import('@/pages/sync-group'));
 
 // TabBar Routes
 export const tabBarRoutes: RouteConfig = {
   path: '/',
   element: <Layout />,
+  isLayout: true,
   children: [
     {
       path: 'home',
@@ -70,6 +76,7 @@ export const tabBarRoutes: RouteConfig = {
 const PersonalCenterRoutes: RouteConfig = {
   path: '/personal-center',
   element: <Layout />,
+  isLayout: true,
   children: [
     {
       path: 'user-detail',
@@ -120,6 +127,7 @@ const PersonalCenterRoutes: RouteConfig = {
 const AccountManagementRoutes: RouteConfig = {
   path: '/account-management',
   element: <Layout />,
+  isLayout: true,
   children: [
     {
       path: '',
@@ -133,6 +141,22 @@ const AccountManagementRoutes: RouteConfig = {
       element: <AccountManagementForm />,
       meta: {
         title: '账号表单',
+      },
+    },
+  ],
+};
+
+// 同步群组 Routes
+const SyncGroupRoutes: RouteConfig = {
+  path: '/sync-group',
+  element: <Layout />,
+  isLayout: true,
+  children: [
+    {
+      path: '',
+      element: <SyncGroup />,
+      meta: {
+        title: '同步群组',
       },
     },
   ],
@@ -160,9 +184,10 @@ export const RootRoutes: RouteConfig[] = [
       auth: true,
     },
   },
-  tabBarRoutes, // TabBar Routes
-  PersonalCenterRoutes, // 用户中心 Routes
-  AccountManagementRoutes, // 账号管理 Routes
+  tabBarRoutes, // TabBar
+  PersonalCenterRoutes, // 用户中心
+  AccountManagementRoutes, // 账号管理
+  SyncGroupRoutes, // 同步群组
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,
