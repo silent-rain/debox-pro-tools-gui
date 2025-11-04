@@ -5,10 +5,10 @@
 
 :root {
   color: rgb(255 255 255 / 87%);
+  background-color: #fafbfc;
   font-weight: 400;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
-  background-color: #fff;
   color-scheme: light dark;
   font-synthesis: none;
   text-rendering: optimizelegibility;

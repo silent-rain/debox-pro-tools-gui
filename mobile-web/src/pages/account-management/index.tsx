@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { AddOutline, MoreOutline } from 'antd-mobile-icons';
 import { Action } from 'antd-mobile/es/components/action-sheet';
 import { useState, useRef, useEffect } from 'react';
+import { saveAs } from 'file-saver';
 import { DeboxAccountApi } from '@/api/debox-account';
 import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 import { useAuthStore } from '@/stores';
 import { ROUTES } from '@/constants/routes';
-import { saveAs } from 'file-saver';
-import './index.module.less';
 import Empty from '@/components/empty';
+import styles from './index.module.less';
 
 // 获取账号列表
 const fetchAccounts = async (userId: number): Promise<DeboxAccount[]> => {
@@ -146,26 +146,26 @@ const AccountList = () => {
   const accountStatus = (account: DeboxAccount) => {
     if (!account.status) {
       return (
-        <Tag color='default' style={{ marginLeft: '8px' }}>
+        <Tag className={styles.accountStatus} color='default'>
           禁用
         </Tag>
       );
     }
 
     const apiKeyStatus = !account.api_key_status ? (
-      <Tag color='danger' style={{ marginLeft: '8px' }}>
+      <Tag className={styles.accountStatus} color='danger'>
         Api Key
       </Tag>
     ) : null;
 
     const accessTokenStatus = !account.access_token_status ? (
-      <Tag color='warning' style={{ marginLeft: '8px' }} aria-hidden='true'>
+      <Tag className={styles.accountStatus} color='warning' aria-hidden='true'>
         Access Token
       </Tag>
     ) : null;
 
     const webTokenStatus = !account.web_token_status ? (
-      <Tag color='danger' style={{ marginLeft: '8px' }}>
+      <Tag className={styles.accountStatus} color='danger'>
         Web Token
       </Tag>
     ) : null;
@@ -193,7 +193,7 @@ const AccountList = () => {
         {accounts.map((account) => (
           <List.Item
             key={account.id}
-            prefix={<Avatar src={account.avatar} style={{ '--size': '32px' }} />}
+            prefix={<Avatar className={styles.accountAvatar} src={account.avatar} />}
             extra={
               <Button
                 fill='none'
@@ -212,14 +212,7 @@ const AccountList = () => {
         ))}
       </List>
 
-      <ActionSheet
-        visible={visible}
-        actions={actions}
-        style={{
-          marginBottom: '0px',
-        }}
-        onClose={() => setVisible(false)}
-      />
+      <ActionSheet visible={visible} actions={actions} onClose={() => setVisible(false)} />
     </div>
   );
 };
@@ -262,16 +255,16 @@ const ImportAccount = () => {
   };
 
   return (
-    <div className='import-account'>
-      <div className='import-account-box' style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+    <div className='account-management'>
+      <div className={styles.accountHeader}>
         <Button fill='none' onClick={handleAddAccount}>
-          <AddOutline style={{ fontSize: '24px' }} />
+          <AddOutline className={styles.addAccount} />
         </Button>
       </div>
 
       <Modal
         visible={modalVisible}
-        title='选择导入方式'
+        title='添加账号'
         closeOnMaskClick={true}
         onClose={() => setModalVisible(false)}
         actions={[
@@ -280,7 +273,13 @@ const ImportAccount = () => {
         ]}
       />
 
-      <input type='file' ref={fileInputRef} style={{ display: 'none' }} accept='.json' onChange={handleFileChange} />
+      <input
+        className={styles.importAccount}
+        type='file'
+        ref={fileInputRef}
+        accept='.json'
+        onChange={handleFileChange}
+      />
 
       <AccountList />
     </div>
