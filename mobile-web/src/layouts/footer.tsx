@@ -1,7 +1,7 @@
-import { TabBar } from 'antd-mobile';
-import { AppOutline, MessageOutline, UnorderedListOutline, UserOutline } from 'antd-mobile-icons';
 import { FC } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { TabBar } from 'antd-mobile';
+import { tabBarRoutes } from '@/routes/routes';
 import styles from './footer.module.less';
 
 // 底部导航栏
@@ -14,28 +14,11 @@ const Footer: FC = () => {
     navigate(value);
   };
 
-  const tabs = [
-    {
-      key: '/',
-      title: '首页',
-      icon: <AppOutline />,
-    },
-    {
-      key: '/todo',
-      title: '待办',
-      icon: <UnorderedListOutline />,
-    },
-    {
-      key: '/message',
-      title: '消息',
-      icon: <MessageOutline />,
-    },
-    {
-      key: '/personal-center',
-      title: '我的',
-      icon: <UserOutline />,
-    },
-  ];
+  const tabs = tabBarRoutes.children!.map((item) => ({
+    key: item.path,
+    title: item.meta?.title,
+    icon: item.meta?.icon,
+  }));
 
   return (
     <TabBar

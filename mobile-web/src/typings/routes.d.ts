@@ -5,6 +5,7 @@ export interface RouteMeta {
   keepAlive?: boolean;
   auth?: boolean;
   key?: string;
+  icon?: ReactElement;
 }
 
 export interface RouteConfig {

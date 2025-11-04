@@ -2,6 +2,7 @@
 import { Navigate } from 'react-router-dom';
 import { lazy } from 'react';
 import { RouteConfig } from '@/typings/routes';
+import { AppOutline, MessageOutline, UnorderedListOutline, UserOutline } from 'antd-mobile-icons';
 
 const Login = lazy(() => import('@/pages/auth/login'));
 const Register = lazy(() => import('@/pages/auth/register'));
@@ -25,7 +26,7 @@ const ImportGroup = lazy(() => import('@/pages/personal-center/import-group'));
 const UserDetail = lazy(() => import('@/pages/personal-center/user-detail'));
 
 // TabBar Routes
-const tabBarRoutes: RouteConfig = {
+export const tabBarRoutes: RouteConfig = {
   path: '/',
   element: <Layout />,
   children: [
@@ -34,20 +35,23 @@ const tabBarRoutes: RouteConfig = {
       element: <Home />,
       meta: {
         title: '首页',
+        icon: <AppOutline />,
       },
     },
     {
-      path: 'todo',
+      path: 'create-group',
       element: <Todo />,
       meta: {
-        title: '待办',
+        title: '拉群',
+        icon: <UnorderedListOutline />,
       },
     },
     {
-      path: 'message',
+      path: 'chat',
       element: <Message />,
       meta: {
-        title: '消息',
+        title: '聊天',
+        icon: <MessageOutline />,
       },
     },
     {
@@ -56,6 +60,7 @@ const tabBarRoutes: RouteConfig = {
       meta: {
         title: '我的',
         auth: true,
+        icon: <UserOutline />,
       },
     },
   ],
