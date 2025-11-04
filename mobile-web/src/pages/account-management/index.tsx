@@ -112,7 +112,7 @@ const AccountList = () => {
         }
         break;
       case 'edit':
-        navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT_FORM, { state: { mode: 'edit', accountId } });
+        navigate(ROUTES.ACCOUNT_MANAGEMENT_FORM, { state: { mode: 'edit', accountId } });
         break;
       case 'delete':
         try {
@@ -235,7 +235,7 @@ const ImportAccount = () => {
   };
 
   const handleFormImport = () => {
-    navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT_FORM, { state: { mode: 'add' } });
+    navigate(ROUTES.ACCOUNT_MANAGEMENT_FORM, { state: { mode: 'add' } });
   };
 
   const handleFileImport = () => {
@@ -255,7 +255,7 @@ const ImportAccount = () => {
 
     try {
       await DeboxAccountApi.uploadConfigFile(file, String(authStore.user_id));
-      navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT);
+      navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
     } catch (error) {
       console.error('上传失败:', error);
     }

@@ -55,7 +55,7 @@ const AddAccountForm = () => {
         });
       }
       form.resetFields();
-      navigate(ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT, { replace: true });
+      navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
     } catch (error) {
       console.error('添加账号失败, err: ', error);
       Toast.show({

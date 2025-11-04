@@ -19,8 +19,8 @@ const About = lazy(() => import('@/pages/personal-center/about'));
 const Help = lazy(() => import('@/pages/personal-center/help'));
 const Logs = lazy(() => import('@/pages/personal-center/logs'));
 const Settings = lazy(() => import('@/pages/personal-center/settings'));
-const ImportAccount = lazy(() => import('@/pages/personal-center/import-account'));
-const ImportAccountForm = lazy(() => import('@/pages/personal-center/import-account/form'));
+const AccountManagement = lazy(() => import('@/pages/account-management'));
+const AccountManagementForm = lazy(() => import('@/pages/account-management/form'));
 const ImportGroup = lazy(() => import('@/pages/personal-center/import-group'));
 const UserDetail = lazy(() => import('@/pages/personal-center/user-detail'));
 
@@ -74,20 +74,6 @@ const PersonalCenterRoutes: RouteConfig = {
       },
     },
     {
-      path: 'import-account',
-      element: <ImportAccount />,
-      meta: {
-        title: '导入账号',
-      },
-    },
-    {
-      path: 'import-account/form',
-      element: <ImportAccountForm />,
-      meta: {
-        title: '账号表单',
-      },
-    },
-    {
       path: 'import-group',
       element: <ImportGroup />,
       meta: {
@@ -125,6 +111,28 @@ const PersonalCenterRoutes: RouteConfig = {
   ],
 };
 
+// 账号管理 Routes
+const AccountManagementRoutes: RouteConfig = {
+  path: '/account-management',
+  element: <Layout />,
+  children: [
+    {
+      path: '',
+      element: <AccountManagement />,
+      meta: {
+        title: '导入账号',
+      },
+    },
+    {
+      path: 'form',
+      element: <AccountManagementForm />,
+      meta: {
+        title: '账号表单',
+      },
+    },
+  ],
+};
+
 export const RootRoutes: RouteConfig[] = [
   // {
   //   path: '',
@@ -149,6 +157,7 @@ export const RootRoutes: RouteConfig[] = [
   },
   tabBarRoutes, // TabBar Routes
   PersonalCenterRoutes, // 用户中心 Routes
+  AccountManagementRoutes, // 账号管理 Routes
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,

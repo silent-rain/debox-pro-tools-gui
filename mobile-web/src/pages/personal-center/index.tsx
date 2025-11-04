@@ -1,14 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, List } from 'antd-mobile';
-import {
-  FileOutline,
-  InformationCircleOutline,
-  QuestionCircleOutline,
-  SetOutline,
-  TeamOutline,
-  UserAddOutline,
-} from 'antd-mobile-icons';
+import { FileOutline, InformationCircleOutline, QuestionCircleOutline, SetOutline } from 'antd-mobile-icons';
 import { useAuthStore } from '@/stores';
 import { ROUTES } from '@/constants/routes';
 import styles from './index.module.less';
@@ -17,8 +10,6 @@ export const PersonalCenter = () => {
   const navigate = useNavigate();
 
   const features = [
-    { title: '导入账号', path: ROUTES.PERSONAL_CENTER_IMPORT_ACCOUNT, icon: <UserAddOutline /> },
-    { title: '导入群组', path: ROUTES.PERSONAL_CENTER_IMPORT_GROUP, icon: <TeamOutline /> },
     { title: '设置', path: ROUTES.PERSONAL_CENTER_SETTINGS, icon: <SetOutline /> },
     { title: '日志', path: ROUTES.PERSONAL_CENTER_LOGS, icon: <FileOutline /> },
     { title: '帮助', path: ROUTES.PERSONAL_CENTER_HELP, icon: <QuestionCircleOutline /> },
