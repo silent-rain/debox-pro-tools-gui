@@ -10,6 +10,7 @@ import styles from './index.module.less';
 import PhoneLogin from './components/PhoneLogin';
 import BaseLogin from './components/BaseLogin';
 import EmailLogin from './components/EmailLogin';
+import { cacheTokenKey } from '@/constant/auth';
 
 export default function Login(): JSX.Element {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ export default function Login(): JSX.Element {
       try {
         const response = await AuthApi.login(values);
         try {
+          localStorage.setItem(cacheTokenKey, response.token);
           authStore.setToken(response.token);
           authStore.setUser();
         } catch (e) {
