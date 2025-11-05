@@ -18,10 +18,12 @@ pub struct GetDeboxAccountsReq {
     pub start_time: Option<String>,
     /// 结束时间
     pub end_time: Option<String>,
-    /// 用户ID
-    pub user_id: Option<i32>,
     /// 返回所有数据
     pub all: Option<bool>,
+    /// 用户ID
+    pub user_id: Option<i32>,
+    /// 账号IDs
+    pub account_ids: Option<Vec<i32>>,
 }
 
 /// 查询DeBox账号列表 响应体

@@ -1,14 +1,36 @@
 import { useState } from 'react';
-import { Button } from 'antd-mobile';
+import { Button, Toast } from 'antd-mobile';
 import AccountList from './components/AccountList';
 import GroupList from './components/GroupList';
 import styles from './index.module.less';
+import { DeboxGroupApi } from '@/api/debox-group';
+
+// 同步DeBox群组列表
+const syncGroups = async (accountIds: number[]) => {
+  const data = {
+    account_ids: accountIds,
+  };
+  await DeboxGroupApi.syncGroups(data);
+};
 
 const GroupManagement = () => {
   const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
+  const [groupsUpdateState, setGroupsUpdateState] = useState<number>(0);
 
-  const handleSyncGroups = () => {
-    console.log('同步群组:', selectedAccounts);
+  // 同步群组
+  const handleSyncGroups = async () => {
+    if (selectedAccounts.length === 0) {
+      Toast.show({
+        content: '请选择账号',
+        position: 'top',
+      });
+      return;
+    }
+
+    await syncGroups(selectedAccounts);
+
+    // 更新 GroupList
+    setGroupsUpdateState((prev) => prev + 1);
   };
 
   return (
@@ -23,7 +45,7 @@ const GroupManagement = () => {
       </div>
 
       {/* 群组列表 */}
-      <GroupList accountIds={selectedAccounts} />
+      <GroupList accountIds={selectedAccounts} groupsUpdateState={groupsUpdateState} />
     </div>
   );
 };

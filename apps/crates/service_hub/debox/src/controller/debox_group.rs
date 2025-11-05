@@ -9,8 +9,8 @@ use crate::{
     dto::debox_group::{
         CreateDeboxGroupReq, CreateDeboxGroupResp, DeleteDeboxGroupReq, DeleteDeboxGroupResp,
         GetDeboxGroupReq, GetDeboxGroupResp, GetDeboxGroupsReq, GetDeboxGroupsResp,
-        UpdateDeboxGroupReq, UpdateDeboxGroupResp, UpdateDeboxGroupStatusReq,
-        UpdateDeboxGroupStatusResp,
+        SyncDeboxGroupReq, SyncDeboxGroupResp, UpdateDeboxGroupReq, UpdateDeboxGroupResp,
+        UpdateDeboxGroupStatusReq, UpdateDeboxGroupStatusResp,
     },
     service::debox_group::DeboxGroupService,
 };
@@ -86,6 +86,20 @@ impl DeboxGroupController {
     ) -> Responder<DeleteDeboxGroupResp> {
         let debox_group_service: DeboxGroupService = provider.provide();
         let _result = debox_group_service.delete(req).await?;
+
+        let resp = Response::ok();
+        Ok(resp)
+    }
+}
+
+impl DeboxGroupController {
+    /// 同步DeBox群组列表
+    pub async fn sync_groups(
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<SyncDeboxGroupReq>,
+    ) -> Responder<SyncDeboxGroupResp> {
+        let debox_group_service: DeboxGroupService = provider.provide();
+        debox_group_service.sync_groups(req).await?;
 
         let resp = Response::ok();
         Ok(resp)

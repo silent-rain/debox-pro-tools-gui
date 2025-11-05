@@ -7,6 +7,7 @@ use entity::debox::debox_group;
 
 /// 查询DeBox群组列表 请求体
 #[derive(Default, Deserialize, Validate)]
+#[serde[default]]
 pub struct GetDeboxGroupsReq {
     /// 当前分页
     pub page: u64,
@@ -19,9 +20,11 @@ pub struct GetDeboxGroupsReq {
     /// 返回所有数据
     pub all: Option<bool>,
     /// 账号ID
-    pub account_id: Option<i32>,
+    pub account_ids: Option<Vec<i32>>,
     /// 群组名称
-    pub group_name: Option<String>,
+    pub name: Option<String>,
+    /// 群组状态
+    pub status: Option<bool>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -58,41 +61,22 @@ impl From<debox_group::Model> for GetDeboxGroupResp {
 /// 添加DeBox群组 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct CreateDeboxGroupReq {
-    /// 账号ID
-    pub account_id: i32,
-    /// 群组分享链接
-    pub url: String,
-    /// 群组名称
-    pub group_name: String,
-    /// 群组邀请码
-    pub group_code: String,
-    /// 描述信息
-    pub desc: Option<String>,
-    /// 状态(false:停用,true:正常)
-    pub status: bool,
+    #[serde(flatten)]
+    pub model: debox_group::Model,
 }
 
+/// 添加DeBox群组 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateDeboxGroupResp {}
 
 /// 更新数据 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDeboxGroupReq {
-    /// DeBox群组ID
-    pub id: i32,
-    /// 账号ID
-    pub account_id: i32,
-    /// 群组分享链接
-    pub url: String,
-    /// 群组名称
-    pub group_name: String,
-    /// 群组邀请码
-    pub group_code: String,
-    /// 描述信息
-    pub desc: Option<String>,
-    /// 状态(false:停用,true:正常)
-    pub status: bool,
+    #[serde(flatten)]
+    pub model: debox_group::Model,
 }
+
+/// 更新数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateDeboxGroupResp {}
 
@@ -119,3 +103,14 @@ pub struct DeleteDeboxGroupReq {
 /// 删除数据 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DeleteDeboxGroupResp {}
+
+/// 同步DeBox群组列表  请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct SyncDeboxGroupReq {
+    /// 账号IDs
+    pub account_ids: Vec<i32>,
+}
+
+/// 同步DeBox群组列表  响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SyncDeboxGroupResp {}

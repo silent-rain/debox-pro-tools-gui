@@ -183,6 +183,7 @@ impl DeboxAccountService {
             user_id: Set(req.model.user_id),
             name: Set(req.model.name.clone()),
             avatar: Set(req.model.avatar.clone()),
+            invite_code: Set(req.model.invite_code.clone()),
             app_id: Set(req.model.app_id.clone()),
             api_key: Set(req.model.api_key.clone()),
             app_secret: Set(req.model.app_secret.clone()),
@@ -234,6 +235,7 @@ impl DeboxAccountService {
             user_id: Set(req.model.user_id),
             name: Set(req.model.name.clone()),
             avatar: Set(req.model.avatar.clone()),
+            invite_code: Set(req.model.invite_code.clone()),
             app_id: Set(req.model.app_id.clone()),
             api_key: Set(req.model.api_key.clone()),
             app_secret: Set(req.model.app_secret.clone()),
@@ -323,6 +325,7 @@ impl DeboxAccountService {
                     account.name = user_info.name;
                 }
                 account.avatar = Some(user_info.pic);
+                account.invite_code = user_info.invite_code;
                 account.wallet_address = user_info.address;
             }
 
@@ -363,6 +366,7 @@ impl DeboxAccountService {
             account.name = user_info.name;
         }
         account.avatar = Some(user_info.pic);
+        account.invite_code = user_info.invite_code;
         account.wallet_address = user_info.address;
 
         self.update(UpdateDeboxAccountReq {

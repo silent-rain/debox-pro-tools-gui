@@ -1,6 +1,7 @@
 //! DeBox群组表
 //! Entity: [`entity::prelude::DeboxAccount`]
 
+use migration_git::utils::if_not_exists_create_unique_index;
 use sea_orm::{
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
@@ -24,39 +25,45 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(DeboxGroup::Id)
-                            .string()
-                            .string_len(20)
+                            .integer()
                             .primary_key()
+                            .auto_increment()
                             .not_null()
                             .comment("群组ID"),
                     )
                     .col(
                         ColumnDef::new(DeboxGroup::AccountId)
                             .integer()
-                            .unique_key()
                             .not_null()
                             .comment("账号ID"),
                     )
                     .col(
-                        ColumnDef::new(DeboxGroup::Url)
+                        ColumnDef::new(DeboxGroup::Gid)
                             .string()
-                            .string_len(60)
+                            .string_len(10)
                             .not_null()
-                            .comment("群组分享链接"),
+                            .comment("群组ID"),
                     )
                     .col(
-                        ColumnDef::new(DeboxGroup::GroupName)
+                        ColumnDef::new(DeboxGroup::Name)
                             .string()
                             .string_len(50)
                             .not_null()
                             .comment("群组名称"),
                     )
                     .col(
-                        ColumnDef::new(DeboxGroup::GroupCode)
+                        ColumnDef::new(DeboxGroup::InviteCode)
                             .string()
                             .string_len(250)
                             .default("")
                             .comment("群组邀请码"),
+                    )
+                    .col(
+                        ColumnDef::new(DeboxGroup::Pic)
+                            .string()
+                            .string_len(250)
+                            .default("")
+                            .comment("群头像"),
                     )
                     .col(
                         ColumnDef::new(DeboxGroup::Desc)
@@ -112,6 +119,14 @@ impl MigrationTrait for Migration {
         // create index
         if_not_exists_create_index(manager, DeboxGroup::Table, vec![DeboxGroup::AccountId]).await?;
 
+        // create unique index
+        if_not_exists_create_unique_index(
+            manager,
+            DeboxGroup::Table,
+            vec![DeboxGroup::AccountId, DeboxGroup::Gid],
+        )
+        .await?;
+
         Ok(())
     }
 
@@ -123,16 +138,17 @@ impl MigrationTrait for Migration {
     }
 }
 
-// "https://m.debox.pro/group?id=l3izdfzd&code=2y9u8fkw",
+// 群组分享链接: "https://m.debox.pro/group?id=l3izdfzd&code=2y9u8fkw",
 #[derive(DeriveIden)]
 pub enum DeboxGroup {
     #[sea_orm(iden = "t_debox_group")]
     Table,
     Id,
     AccountId,
-    Url,
-    GroupName,
-    GroupCode,
+    Gid,
+    Name,
+    InviteCode,
+    Pic,
     Desc,
     Status,
     CreatedAt,

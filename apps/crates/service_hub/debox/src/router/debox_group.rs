@@ -2,7 +2,7 @@
 
 use axum::{
     Router,
-    routing::{get, put},
+    routing::{get, post, put},
 };
 
 use crate::controller::debox_group::DeboxGroupController;
@@ -26,7 +26,8 @@ impl DeboxGroupRouter {
                         .put(DeboxGroupController::update)
                         .delete(DeboxGroupController::delete),
                 )
-                .route("/{id}/status", put(DeboxGroupController::update_status)),
+                .route("/status", put(DeboxGroupController::update_status))
+                .route("/sync-groups", post(DeboxGroupController::sync_groups)),
         )
     }
 }

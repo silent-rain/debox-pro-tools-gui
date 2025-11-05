@@ -56,6 +56,14 @@ impl MigrationTrait for Migration {
                             .comment("账号头像"),
                     )
                     .col(
+                        ColumnDef::new(DeboxAccount::InviteCode)
+                            .string()
+                            .string_len(10)
+                            .not_null()
+                            .default("")
+                            .comment("邀请码"),
+                    )
+                    .col(
                         ColumnDef::new(DeboxAccount::AppId)
                             .string()
                             .string_len(30)
@@ -214,6 +222,7 @@ pub enum DeboxAccount {
     UserId,
     Name,
     Avatar,
+    InviteCode,
     AppId,
     ApiKey,
     AppSecret,

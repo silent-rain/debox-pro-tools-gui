@@ -19,37 +19,38 @@ pub struct DeboxGroupDao {
 }
 
 impl DeboxGroupDao {
-    /// 获取所有数据
-    pub async fn all(&self) -> Result<(Vec<debox_group::Model>, u64), DbErr> {
-        let results = DeboxGroupEntity::find()
-            .filter(debox_group::Column::Status.eq(true))
-            .order_by_asc(debox_group::Column::Id)
-            .all(self.db.db())
-            .await?;
-        let total = results.len() as u64;
-        Ok((results, total))
-    }
-
     /// 获取数据列表
     pub async fn list(
         &self,
         req: GetDeboxGroupsReq,
     ) -> Result<(Vec<debox_group::Model>, u64), DbErr> {
-        let page = Pagination::new(req.page, req.page_size);
+        let page = if req.all.unwrap_or(false) {
+            // 如果 `all` 为 true，则不分页
+            Pagination::new(1, 1000) // 设置一个非常大的 page_size
+        } else {
+            // 否则正常分页
+            Pagination::new(req.page, req.page_size)
+        };
 
         let states = DeboxGroupEntity::find()
-            .filter(debox_group::Column::Status.eq(true))
-            .apply_if(req.account_id, |query, v| {
-                query.filter(debox_group::Column::AccountId.ne(v))
-            })
-            .apply_if(req.group_name, |query, v| {
-                query.filter(debox_group::Column::GroupName.like(format!("%{v}%")))
-            })
             .apply_if(req.start_time, |query, v| {
                 query.filter(debox_group::Column::CreatedAt.gte(v))
             })
             .apply_if(req.end_time, |query, v| {
                 query.filter(debox_group::Column::CreatedAt.lt(v))
+            })
+            .apply_if(req.account_ids, |query, v| {
+                if v.is_empty() {
+                    query // 不添加过滤条件
+                } else {
+                    query.filter(debox_group::Column::AccountId.is_in(v))
+                }
+            })
+            .apply_if(req.name, |query, v| {
+                query.filter(debox_group::Column::Name.like(format!("%{v}%")))
+            })
+            .apply_if(req.status, |query, v| {
+                query.filter(debox_group::Column::Status.eq(v))
             });
 
         let total = states.clone().count(self.db.db()).await?;
@@ -109,5 +110,20 @@ impl DeboxGroupDao {
             .exec(self.db.db())
             .await?;
         Ok(result.rows_affected)
+    }
+}
+
+impl DeboxGroupDao {
+    /// 根据 account_id 和 gid 获取群组信息
+    pub async fn info_by_gid(
+        &self,
+        account_id: i32,
+        gid: String,
+    ) -> Result<Option<debox_group::Model>, DbErr> {
+        DeboxGroupEntity::find()
+            .filter(debox_group::Column::AccountId.eq(account_id))
+            .filter(debox_group::Column::Gid.eq(gid))
+            .one(self.db.db())
+            .await
     }
 }

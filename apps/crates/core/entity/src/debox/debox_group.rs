@@ -19,12 +19,14 @@ pub struct Model {
     pub id: i32,
     /// 账号ID
     pub account_id: i32,
-    /// 群组分享链接
-    pub url: String,
+    /// 群组ID
+    pub gid: String,
     /// 群组名称
-    pub group_name: String,
+    pub name: String,
     /// 群组邀请码
-    pub group_code: String,
+    pub invite_code: String,
+    /// 群组头像
+    pub pic: String,
     /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)

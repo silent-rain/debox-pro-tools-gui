@@ -5,6 +5,11 @@ import { DeboxAccountApi } from '@/api/debox-account';
 import { useAuthStore } from '@/stores';
 import styles from './AccountList.module.less';
 
+interface AccountListProps {
+  selectedAccounts: number[];
+  onAccountChange: (selected: number[]) => void;
+}
+
 // 获取账号列表
 const fetchAccounts = async (userId: number): Promise<DeboxAccount[]> => {
   const data: GetDeboxAccountsReq = {
@@ -16,11 +21,6 @@ const fetchAccounts = async (userId: number): Promise<DeboxAccount[]> => {
   const response = await DeboxAccountApi.list(data);
   return response.data_list;
 };
-
-interface AccountListProps {
-  selectedAccounts: number[];
-  onAccountChange: (selected: number[]) => void;
-}
 
 const AccountList: FC<AccountListProps> = ({ selectedAccounts, onAccountChange }) => {
   const authStore = useAuthStore();

@@ -65,7 +65,7 @@ export const DeboxAccountApi = {
     return response.data;
   },
 
-  // 更新账号信息
+  // 更新账号状态
   updateStatus: async (data: UpdateDeboxAccountStatusReq): Promise<UpdateDeboxAccountStatusResp> => {
     const response = await request({
       url: `${server}/debox/debox-accounts/${data.id}/status`,
