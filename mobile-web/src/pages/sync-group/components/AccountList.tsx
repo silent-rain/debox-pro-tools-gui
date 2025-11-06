@@ -30,6 +30,10 @@ const AccountList: FC<AccountListProps> = ({ selectedAccounts, onAccountChange }
         setLoading(true);
         const data = await fetchAccounts();
         setAccounts(data);
+
+        if (data.length > 0) {
+          onAccountChange([data[0].id]);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -38,7 +42,7 @@ const AccountList: FC<AccountListProps> = ({ selectedAccounts, onAccountChange }
     };
 
     loadAccounts();
-  }, []);
+  }, [onAccountChange]);
 
   const handleSelectAll = useCallback(
     (checked: boolean) => {

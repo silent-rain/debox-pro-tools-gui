@@ -4,6 +4,7 @@ import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
 import styles from './GroupMemberList.module.less';
 import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
 import { DeboxGroupApi } from '@/api/debox-group';
+import Empty from '@/components/empty';
 
 interface GroupListProps {
   accountIds: number[];
@@ -59,6 +60,15 @@ const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
   if (loading) {
     return <DotLoading color='primary' />;
   }
+
+  if (accountIds.length === 0) {
+    return <Empty title='请先选择账号' description='暂无数据' />;
+  }
+
+  if (groups.length === 0) {
+    return <Empty />;
+  }
+
   return (
     <>
       <List className={styles.groupList}>
