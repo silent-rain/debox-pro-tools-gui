@@ -41,5 +41,4 @@ export interface RegisterReq {
 }
 
 // 注册用户 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
-export interface RegisterResp { }
+export interface RegisterResp {}

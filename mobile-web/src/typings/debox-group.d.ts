@@ -38,7 +38,6 @@ export interface UpdateDeboxGroupStatusReq {
 }
 
 // 更新数据状态 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateDeboxGroupStatusResp {}
 
 // 同步DeBox群组列表  请求体
@@ -46,5 +45,4 @@ export interface SyncDeboxGroupReq {
   account_ids: number[]; // 账号IDs
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface SyncDeboxGroupResp {}

@@ -1,22 +1,17 @@
-import globals from 'globals'
-import js from '@eslint/js'
-import tseslint from 'typescript-eslint'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import react from "eslint-plugin-react";
-import eslintConfigPrettier from "eslint-config-prettier";
-import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import globals from 'globals';
+import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import react from 'eslint-plugin-react';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import prettier from 'eslint-plugin-prettier';
 
-export default tseslint.config(
+export default [
   { ignores: ['dist'] },
   {
     settings: { react: { version: '18.3' } },
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-      eslintConfigPrettier,
-      eslintPluginPrettierRecommended,
-    ],
     files: ['src/**/*.{js,mjs,cjs,ts,jsx,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
@@ -31,18 +26,21 @@ export default tseslint.config(
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      prettier,
+      '@typescript-eslint': tseslint,
     },
     rules: {
+      ...js.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+      ...eslintConfigPrettier.rules,
+      ...eslintPluginPrettierRecommended.rules,
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': [
-        'warn',
-        { allowConstantExport: true },
-      ],
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       // Enable its recommended rules
       ...react.configs.recommended.rules,
       ...react.configs['jsx-runtime'].rules,
       // 自定义 rules
-      "prettier/prettier": "warn", // 默认为 error
+      'prettier/prettier': 'warn', // 默认为 error
       // 使用分号
       semi: 'warn',
       // 强制使用单引号
@@ -72,7 +70,7 @@ export default tseslint.config(
       // 关闭禁止使用非 null 断言运算符的规则
       '@typescript-eslint/no-non-null-assertion': 'off',
       // 强制禁止重复声明类型
-      '@typescript-eslint/no-redeclare': 'error',
+      '@typescript-eslint/no-shadow': 'error',
       // 关闭禁止使用与外部变量同名的变量的规则
       '@typescript-eslint/no-shadow': 'off',
       // 关闭禁止默认导出的规则
@@ -85,8 +83,7 @@ export default tseslint.config(
       'react/no-unescaped-entities': 'off',
       // 关闭强制要求在 JSX 文件中使用 `<React>` 命名空间的规则
       'react/react-in-jsx-scope': 'off',
+      'no-unused-vars': 'off',
     },
   },
-)
-
-
+];

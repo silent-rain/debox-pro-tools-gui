@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Form, Input, TextArea, Switch, Toast } from 'antd-mobile';
 import { ROUTES } from '@/constants/routes';
@@ -14,7 +14,7 @@ const AddAccountForm = () => {
   const location = useLocation();
   const [isEditMode, setIsEditMode] = useState(false);
 
-  useEffect(() => {
+  useMemo(() => {
     const { mode, accountId } = location.state || {};
 
     const fetchAccountData = async (id: string) => {

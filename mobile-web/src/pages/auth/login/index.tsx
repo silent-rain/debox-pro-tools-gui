@@ -36,7 +36,6 @@ export default function Login(): JSX.Element {
         const response = await AuthApi.login(values);
         try {
           localStorage.setItem(cacheTokenKey, response.token);
-          authStore.setToken(response.token);
           authStore.setUser();
         } catch (e) {
           // 某些环境可能禁用本地存储，不阻断登录

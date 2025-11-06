@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   tabWidth: 2, // 缩进长度
   useTabs: false, // 使用空格代替tab缩进
   printWidth: 120, // 单行长度

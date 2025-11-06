@@ -62,14 +62,12 @@ export interface CreateDeboxAccountReq {
 }
 
 // 添加DeBox账号 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface CreateDeboxAccountResp {}
 
 // 更新DeBox账号 请求体
 export type UpdateDeboxAccountReq = DeboxAccount;
 
 // 更新DeBox账号 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateDeboxAccountResp {}
 
 // 更新DeBox账号状态 请求体
@@ -79,7 +77,6 @@ export interface UpdateDeboxAccountStatusReq {
 }
 
 // 更新DeBox账号状态 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateDeboxAccountStatusResp {}
 
 // 删除数据 请求体
@@ -88,20 +85,16 @@ export interface DeleteDeboxAccountReq {
 }
 
 // 删除数据 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DeleteDeboxAccountResp {}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateAllAccountsInfoReq {}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateAllAccountsInfoResp {}
 
 export interface UpdateAccountInfoReq {
   id: number; // 账号ID
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface UpdateAccountInfoResp {}
 
 // 下载配置文件 请求体
@@ -109,7 +102,6 @@ export interface DownloadConfigReq {
   id: number; // 账号ID
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface DownloadConfigResp {}
 
 export type UploadConfigResp = DeboxAccount;

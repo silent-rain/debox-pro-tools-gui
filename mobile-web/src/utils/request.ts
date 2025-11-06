@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Modal } from 'antd-mobile';
-import { useAuthStore } from '@/stores';
 import { cacheTokenKey } from '@/constant/auth';
 
 function dispatchLogout() {
@@ -8,7 +7,7 @@ function dispatchLogout() {
     content: '你已被登出, 请重新登录',
     onConfirm: () => {
       // 清除登录信息
-      useAuthStore.getState().clearAuth();
+      localStorage.removeItem(cacheTokenKey);
     },
   });
 }
