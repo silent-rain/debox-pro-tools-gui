@@ -4,6 +4,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
+use axum_context::Context;
 use debox_pro_rs::{Config as DeBoxConfig, DaoExtApi, DeBoxClient, dto::dao_ext::MyDao};
 use entity::debox::{debox_account, debox_group};
 use err_code::{Error, ErrorMsg};
@@ -27,21 +28,34 @@ impl DeboxGroupService {
     /// 获取列表数据
     pub async fn list(
         &self,
+        ctx: &Context,
         req: GetDeboxGroupsReq,
     ) -> Result<(Vec<debox_group::Model>, u64), ErrorMsg> {
-        let (results, total) = self.debox_group_dao.list(req).await.map_err(|err| {
-            error!("查询DeBox群组列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_err_with_msg("查询DeBox群组列表失败")
-        })?;
+        let user_id = ctx.get_user_id();
+
+        let (results, total) = self
+            .debox_group_dao
+            .list(user_id, req)
+            .await
+            .map_err(|err| {
+                error!("查询DeBox群组列表失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox群组列表失败")
+            })?;
 
         Ok((results, total))
     }
 
     /// 获取详情数据
-    pub async fn info(&self, req: GetDeboxGroupReq) -> Result<debox_group::Model, ErrorMsg> {
+    pub async fn info(
+        &self,
+        ctx: &Context,
+        req: GetDeboxGroupReq,
+    ) -> Result<debox_group::Model, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         let result = self
             .debox_group_dao
-            .info(req.id)
+            .info(req.id, user_id)
             .await
             .map_err(|err| {
                 error!("查询DeBox群组信息失败, err: {:#?}", err);
@@ -75,9 +89,9 @@ impl DeboxGroupService {
     }
 
     /// 更新DeBox群组
-    pub async fn update(&self, req: UpdateDeboxGroupReq) -> Result<u64, ErrorMsg> {
-        let model = debox_group::ActiveModel {
-            id: Set(req.model.id),
+    pub async fn update(&self, ctx: &Context, req: UpdateDeboxGroupReq) -> Result<u64, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+        let active_model = debox_group::ActiveModel {
             account_id: Set(req.model.account_id),
             name: Set(req.model.name),
             invite_code: Set(req.model.invite_code),
@@ -87,18 +101,28 @@ impl DeboxGroupService {
             ..Default::default()
         };
 
-        let result = self.debox_group_dao.update(model).await.map_err(|err| {
-            error!("更新DeBox群组失败, err: {:#?}", err);
-            Error::DbUpdateError.into_err_with_msg("更新DeBox群组失败")
-        })?;
+        let result = self
+            .debox_group_dao
+            .update(req.model.id, user_id, active_model)
+            .await
+            .map_err(|err| {
+                error!("更新DeBox群组失败, err: {:#?}", err);
+                Error::DbUpdateError.into_err_with_msg("更新DeBox群组失败")
+            })?;
 
         Ok(result)
     }
 
     /// 更新数据状态
-    pub async fn update_status(&self, req: UpdateDeboxGroupStatusReq) -> Result<(), ErrorMsg> {
+    pub async fn update_status(
+        &self,
+        ctx: &Context,
+        req: UpdateDeboxGroupStatusReq,
+    ) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         self.debox_group_dao
-            .update_status(req.id, req.status)
+            .update_status(req.id, user_id, req.status)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {
@@ -114,11 +138,17 @@ impl DeboxGroupService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, req: DeleteDeboxGroupReq) -> Result<u64, ErrorMsg> {
-        let result = self.debox_group_dao.delete(req.id).await.map_err(|err| {
-            error!("删除DeBox群组信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_err_with_msg("删除DeBox群组信息失败")
-        })?;
+    pub async fn delete(&self, ctx: &Context, req: DeleteDeboxGroupReq) -> Result<u64, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
+        let result = self
+            .debox_group_dao
+            .delete(req.id, user_id)
+            .await
+            .map_err(|err| {
+                error!("删除DeBox群组信息失败, err: {:#?}", err);
+                Error::DbDeleteError.into_err_with_msg("删除DeBox群组信息失败")
+            })?;
 
         Ok(result)
     }
@@ -149,6 +179,7 @@ impl DeboxGroupService {
     /// 创建或更新群组
     async fn create_or_update(
         &self,
+        user_id: i32,
         account_id: i32,
         invite_code: String,
         data: &MyDao,
@@ -156,7 +187,7 @@ impl DeboxGroupService {
         // 查询dao
         let dao_info = self
             .debox_group_dao
-            .info_by_gid(account_id, data.gid.clone())
+            .info_by_gid(user_id, account_id, data.gid.clone())
             .await
             .map_err(|e| {
                 error!("查询DeBox DAO信息失败, err: {:#?}", e);
@@ -173,9 +204,8 @@ impl DeboxGroupService {
 
         match dao_info {
             Some(data) => {
-                active_model.id = Set(data.id);
                 self.debox_group_dao
-                    .update(active_model)
+                    .update(data.id, data.user_id, active_model)
                     .await
                     .map_err(|e| {
                         error!("更新DeBox DAO信息失败, err: {e:#?}");
@@ -199,10 +229,12 @@ impl DeboxGroupService {
     }
 
     /// 同步DeBox群组列表
-    pub async fn sync_groups(&self, req: SyncDeboxGroupReq) -> Result<(), ErrorMsg> {
+    pub async fn sync_groups(&self, ctx: &Context, req: SyncDeboxGroupReq) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         for account_id in req.account_ids {
             // 获取账号信息
-            let account_info = match self.debox_account_dao.info(account_id).await {
+            let account_info = match self.debox_account_dao.info(account_id, user_id).await {
                 Ok(Some(account_info)) => account_info,
                 Ok(_account_info) => {
                     error!("DeBox账号不存在, account_id: {}", account_id);
@@ -237,7 +269,7 @@ impl DeboxGroupService {
             // https://m.debox.pro/group?id=bzqg8m3n&code=peqt8jxu
             for dao in daos {
                 if self
-                    .create_or_update(account_id, invite_code.clone(), &dao)
+                    .create_or_update(user_id, account_id, invite_code.clone(), &dao)
                     .await
                     .is_err()
                 {

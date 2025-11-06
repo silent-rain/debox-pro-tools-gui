@@ -29,11 +29,12 @@ pub struct DeboxAccountController;
 impl DeboxAccountController {
     /// 获DeBox账号列表
     pub async fn list(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Query(req): Query<GetDeboxAccountsReq>,
     ) -> Responder<GetDeboxAccountsResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        let (results, total) = debox_account_service.list(req).await?;
+        let (results, total) = debox_account_service.list(&ctx, req).await?;
 
         let resp = Response::data((results, total).into());
         Ok(resp)
@@ -41,11 +42,12 @@ impl DeboxAccountController {
 
     /// 获取DeBox账号信息
     pub async fn info(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Path(req): Path<GetDeboxAccountReq>,
     ) -> Responder<GetDeboxAccountResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        let result = debox_account_service.info(req).await?;
+        let result = debox_account_service.info(&ctx, req).await?;
 
         let resp = Response::data(result.into());
         Ok(resp)
@@ -65,11 +67,12 @@ impl DeboxAccountController {
 
     /// 更新DeBox账号
     pub async fn update(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateDeboxAccountReq>,
     ) -> Responder<UpdateDeboxAccountResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        let _result = debox_account_service.update(req).await?;
+        let _result = debox_account_service.update(&ctx, req).await?;
 
         let resp = Response::ok();
         Ok(resp)
@@ -77,11 +80,12 @@ impl DeboxAccountController {
 
     /// 更新DeBox账号状态
     pub async fn update_status(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateDeboxAccountStatusReq>,
     ) -> Responder<UpdateDeboxAccountStatusResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        debox_account_service.update_status(req).await?;
+        debox_account_service.update_status(&ctx, req).await?;
 
         let resp = Response::ok();
         Ok(resp)
@@ -89,11 +93,12 @@ impl DeboxAccountController {
 
     /// 删除DeBox账号
     pub async fn delete(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Path(req): Path<DeleteDeboxAccountReq>,
     ) -> Responder<DeleteDeboxAccountResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        let _result = debox_account_service.delete(req).await?;
+        let _result = debox_account_service.delete(&ctx, req).await?;
 
         let resp = Response::ok();
         Ok(resp)
@@ -103,11 +108,14 @@ impl DeboxAccountController {
 impl DeboxAccountController {
     /// 更新所有账户信息
     pub async fn update_all_accounts_info(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateAllAccountsInfoReq>,
     ) -> Responder<UpdateAllAccountsInfoResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        debox_account_service.update_all_accounts_info(req).await?;
+        debox_account_service
+            .update_all_accounts_info(&ctx, req)
+            .await?;
 
         let resp = Response::ok();
         Ok(resp)
@@ -115,11 +123,12 @@ impl DeboxAccountController {
 
     /// 更新账户信息
     pub async fn update_account_info(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<UpdateAccountInfoReq>,
     ) -> Responder<UpdateAccountInfoResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        debox_account_service.update_account_info(req).await?;
+        debox_account_service.update_account_info(&ctx, req).await?;
 
         let resp = Response::ok();
         Ok(resp)
@@ -128,12 +137,13 @@ impl DeboxAccountController {
     /// 下载配置文件
     /// TODO 可能需要放开权限管控或前端进行特性处理, 放开code检验
     pub async fn download_config_file(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Path(req): Path<DownloadConfigFileReq>,
     ) -> Result<axum::response::Response<Body>, ResponseErr> {
         let debox_account_service: DeboxAccountService = provider.provide();
         let result = debox_account_service
-            .info(GetDeboxAccountReq { id: req.id })
+            .info(&ctx, GetDeboxAccountReq { id: req.id })
             .await?;
 
         let filename = if result.name.is_empty() {
@@ -165,15 +175,12 @@ impl DeboxAccountController {
 
     /// 上传配置文件
     pub async fn upload_config_file(
-        Extension(provider): Extension<AInjectProvider>,
         ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
         TypedMultipart(req): TypedMultipart<UploadConfigFileReq>,
     ) -> Responder<UploadConfigFileResp> {
-        let user_id = ctx.get_user_id();
         let debox_account_service: DeboxAccountService = provider.provide();
-        let _result = debox_account_service
-            .upload_config_file(req, user_id)
-            .await?;
+        let _result = debox_account_service.upload_config_file(&ctx, req).await?;
 
         let resp = Response::ok();
         Ok(resp)

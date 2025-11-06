@@ -1,4 +1,5 @@
 //! DeBox账号表
+//! Entity: [`entity::user::UserBase`]
 
 use sea_orm::{
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,

@@ -5,6 +5,7 @@ use log::error;
 use nject::injectable;
 use sea_orm::{ActiveValue::Set, DbErr::RecordNotUpdated};
 
+use axum_context::Context;
 use debox_pro_rs::{
     Config as DeBoxConfig, DeBoxClient, UserApi, UserExtApi,
     dto::{
@@ -116,29 +117,34 @@ impl DeboxAccountService {
     /// 获取列表数据
     pub async fn list(
         &self,
+        ctx: &Context,
         req: GetDeboxAccountsReq,
     ) -> Result<(Vec<debox_account::Model>, u64), ErrorMsg> {
-        // 获取所有数据
-        if let Some(true) = req.all {
-            return self.debox_account_dao.all(req).await.map_err(|err| {
+        let user_id = ctx.get_user_id();
+
+        let (results, total) = self
+            .debox_account_dao
+            .list(user_id, req)
+            .await
+            .map_err(|err| {
                 error!("查询DeBox账号列表失败, err: {:#?}", err);
                 Error::DbQueryError.into_err_with_msg("查询DeBox账号列表失败")
-            });
-        }
-
-        let (results, total) = self.debox_account_dao.list(req).await.map_err(|err| {
-            error!("查询DeBox账号列表失败, err: {:#?}", err);
-            Error::DbQueryError.into_err_with_msg("查询DeBox账号列表失败")
-        })?;
+            })?;
 
         Ok((results, total))
     }
 
     /// 获取详情数据
-    pub async fn info(&self, req: GetDeboxAccountReq) -> Result<debox_account::Model, ErrorMsg> {
+    pub async fn info(
+        &self,
+        ctx: &Context,
+        req: GetDeboxAccountReq,
+    ) -> Result<debox_account::Model, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         let result = self
             .debox_account_dao
-            .info(req.id)
+            .info(req.id, user_id)
             .await
             .map_err(|err| {
                 error!("查询DeBox账号信息失败, err: {:#?}", err);
@@ -152,24 +158,34 @@ impl DeboxAccountService {
         Ok(result)
     }
 
-    /// 添加数据
-    pub async fn create(
+    // 是否存在 DeBox 账号
+    async fn exist_debox_user_id(
         &self,
-        req: CreateDeboxAccountReq,
-    ) -> Result<debox_account::Model, ErrorMsg> {
-        // 判断是否已存在
-        if self
+        user_id: i32,
+        debox_user_id: String,
+    ) -> Result<bool, ErrorMsg> {
+        let result = self
             .debox_account_dao
-            .account_by_user_id_and_debox_user_id(
-                req.model.user_id,
-                req.model.debox_user_id.clone(),
-            )
+            .account_by_debox_user_id(user_id, debox_user_id)
             .await
             .map_err(|err| {
                 error!("查询DeBox账号信息失败, err: {:#?}", err);
                 Error::DbQueryError.into_err_with_msg("查询DeBox账号信息失败")
             })?
-            .is_some()
+            .is_some();
+
+        Ok(result)
+    }
+
+    /// 添加数据
+    pub async fn create(
+        &self,
+        req: CreateDeboxAccountReq,
+    ) -> Result<debox_account::Model, ErrorMsg> {
+        // 是否存在 DeBox 账号
+        if self
+            .exist_debox_user_id(req.model.user_id, req.model.debox_user_id.clone())
+            .await?
         {
             error!(
                 "DeBox账号已存在, user_id: {:#?}, debox_user_id: {:#?}",
@@ -229,10 +245,11 @@ impl DeboxAccountService {
     }
 
     /// 更新DeBox账号
-    pub async fn update(&self, req: UpdateDeboxAccountReq) -> Result<u64, ErrorMsg> {
+    pub async fn update(&self, ctx: &Context, req: UpdateDeboxAccountReq) -> Result<u64, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+        let id = req.model.id;
+
         let active_model = debox_account::ActiveModel {
-            id: Set(req.model.id),
-            user_id: Set(req.model.user_id),
             name: Set(req.model.name.clone()),
             avatar: Set(req.model.avatar.clone()),
             invite_code: Set(req.model.invite_code.clone()),
@@ -253,7 +270,7 @@ impl DeboxAccountService {
 
         let result = self
             .debox_account_dao
-            .update(active_model)
+            .update(id, user_id, active_model)
             .await
             .map_err(|err| {
                 error!("更新DeBox账号失败, err: {:#?}", err);
@@ -264,9 +281,15 @@ impl DeboxAccountService {
     }
 
     /// 更新数据状态
-    pub async fn update_status(&self, req: UpdateDeboxAccountStatusReq) -> Result<(), ErrorMsg> {
+    pub async fn update_status(
+        &self,
+        ctx: &Context,
+        req: UpdateDeboxAccountStatusReq,
+    ) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         self.debox_account_dao
-            .update_status(req.id, req.status)
+            .update_status(req.id, user_id, req.status)
             .await
             .map_err(|err| {
                 if err == RecordNotUpdated {
@@ -282,11 +305,17 @@ impl DeboxAccountService {
     }
 
     /// 删除数据
-    pub async fn delete(&self, req: DeleteDeboxAccountReq) -> Result<u64, ErrorMsg> {
-        let result = self.debox_account_dao.delete(req.id).await.map_err(|err| {
-            error!("删除DeBox账号信息失败, err: {:#?}", err);
-            Error::DbDeleteError.into_err_with_msg("删除DeBox账号信息失败")
-        })?;
+    pub async fn delete(&self, ctx: &Context, req: DeleteDeboxAccountReq) -> Result<u64, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
+        let result = self
+            .debox_account_dao
+            .delete(req.id, user_id)
+            .await
+            .map_err(|err| {
+                error!("删除DeBox账号信息失败, err: {:#?}", err);
+                Error::DbDeleteError.into_err_with_msg("删除DeBox账号信息失败")
+            })?;
 
         Ok(result)
     }
@@ -296,6 +325,7 @@ impl DeboxAccountService {
     /// 更新所有账户信息
     pub async fn update_all_accounts_info(
         &self,
+        ctx: &Context,
         req: UpdateAllAccountsInfoReq,
     ) -> Result<(), ErrorMsg> {
         let (mut accounts, _) = self
@@ -330,9 +360,12 @@ impl DeboxAccountService {
             }
 
             if let Err(e) = self
-                .update(UpdateDeboxAccountReq {
-                    model: account.clone(),
-                })
+                .update(
+                    ctx,
+                    UpdateDeboxAccountReq {
+                        model: account.clone(),
+                    },
+                )
                 .await
             {
                 error!("更新DeBox账号失败, err: {e:#?}");
@@ -348,8 +381,12 @@ impl DeboxAccountService {
     }
 
     /// 更新账户信息
-    pub async fn update_account_info(&self, req: UpdateAccountInfoReq) -> Result<(), ErrorMsg> {
-        let mut account = self.info(GetDeboxAccountReq { id: req.id }).await?;
+    pub async fn update_account_info(
+        &self,
+        ctx: &Context,
+        req: UpdateAccountInfoReq,
+    ) -> Result<(), ErrorMsg> {
+        let mut account = self.info(ctx, GetDeboxAccountReq { id: req.id }).await?;
 
         if self.check_api_key_status(&account).await.is_ok() {
             account.api_key_status = true;
@@ -369,9 +406,12 @@ impl DeboxAccountService {
         account.invite_code = user_info.invite_code;
         account.wallet_address = user_info.address;
 
-        self.update(UpdateDeboxAccountReq {
-            model: account.clone(),
-        })
+        self.update(
+            ctx,
+            UpdateDeboxAccountReq {
+                model: account.clone(),
+            },
+        )
         .await
         .map_err(|err| {
             error!("更新DeBox账号失败, err: {:#?}", err);
@@ -386,9 +426,11 @@ impl DeboxAccountService {
     /// 上传 json 文件
     pub async fn upload_config_file(
         &self,
+        ctx: &Context,
         mut req: UploadConfigFileReq,
-        user_id: i32,
     ) -> Result<debox_account::Model, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         // 读取json文件数据
         let mut buffer = vec![];
         req.file

@@ -2,5 +2,5 @@
 pub mod debox_account;
 pub mod debox_group;
 
-pub use debox_account::Entity as DeboxAccountEntity;
-pub use debox_group::Entity as DeboxGroupEntity;
+pub use debox_account::Entity as DeboxAccount;
+pub use debox_group::Entity as DeboxGroup;

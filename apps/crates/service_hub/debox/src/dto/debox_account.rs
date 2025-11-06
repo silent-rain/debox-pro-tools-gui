@@ -20,10 +20,41 @@ pub struct GetDeboxAccountsReq {
     pub end_time: Option<String>,
     /// 返回所有数据
     pub all: Option<bool>,
-    /// 用户ID
-    pub user_id: Option<i32>,
     /// 账号IDs
     pub account_ids: Option<Vec<i32>>,
+    /// 账号状态
+    pub status: Option<bool>,
+    /// 排序字段
+    ///
+    /// sorts: ["id:asc"]
+    pub sorts: Option<Vec<String>>,
+}
+
+/// 排序字段
+pub struct DeboxAccountSort(pub debox_account::Column, pub sea_orm::Order);
+
+impl TryFrom<String> for DeboxAccountSort {
+    type Error = sea_orm::DbErr;
+
+    // sort: "id:asc"
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        let parts: Vec<&str> = value.split(':').collect();
+        if parts.len() != 2 {
+            return Err(sea_orm::DbErr::Custom("Invalid sort format".to_string()));
+        }
+        let column = match parts[0] {
+            "user_id" => debox_account::Column::UserId,
+            "created_at" => debox_account::Column::CreatedAt,
+            "updated_at" => debox_account::Column::UpdatedAt,
+            _ => debox_account::Column::Id,
+        };
+        let order = match parts[1] {
+            "asc" => sea_orm::Order::Asc,
+            "desc" => sea_orm::Order::Desc,
+            _ => sea_orm::Order::Asc,
+        };
+        Ok(DeboxAccountSort(column, order))
+    }
 }
 
 /// 查询DeBox账号列表 响应体
@@ -70,17 +101,18 @@ pub struct CreateDeboxAccountReq {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateDeboxAccountResp {}
 
-/// 更新数据 请求体
+/// 更新DeBox账号信息 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDeboxAccountReq {
     #[serde(flatten)]
     pub model: debox_account::Model,
 }
 
+/// 更新DeBox账号信息 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateDeboxAccountResp {}
 
-/// 更新数据状态 请求体
+/// 更新DeBox账号状态 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDeboxAccountStatusReq {
     /// 账号ID
@@ -89,18 +121,18 @@ pub struct UpdateDeboxAccountStatusReq {
     pub status: bool,
 }
 
-/// 更新数据状态 响应体
+/// 更新DeBox账号状态 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UpdateDeboxAccountStatusResp {}
 
-/// 删除数据 请求体
+/// 删除DeBox账号 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteDeboxAccountReq {
     /// 账号ID
     pub id: i32,
 }
 
-/// 删除数据 响应体
+/// 删除DeBox账号 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DeleteDeboxAccountResp {}
 
@@ -133,7 +165,9 @@ pub struct DownloadConfigFileReq {
     pub id: i32,
 }
 
-/// 单文件上传 请求体
+/// 上传配置文件 请求体
+///
+/// 单文件上传
 #[derive(TryFromMultipart)]
 pub struct UploadConfigFileReq {
     // The `unlimited arguments` means that this field will be limited to the
@@ -147,6 +181,6 @@ pub struct UploadConfigFileReq {
     pub author: String,
 }
 
-/// 单文件上传 响应体
+/// 上传配置文件 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UploadConfigFileResp {}

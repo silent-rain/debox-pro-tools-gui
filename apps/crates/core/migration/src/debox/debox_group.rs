@@ -1,14 +1,18 @@
 //! DeBox群组表
-//! Entity: [`entity::prelude::DeboxAccount`]
+//! Entity: [`entity::user::UserBase`]
+//! Entity: [`entity::debox::DeboxAccount`]
 
-use migration_git::utils::if_not_exists_create_unique_index;
 use sea_orm::{
     DatabaseBackend, DeriveIden, DeriveMigrationName, Iden,
     sea_query::{ColumnDef, Expr, ForeignKey, ForeignKeyAction, Table},
 };
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
-use crate::{debox::debox_account::DeboxAccount, utils::if_not_exists_create_index};
+use crate::{
+    debox::debox_account::DeboxAccount,
+    user::user_base::UserBase,
+    utils::{if_not_exists_create_index, if_not_exists_create_unique_index},
+};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -30,6 +34,12 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .not_null()
                             .comment("群组ID"),
+                    )
+                    .col(
+                        ColumnDef::new(DeboxAccount::UserId)
+                            .integer()
+                            .not_null()
+                            .comment("用户ID"),
                     )
                     .col(
                         ColumnDef::new(DeboxGroup::AccountId)
@@ -105,6 +115,18 @@ impl MigrationTrait for Migration {
                             .name(format!(
                                 "fk_{}_{}",
                                 DeboxGroup::Table.to_string(),
+                                DeboxGroup::UserId.to_string()
+                            ))
+                            .from_col(DeboxGroup::UserId)
+                            .to(UserBase::Table, UserBase::Id)
+                            .on_update(ForeignKeyAction::Cascade)
+                            .on_delete(ForeignKeyAction::Cascade),
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .name(format!(
+                                "fk_{}_{}",
+                                DeboxGroup::Table.to_string(),
                                 DeboxGroup::AccountId.to_string()
                             ))
                             .from_col(DeboxGroup::AccountId)
@@ -117,13 +139,18 @@ impl MigrationTrait for Migration {
             .await?;
 
         // create index
-        if_not_exists_create_index(manager, DeboxGroup::Table, vec![DeboxGroup::AccountId]).await?;
+        if_not_exists_create_index(
+            manager,
+            DeboxGroup::Table,
+            vec![DeboxGroup::UserId, DeboxGroup::AccountId],
+        )
+        .await?;
 
         // create unique index
         if_not_exists_create_unique_index(
             manager,
             DeboxGroup::Table,
-            vec![DeboxGroup::AccountId, DeboxGroup::Gid],
+            vec![DeboxGroup::UserId, DeboxGroup::AccountId, DeboxGroup::Gid],
         )
         .await?;
 
@@ -144,6 +171,7 @@ pub enum DeboxGroup {
     #[sea_orm(iden = "t_debox_group")]
     Table,
     Id,
+    UserId,
     AccountId,
     Gid,
     Name,

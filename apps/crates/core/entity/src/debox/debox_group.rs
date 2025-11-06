@@ -8,7 +8,7 @@ use sea_orm::{
 };
 use serde::{Deserialize, Serialize};
 
-use crate::debox::debox_account;
+use crate::{debox::debox_account, user::user_base};
 
 /// DeBox群组表
 #[derive(Clone, Debug, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
@@ -17,6 +17,8 @@ pub struct Model {
     /// 群组ID
     #[sea_orm(primary_key)]
     pub id: i32,
+    /// 用户ID
+    pub user_id: i32,
     /// 账号ID
     pub account_id: i32,
     /// 群组ID
@@ -39,17 +41,28 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
+    UserBase,
     DeboxGroup,
 }
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
         match self {
+            Self::UserBase => Entity::belongs_to(user_base::Entity)
+                .from(Column::UserId)
+                .to(user_base::Column::Id)
+                .into(),
             Self::DeboxGroup => Entity::belongs_to(debox_account::Entity)
                 .from(Column::AccountId)
                 .to(debox_account::Column::Id)
                 .into(),
         }
+    }
+}
+
+impl Related<user_base::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::UserBase.def()
     }
 }
 

@@ -8,9 +8,9 @@ use sea_orm::{
 };
 
 use database::{Pagination, PoolTrait};
-use entity::debox::{DeboxAccountEntity, debox_account};
+use entity::debox::{DeboxAccount, debox_account};
 
-use crate::dto::debox_account::GetDeboxAccountsReq;
+use crate::dto::debox_account::{DeboxAccountSort, GetDeboxAccountsReq};
 
 /// 数据访问
 #[injectable]
@@ -19,40 +19,22 @@ pub struct DeboxAccountDao {
 }
 
 impl DeboxAccountDao {
-    /// 获取所有数据
-    pub async fn all(
-        &self,
-        req: GetDeboxAccountsReq,
-    ) -> Result<(Vec<debox_account::Model>, u64), DbErr> {
-        let results = DeboxAccountEntity::find()
-            .apply_if(req.user_id, |query, v| {
-                println!("user_id: {}", v);
-                query.filter(debox_account::Column::UserId.eq(v))
-            })
-            .order_by_asc(debox_account::Column::Id)
-            .all(self.db.db())
-            .await?;
-        let total = results.len() as u64;
-        Ok((results, total))
-    }
-
     /// 获取数据列表
     pub async fn list(
         &self,
+        user_id: i32,
         req: GetDeboxAccountsReq,
     ) -> Result<(Vec<debox_account::Model>, u64), DbErr> {
-        let page = Pagination::new(req.page, req.page_size);
-
-        let states = DeboxAccountEntity::find()
-            .filter(debox_account::Column::Status.eq(true))
-            .apply_if(req.user_id, |query, v| {
-                query.filter(debox_account::Column::UserId.eq(v))
-            })
+        let mut states = DeboxAccount::find()
+            .filter(debox_account::Column::UserId.eq(user_id))
             .apply_if(req.start_time, |query, v| {
                 query.filter(debox_account::Column::CreatedAt.gte(v))
             })
             .apply_if(req.end_time, |query, v| {
                 query.filter(debox_account::Column::CreatedAt.lt(v))
+            })
+            .apply_if(req.status, |query, v| {
+                query.filter(debox_account::Column::Status.eq(v))
             });
 
         let total = states.clone().count(self.db.db()).await?;
@@ -60,19 +42,29 @@ impl DeboxAccountDao {
             return Ok((vec![], total));
         }
 
-        let results = states
-            .order_by_desc(debox_account::Column::Id)
-            .offset(page.offset())
-            .limit(page.page_size())
-            .all(self.db.db())
-            .await?;
+        // 排序
+        if let Some(sorts) = req.sorts {
+            for sort in sorts {
+                let DeboxAccountSort(column, order) = sort.try_into()?;
+                states = states.order_by(column, order);
+            }
+        }
+        // 分页处理
+        if !req.all.unwrap_or(false) {
+            let page = Pagination::new(req.page, req.page_size);
+            states = states.offset(page.offset()).limit(page.page_size());
+        }
 
+        let results = states.all(self.db.db()).await?;
         Ok((results, total))
     }
 
     /// 获取详情信息
-    pub async fn info(&self, id: i32) -> Result<Option<debox_account::Model>, DbErr> {
-        DeboxAccountEntity::find_by_id(id).one(self.db.db()).await
+    pub async fn info(&self, id: i32, user_id: i32) -> Result<Option<debox_account::Model>, DbErr> {
+        DeboxAccount::find_by_id(id)
+            .filter(debox_account::Column::UserId.eq(user_id))
+            .one(self.db.db())
+            .await
     }
 
     /// 添加详情信息
@@ -84,11 +76,16 @@ impl DeboxAccountDao {
     }
 
     /// 更新数据
-    pub async fn update(&self, active_model: debox_account::ActiveModel) -> Result<u64, DbErr> {
-        let id: i32 = *(active_model.id.clone().as_ref());
-        let result = DeboxAccountEntity::update_many()
+    pub async fn update(
+        &self,
+        id: i32,
+        user_id: i32,
+        active_model: debox_account::ActiveModel,
+    ) -> Result<u64, DbErr> {
+        let result = DeboxAccount::update_many()
             .set(active_model)
             .filter(debox_account::Column::Id.eq(id))
+            .filter(debox_account::Column::UserId.eq(user_id))
             .exec(self.db.db())
             .await?;
 
@@ -96,19 +93,25 @@ impl DeboxAccountDao {
     }
 
     /// 更新状态
-    pub async fn update_status(&self, id: i32, status: bool) -> Result<(), DbErr> {
+    pub async fn update_status(&self, id: i32, user_id: i32, status: bool) -> Result<u64, DbErr> {
         let active_model = debox_account::ActiveModel {
-            id: Set(id),
             status: Set(status),
             ..Default::default()
         };
-        let _ = active_model.update(self.db.db()).await?;
-        Ok(())
+
+        let result = DeboxAccount::update_many()
+            .set(active_model)
+            .filter(debox_account::Column::Id.eq(id))
+            .filter(debox_account::Column::UserId.eq(user_id))
+            .exec(self.db.db())
+            .await?;
+        Ok(result.rows_affected)
     }
 
     /// 按主键删除信息
-    pub async fn delete(&self, id: i32) -> Result<u64, DbErr> {
-        let result = DeboxAccountEntity::delete_by_id(id)
+    pub async fn delete(&self, id: i32, user_id: i32) -> Result<u64, DbErr> {
+        let result = DeboxAccount::delete_by_id(id)
+            .filter(debox_account::Column::UserId.eq(user_id))
             .exec(self.db.db())
             .await?;
         Ok(result.rows_affected)
@@ -116,13 +119,13 @@ impl DeboxAccountDao {
 }
 
 impl DeboxAccountDao {
-    /// 根据user_id和debox_user_id获取账号信息
-    pub async fn account_by_user_id_and_debox_user_id(
+    /// 根据debox_user_id获取账号信息
+    pub async fn account_by_debox_user_id(
         &self,
         user_id: i32,
         debox_user_id: String,
     ) -> Result<Option<debox_account::Model>, DbErr> {
-        let result = DeboxAccountEntity::find()
+        let result = DeboxAccount::find()
             .filter(debox_account::Column::UserId.eq(user_id))
             .filter(debox_account::Column::DeboxUserId.eq(debox_user_id))
             .one(self.db.db())
@@ -135,11 +138,9 @@ impl DeboxAccountDao {
         &self,
         user_id: i32,
     ) -> Result<(Vec<debox_account::Model>, u64), DbErr> {
-        let states = DeboxAccountEntity::find()
+        let results = DeboxAccount::find()
             .filter(debox_account::Column::Status.eq(true))
-            .filter(debox_account::Column::UserId.eq(user_id));
-
-        let results = states
+            .filter(debox_account::Column::UserId.eq(user_id))
             .order_by_desc(debox_account::Column::Id)
             .all(self.db.db())
             .await?;
@@ -152,48 +153,87 @@ impl DeboxAccountDao {
 
 #[cfg(test)]
 mod tests {
-    use entity::debox::{DeboxAccountEntity, debox_account};
+    use super::*;
+
     use sea_orm::{
         ActiveValue::Set, ColumnTrait, DbBackend, EntityTrait, IntoActiveModel, QueryFilter,
-        QueryTrait,
+        QuerySelect, QueryTrait,
     };
 
     #[test]
-    fn test_update() {
+    fn test_into_active_model() {
         let model = debox_account::Model {
-            id: 3,
-            user_id: 1,
             name: "f7641fa0-dr".to_string(),
-            avatar: Some(
-                "https://data.debox.pro/static/2025/10/31/peqt8jxu/c9ae4783c39a68f709bdaa79769fcf0fe710549ade9dc0ac358bd43d08c1829c.png".to_string(),
-            ),
-            app_id: "5aoxGwhO2kK1gzj2".to_string(),
-            api_key: "s6jAJDvviJCAMH61".to_string(),
-            app_secret: "qRnzlagd6vN68UxaJzOoPhd0iIqZqHh5".to_string(),
-            access_token: "".to_string(),
-            web_token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOjY3MDE4MzYwODM2MjE3MywibG9naW5fc291cmNlIjoid2ViIiwicmVtZW1iZXIiOnRydWUsInZlcnNpb24iOjEwMDAwLCJpc3MiOiJkZWJveCIsIm5iZiI6MTc2MTg0MzU4MH0.KHZK-HPMYkFoE0B9xp6BfVFM0MWRb7c-jWmVjeEKdvQ".to_string(),
-            debox_user_id: "670183608362173".to_string(),
-            wallet_address: "0x8b55e1eab5a0d07d2864e86c49860353f7641fa0".to_string(),
-            api_key_status: false,
-            access_token_status: false,
-            web_token_status: true,
-            desc: "".to_string(),
             status: true,
             ..Default::default()
         };
         let mut active_model = model.into_active_model();
         active_model.name = Set("sr".to_string());
 
-        println!("active_model: {:#?}", active_model);
+        let id: i32 = 3;
 
-        let id: i32 = *(active_model.id.clone().as_ref());
-        let result = DeboxAccountEntity::update_many()
+        let result = DeboxAccount::update_many()
             .set(active_model)
             .filter(debox_account::Column::Id.eq(id))
             .build(DbBackend::MySql)
             .to_string();
 
         let sql = r#"UPDATE `t_debox_account` SET `name` = 'sr' WHERE `t_debox_account`.`id` = 3"#;
+
+        assert_eq!(result, sql);
+    }
+
+    #[test]
+    fn test_find_by_id() {
+        let id = 3;
+        let user_id = 1;
+
+        let result = DeboxAccount::find_by_id(id)
+            .filter(debox_account::Column::UserId.eq(user_id))
+            .select_only()
+            .columns([
+                debox_account::Column::Id,
+                debox_account::Column::UserId,
+                debox_account::Column::Name,
+            ])
+            .build(DbBackend::MySql)
+            .to_string();
+
+        let sql = r#"SELECT `t_debox_account`.`id`, `t_debox_account`.`user_id`, `t_debox_account`.`name` FROM `t_debox_account` WHERE `t_debox_account`.`id` = 3 AND `t_debox_account`.`user_id` = 1"#;
+
+        assert_eq!(result, sql);
+    }
+
+    #[test]
+    fn test_delete_by_id() {
+        let id = 3;
+        let user_id = 1;
+
+        let result = DeboxAccount::delete_by_id(id)
+            .filter(debox_account::Column::UserId.eq(user_id))
+            .build(DbBackend::MySql)
+            .to_string();
+
+        let sql = r#"DELETE FROM `t_debox_account` WHERE `t_debox_account`.`id` = 3 AND `t_debox_account`.`user_id` = 1"#;
+
+        assert_eq!(result, sql);
+    }
+
+    #[test]
+    fn test_order_by_desc() {
+        let result = DeboxAccount::find()
+            .select_only()
+            .columns([
+                debox_account::Column::Id,
+                debox_account::Column::UserId,
+                debox_account::Column::Name,
+            ])
+            .order_by_desc(debox_account::Column::Id)
+            .order_by_asc(debox_account::Column::UserId)
+            .build(DbBackend::MySql)
+            .to_string();
+
+        let sql = r#"SELECT `t_debox_account`.`id`, `t_debox_account`.`user_id`, `t_debox_account`.`name` FROM `t_debox_account` ORDER BY `t_debox_account`.`id` DESC, `t_debox_account`.`user_id` ASC"#;
 
         assert_eq!(result, sql);
     }
