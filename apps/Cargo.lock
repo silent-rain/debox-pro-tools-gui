@@ -45,6 +45,7 @@ dependencies = [
  "listenfd",
  "log 0.4.28",
  "logger",
+ "migration 0.1.0",
  "rust-embed",
  "serde",
  "serde_json",

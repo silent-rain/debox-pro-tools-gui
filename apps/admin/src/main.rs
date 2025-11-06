@@ -1,12 +1,13 @@
 //! 程序入口
 use std::sync::Arc;
 
+use migration::MigratorTrait;
+
+use admin::server::HttpServer;
 use app_state::mobile::{AppDirector, AppState};
 use config::AppConfig;
 use database::Mdb;
 use inject::InjectProvider;
-
-use admin::server::HttpServer;
 
 use colored::Colorize;
 use dotenv::dotenv;
@@ -26,7 +27,12 @@ pub async fn main() -> anyhow::Result<()> {
     // 初始化数据库
     let main_db =
         database::Pool::new(app_config.sqlite.dns(), app_config.sqlite.options.clone()).await?;
-    let db_pool = Mdb::new(Arc::new(main_db.clone()), Arc::new(main_db));
+    let db_pool = Mdb::new(Arc::new(main_db.clone()), Arc::new(main_db.clone()));
+
+    // 数据库迁移
+    migration::Migrator::up(&main_db.db, None)
+        .await
+        .expect("数据库迁移失败");
 
     // 全局状态
     let state = Arc::new(AppState {

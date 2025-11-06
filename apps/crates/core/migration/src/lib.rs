@@ -1,7 +1,8 @@
-use sea_orm_migration::{MigrationTrait, MigratorTrait, async_trait};
+use sea_orm_migration::{MigrationTrait, async_trait};
 
 mod debox;
 pub use migration_git::*;
+pub use sea_orm_migration::migrator::MigratorTrait;
 
 pub struct Migrator;
 
