@@ -16,13 +16,28 @@ const Home = () => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { title: '账号管理', path: ROUTES.ACCOUNT_MANAGEMENT, icon: <UserOutline /> },
-    { title: '同步群组', path: ROUTES.SYNC_GROUP, icon: <TeamOutline /> },
-    { title: '同步群员', path: ROUTES.SYNC_GROUP_MEMBER, icon: <UserAddOutline /> },
-    { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline /> },
-    { title: '一键拉群', path: ROUTES.CREATE_GROUP, icon: <TruckOutline /> },
-    { title: '一键关注', path: ROUTES.FOLLOW_USER, icon: <HeartOutline /> },
-    { title: '自动互关', path: ROUTES.AUTO_FOLLOW, icon: <LoopOutline /> }, // 群组互关/账号互关
+    {
+      title: '账号管理',
+      path: ROUTES.ACCOUNT_MANAGEMENT,
+      icon: <UserOutline />,
+      description: '管理DeBox账号',
+    },
+    { title: '同步群组', path: ROUTES.SYNC_GROUP, icon: <TeamOutline />, description: '同步DeBox账号下的群组' },
+    {
+      title: '同步群员',
+      path: ROUTES.SYNC_GROUP_MEMBER,
+      icon: <UserAddOutline />,
+      description: '同步群组成员列表',
+    },
+    { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline />, description: '批量发送消息' },
+    { title: '一键拉群', path: ROUTES.CREATE_GROUP, icon: <TruckOutline />, description: '快速创建群组' },
+    {
+      title: '一键关注',
+      path: ROUTES.FOLLOW_USER,
+      icon: <HeartOutline />,
+      description: '一键关注目标账号',
+    },
+    { title: '自动互关', path: ROUTES.AUTO_FOLLOW, icon: <LoopOutline />, description: '账号之间的互相关注' }, // 群组互关/账号互关
   ];
 
   return (
@@ -36,6 +51,7 @@ const Home = () => {
               <div className={styles.cardContent}>
                 <div className={styles.cardIcon}>{item.icon}</div>
                 <div className={styles.cardTitle}>{item.title}</div>
+                <div className={styles.cardDescription}>{item.description}</div>
               </div>
             </Card>
           </Grid.Item>
