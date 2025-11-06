@@ -11,7 +11,7 @@ export interface DeboxAccount {
   app_secret: string; // 开发者 App Secret，在DeBox开放平台获取
   access_token: string; // 登录授权, 有效期较短
   web_token: string; // WEB登录授权
-  debox_user_id: string; //  DeBox 用户ID
+  debox_user_id: string; // DeBox 用户ID
   wallet_address: string; // 用户钱包地址
   api_key_status: boolean; // ApiKey 状态(false:无效,true:有效)
   access_token_status: boolean; // Access Token 状态(false:无效,true:有效)
@@ -28,7 +28,10 @@ export interface GetDeboxAccountsReq {
   page_size?: number; // 页面大小
   start_time?: string; // 开始时间
   end_time?: string; // 结束时间
-  all: boolean; // 返回所有数据
+  all?: boolean; // 返回所有数据
+  account_ids?: number[]; // 账号IDs
+  status?: boolean; // 账号状态
+  sorts?: string[]; // 排序字段, sorts: ["id:asc"]
 }
 
 // 查询DeBox账号列表 响应体
@@ -54,9 +57,6 @@ export interface CreateDeboxAccountReq {
   web_token: string; // WEB登录授权
   debox_user_id: string; // DeBox 用户ID
   wallet_address: string; // 用户钱包地址
-  api_key_status: boolean; // ApiKey 状态(false:无效,true:有效)
-  access_token_status: boolean; // Access Token 状态(false:无效,true:有效)
-  web_token_status: boolean; // Web Token 状态(false:无效,true:有效)
   desc: string; // 描述信息
   status: boolean; // 状态(false:停用,true:正常)
 }

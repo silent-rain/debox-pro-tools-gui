@@ -22,11 +22,10 @@ impl DeboxAccountRouter {
                 )
                 .route(
                     "/{id}",
-                    get(DeboxAccountController::info)
-                        .put(DeboxAccountController::update)
-                        .delete(DeboxAccountController::delete),
+                    get(DeboxAccountController::info).delete(DeboxAccountController::delete),
                 )
-                .route("/{id}/status", put(DeboxAccountController::update_status))
+                .route("/update", put(DeboxAccountController::update))
+                .route("/update-status", put(DeboxAccountController::update_status))
                 .route(
                     "/update-all-accounts-info",
                     put(DeboxAccountController::update_all_accounts_info),

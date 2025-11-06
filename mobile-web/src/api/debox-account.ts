@@ -58,7 +58,7 @@ export const DeboxAccountApi = {
   // 更新账号信息
   update: async (data: UpdateDeboxAccountReq): Promise<UpdateDeboxAccountResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/${data.id}`,
+      url: `${server}/debox/debox-accounts/update`,
       method: 'PUT',
       data,
     });
@@ -68,7 +68,7 @@ export const DeboxAccountApi = {
   // 更新账号状态
   updateStatus: async (data: UpdateDeboxAccountStatusReq): Promise<UpdateDeboxAccountStatusResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/${data.id}/status`,
+      url: `${server}/debox/debox-accounts/update-status`,
       method: 'PUT',
       data,
     });

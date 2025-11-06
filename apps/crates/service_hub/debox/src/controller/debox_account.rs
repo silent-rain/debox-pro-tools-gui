@@ -55,11 +55,12 @@ impl DeboxAccountController {
 
     /// 添加DeBox账号
     pub async fn create(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateDeboxAccountReq>,
     ) -> Responder<CreateDeboxAccountResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        let _result = debox_account_service.create(req).await?;
+        let _result = debox_account_service.create(&ctx, req).await?;
 
         let resp = Response::ok();
         Ok(resp)

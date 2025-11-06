@@ -22,11 +22,10 @@ impl DeboxGroupRouter {
                 )
                 .route(
                     "/{id}",
-                    get(DeboxGroupController::info)
-                        .put(DeboxGroupController::update)
-                        .delete(DeboxGroupController::delete),
+                    get(DeboxGroupController::info).delete(DeboxGroupController::delete),
                 )
-                .route("/status", put(DeboxGroupController::update_status))
+                .route("/update", put(DeboxGroupController::update))
+                .route("/update-status", put(DeboxGroupController::update_status))
                 .route("/sync-groups", post(DeboxGroupController::sync_groups)),
         )
     }

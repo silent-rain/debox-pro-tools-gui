@@ -70,8 +70,15 @@ impl DeboxGroupService {
     }
 
     /// 添加数据
-    pub async fn create(&self, req: CreateDeboxGroupReq) -> Result<debox_group::Model, ErrorMsg> {
+    pub async fn create(
+        &self,
+        ctx: &Context,
+        req: CreateDeboxGroupReq,
+    ) -> Result<debox_group::Model, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         let model = debox_group::ActiveModel {
+            user_id: Set(user_id),
             account_id: Set(req.model.account_id),
             name: Set(req.model.name),
             invite_code: Set(req.model.invite_code),
@@ -213,6 +220,7 @@ impl DeboxGroupService {
                     })?;
             }
             None => {
+                active_model.user_id = Set(user_id);
                 active_model.account_id = Set(account_id);
                 active_model.status = Set(true);
                 self.debox_group_dao

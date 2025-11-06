@@ -180,26 +180,26 @@ impl DeboxAccountService {
     /// 添加数据
     pub async fn create(
         &self,
+        ctx: &Context,
         req: CreateDeboxAccountReq,
     ) -> Result<debox_account::Model, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         // 是否存在 DeBox 账号
         if self
-            .exist_debox_user_id(req.model.user_id, req.model.debox_user_id.clone())
+            .exist_debox_user_id(user_id, req.model.debox_user_id.clone())
             .await?
         {
             error!(
                 "DeBox账号已存在, user_id: {:#?}, debox_user_id: {:#?}",
-                req.model.user_id, req.model.debox_user_id
+                user_id, req.model.debox_user_id
             );
             return Err(Error::DbDataExistError.into_err_with_msg("DeBox账号已存在"));
         }
 
         // 创建用户
         let mut active_model = debox_account::ActiveModel {
-            user_id: Set(req.model.user_id),
-            name: Set(req.model.name.clone()),
-            avatar: Set(req.model.avatar.clone()),
-            invite_code: Set(req.model.invite_code.clone()),
+            user_id: Set(user_id),
             app_id: Set(req.model.app_id.clone()),
             api_key: Set(req.model.api_key.clone()),
             app_secret: Set(req.model.app_secret.clone()),
@@ -221,7 +221,6 @@ impl DeboxAccountService {
         }
 
         if let Ok(user_info) = self.get_debox_account(&req.model).await {
-            active_model.web_token_status = Set(true);
             if user_info.name.is_empty() {
                 active_model.name =
                     Set(user_info.address[user_info.address.len() - 8..].to_string());
@@ -229,7 +228,9 @@ impl DeboxAccountService {
                 active_model.name = Set(user_info.name);
             }
             active_model.avatar = Set(Some(user_info.pic));
+            active_model.invite_code = Set(user_info.invite_code);
             active_model.wallet_address = Set(user_info.address);
+            active_model.web_token_status = Set(true);
         }
 
         let result = self
@@ -249,24 +250,38 @@ impl DeboxAccountService {
         let user_id = ctx.get_user_id();
         let id = req.model.id;
 
-        let active_model = debox_account::ActiveModel {
-            name: Set(req.model.name.clone()),
-            avatar: Set(req.model.avatar.clone()),
-            invite_code: Set(req.model.invite_code.clone()),
+        let mut active_model = debox_account::ActiveModel {
             app_id: Set(req.model.app_id.clone()),
             api_key: Set(req.model.api_key.clone()),
             app_secret: Set(req.model.app_secret.clone()),
             access_token: Set(req.model.access_token.clone()),
             web_token: Set(req.model.web_token.clone()),
             debox_user_id: Set(req.model.debox_user_id.clone()),
-            wallet_address: Set(req.model.wallet_address.clone()),
-            api_key_status: Set(req.model.api_key_status),
-            access_token_status: Set(req.model.access_token_status),
-            web_token_status: Set(req.model.web_token_status),
             desc: Set(req.model.desc.clone()),
             status: Set(req.model.status),
             ..Default::default()
         };
+
+        // 账号检测
+        if self.check_api_key_status(&req.model).await.is_ok() {
+            active_model.api_key_status = Set(true)
+        }
+        if self.check_access_token_status(&req.model).await.is_ok() {
+            active_model.access_token_status = Set(true)
+        }
+
+        if let Ok(user_info) = self.get_debox_account(&req.model).await {
+            if user_info.name.is_empty() {
+                active_model.name =
+                    Set(user_info.address[user_info.address.len() - 8..].to_string());
+            } else {
+                active_model.name = Set(user_info.name);
+            }
+            active_model.avatar = Set(Some(user_info.pic));
+            active_model.invite_code = Set(user_info.invite_code);
+            active_model.wallet_address = Set(user_info.address);
+            active_model.web_token_status = Set(true);
+        }
 
         let result = self
             .debox_account_dao
@@ -396,7 +411,6 @@ impl DeboxAccountService {
         }
 
         let user_info = self.get_debox_account(&account).await?;
-        account.web_token_status = true;
         if user_info.name.is_empty() {
             account.name = user_info.address[user_info.address.len() - 8..].to_string();
         } else {
@@ -405,6 +419,7 @@ impl DeboxAccountService {
         account.avatar = Some(user_info.pic);
         account.invite_code = user_info.invite_code;
         account.wallet_address = user_info.address;
+        account.web_token_status = true;
 
         self.update(
             ctx,
@@ -451,7 +466,7 @@ impl DeboxAccountService {
 
         // 添加
         let data = CreateDeboxAccountReq { model };
-        let result = self.create(data).await?;
+        let result = self.create(ctx, data).await?;
 
         Ok(result)
     }

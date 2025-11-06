@@ -48,11 +48,12 @@ impl DeboxGroupController {
 
     /// 添加DeBox群组
     pub async fn create(
+        ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
         Json(req): Json<CreateDeboxGroupReq>,
     ) -> Responder<CreateDeboxGroupResp> {
         let debox_group_service: DeboxGroupService = provider.provide();
-        let _result = debox_group_service.create(req).await?;
+        let _result = debox_group_service.create(&ctx, req).await?;
 
         let resp = Response::ok();
         Ok(resp)

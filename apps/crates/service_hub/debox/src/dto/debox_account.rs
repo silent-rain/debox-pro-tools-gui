@@ -25,7 +25,6 @@ pub struct GetDeboxAccountsReq {
     /// 账号状态
     pub status: Option<bool>,
     /// 排序字段
-    ///
     /// sorts: ["id:asc"]
     pub sorts: Option<Vec<String>>,
 }

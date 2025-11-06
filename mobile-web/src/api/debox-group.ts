@@ -4,10 +4,18 @@ import request from '@/utils/request';
 import { server } from './constant';
 import {} from '@/typings/debox-account';
 import {
+  CreateDeboxGroupReq,
+  CreateDeboxGroupResp,
+  DeleteDeboxGroupReq,
+  DeleteDeboxGroupResp,
+  GetDeboxGroupReq,
+  GetDeboxGroupResp,
   GetDeboxGroupsReq,
   GetDeboxGroupsResp,
   SyncDeboxGroupReq,
   SyncDeboxGroupResp,
+  UpdateDeboxGroupReq,
+  UpdateDeboxGroupResp,
   UpdateDeboxGroupStatusReq,
   UpdateDeboxGroupStatusResp,
 } from '@/typings/debox-group';
@@ -23,14 +31,52 @@ export const DeboxGroupApi = {
     return response.data;
   },
 
-  //  .route("/{id}/status", put(DeboxGroupController::update_status))
+  // 获取群组信息
+  info: async (data: GetDeboxGroupReq): Promise<GetDeboxGroupResp> => {
+    const response = await request({
+      url: `${server}/debox/debox-groups/${data.id}`,
+      method: 'GET',
+      params: {},
+    });
+    return response.data;
+  },
+
+  // 创建群组
+  create: async (data: CreateDeboxGroupReq): Promise<CreateDeboxGroupResp> => {
+    const response = await request({
+      url: `${server}/debox/debox-groups`,
+      method: 'POST',
+      data,
+    });
+    return response.data;
+  },
+
+  // 更新群组信息
+  update: async (data: UpdateDeboxGroupReq): Promise<UpdateDeboxGroupResp> => {
+    const response = await request({
+      url: `${server}/debox/debox-groups/update`,
+      method: 'PUT',
+      data,
+    });
+    return response.data;
+  },
 
   // 更新群组状态
   updateStatus: async (data: UpdateDeboxGroupStatusReq): Promise<UpdateDeboxGroupStatusResp> => {
     const response = await request({
-      url: `${server}/debox/debox-groups/status`,
+      url: `${server}/debox/debox-groups/update-status`,
       method: 'PUT',
       data,
+    });
+    return response.data;
+  },
+
+  // 删除群组
+  delete: async (data: DeleteDeboxGroupReq): Promise<DeleteDeboxGroupResp> => {
+    const response = await request({
+      url: `${server}/debox/debox-groups/${data.id}`,
+      method: 'DELETE',
+      data: {},
     });
     return response.data;
   },

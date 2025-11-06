@@ -31,14 +31,42 @@ export interface GetDeboxGroupsResp {
   total: number;
 }
 
+// 查询DeBox群组信息 请求体
+export interface GetDeboxGroupReq {
+  id: number; // DeBox群组ID
+}
+
+// 查询DeBox群组信息 响应体
+export type GetDeboxGroupResp = DeboxGroup;
+
 // 更新数据状态  请求体
 export interface UpdateDeboxGroupStatusReq {
   id: number; // DeBox群组ID
   status: boolean; // 状态(false:停用,true:正常)
 }
 
+// 添加DeBox群组 请求体
+export type CreateDeboxGroupReq = DeboxGroup;
+
+// 添加DeBox群组 响应体
+export interface CreateDeboxGroupResp {}
+
+// 更新DeBox群组 请求体
+export type UpdateDeboxGroupReq = DeboxGroup;
+
+// 更新DeBox群组 响应体
+export interface UpdateDeboxGroupResp {}
+
 // 更新数据状态 响应体
 export interface UpdateDeboxGroupStatusResp {}
+
+// 删除数据 请求体
+export interface DeleteDeboxGroupReq {
+  id: number; // DeBox群组ID
+}
+
+// 删除数据 响应体
+export interface DeleteDeboxGroupResp {}
 
 // 同步DeBox群组列表  请求体
 export interface SyncDeboxGroupReq {

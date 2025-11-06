@@ -73,6 +73,10 @@ const AddAccountForm = () => {
           </Button>
         }
       >
+        <Form.Item name='id' hidden>
+          <Input type='hidden' />
+        </Form.Item>
+
         <Item name='app_id' label='App Id' rules={[{ required: true }]}>
           <Input placeholder=' 请输入 AppId，在DeBox开放平台获取' />
         </Item>
