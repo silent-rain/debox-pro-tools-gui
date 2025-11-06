@@ -7,6 +7,7 @@ import {
   UserAddOutline,
   TruckOutline,
   HeartOutline,
+  LoopOutline,
 } from 'antd-mobile-icons';
 import { ROUTES } from '@/constants/routes';
 import styles from './index.module.less';
@@ -21,6 +22,7 @@ const Home = () => {
     { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline /> },
     { title: '一键拉群', path: ROUTES.CREATE_GROUP, icon: <TruckOutline /> },
     { title: '一键关注', path: ROUTES.FOLLOW_USER, icon: <HeartOutline /> },
+    { title: '自动互关', path: ROUTES.AUTO_FOLLOW, icon: <LoopOutline /> }, // 群组互关/账号互关
   ];
 
   return (

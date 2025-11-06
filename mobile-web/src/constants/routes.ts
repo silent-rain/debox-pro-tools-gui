@@ -32,4 +32,7 @@ export const ROUTES = {
 
   // 一键关注用户
   FOLLOW_USER: '/follow-user',
+
+  // 自动互关
+  AUTO_FOLLOW: '/auto-follow',
 };
