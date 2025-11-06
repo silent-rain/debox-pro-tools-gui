@@ -30,6 +30,9 @@ const AccountManagementForm = lazy(() => import('@/pages/account-management/form
 // 同步群组
 const SyncGroup = lazy(() => import('@/pages/sync-group'));
 
+// 同步群员
+const SyncGroupMember = lazy(() => import('@/pages/sync-group-member'));
+
 // TabBar Routes
 export const tabBarRoutes: RouteConfig = {
   path: '/',
@@ -162,6 +165,23 @@ const SyncGroupRoutes: RouteConfig = {
   ],
 };
 
+// 同步群员 Routes
+const SyncGroupMemberRoutes: RouteConfig = {
+  path: '/sync-group-member',
+  element: <Layout />,
+  isLayout: true,
+  children: [
+    {
+      path: '',
+      element: <SyncGroupMember />,
+      meta: {
+        title: '同步群组成员',
+      },
+    },
+  ],
+};
+
+// 主路由
 export const RootRoutes: RouteConfig[] = [
   // {
   //   path: '',
@@ -188,6 +208,7 @@ export const RootRoutes: RouteConfig[] = [
   PersonalCenterRoutes, // 用户中心
   AccountManagementRoutes, // 账号管理
   SyncGroupRoutes, // 同步群组
+  SyncGroupMemberRoutes, // 同步群员
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,

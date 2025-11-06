@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Button, Form, Input, TextArea, Switch, Toast } from 'antd-mobile';
 import { ROUTES } from '@/constants/routes';
 import { DeboxAccountApi } from '@/api/debox-account';
-import { useAuthStore } from '@/stores';
 import { DeboxAccount } from '@/typings/debox-account';
 import './index.module.less';
 
@@ -11,7 +10,6 @@ const { Item } = Form;
 
 const AddAccountForm = () => {
   const navigate = useNavigate();
-  const authStore = useAuthStore.getState();
   const [form] = Form.useForm();
   const location = useLocation();
   const [isEditMode, setIsEditMode] = useState(false);
@@ -39,7 +37,6 @@ const AddAccountForm = () => {
   }, [form, location.state]);
 
   const handleSubmit = async (values: DeboxAccount) => {
-    values.user_id = authStore.user_id!;
     try {
       if (isEditMode) {
         await DeboxAccountApi.update(values);
@@ -76,9 +73,6 @@ const AddAccountForm = () => {
           </Button>
         }
       >
-        {/* <Item name='user_id' label='用户ID' rules={[{ required: false }]}>
-          <Input placeholder='请输入用户ID' type='number' />
-        </Item> */}
         <Item name='app_id' label='App Id' rules={[{ required: true }]}>
           <Input placeholder=' 请输入 AppId，在DeBox开放平台获取' />
         </Item>

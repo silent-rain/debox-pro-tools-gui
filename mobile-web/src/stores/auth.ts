@@ -4,14 +4,11 @@ import { Modal } from 'antd-mobile';
 import { create } from 'zustand';
 
 interface AuthState {
-  token: string | null;
   user_id: number | null;
   username: string | null;
   avatar: string | null;
 
-  setToken: (token: string) => void;
   setUser: () => void;
-  clearAuth: () => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -20,7 +17,6 @@ export const useAuthStore = create<AuthState>((set) => ({
   username: null,
   avatar: null,
 
-  setToken: (token) => set({ token }),
   setUser: async () => {
     try {
       const response = await UserApi.profile();
@@ -33,5 +29,4 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
     }
   },
-  clearAuth: () => set({ token: null }),
 }));

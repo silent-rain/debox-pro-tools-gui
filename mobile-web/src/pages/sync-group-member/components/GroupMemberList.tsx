@@ -1,10 +1,9 @@
 import { FC, useEffect, useState } from 'react';
 import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
-import styles from './GroupList.module.less';
+import styles from './GroupMemberList.module.less';
 import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
 import { DeboxGroupApi } from '@/api/debox-group';
-import Empty from '@/components/empty';
 
 interface GroupListProps {
   accountIds: number[];
@@ -13,9 +12,6 @@ interface GroupListProps {
 
 // 获取群组列表
 const fetchGroups = async (accountIds: number[]): Promise<DeboxGroup[]> => {
-  if (accountIds.length === 0) {
-    return [];
-  }
   const data: GetDeboxGroupsReq = {
     all: true,
     account_ids: accountIds,
@@ -63,11 +59,6 @@ const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
   if (loading) {
     return <DotLoading color='primary' />;
   }
-
-  if (groups.length === 0) {
-    return <Empty />;
-  }
-
   return (
     <>
       <List className={styles.groupList}>

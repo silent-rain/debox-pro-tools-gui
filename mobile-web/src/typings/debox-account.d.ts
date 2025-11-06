@@ -28,7 +28,6 @@ export interface GetDeboxAccountsReq {
   page_size?: number; // 页面大小
   start_time?: string; // 开始时间
   end_time?: string; // 结束时间
-  user_id: number; // 用户ID
   all: boolean; // 返回所有数据
 }
 
@@ -48,7 +47,6 @@ export type GetDeboxAccountResp = DeboxAccount;
 
 // 添加DeBox账号 请求体
 export interface CreateDeboxAccountReq {
-  user_id: number; // 用户ID
   app_id: string; // 应用唯一标识，在DeBox开放平台申请
   api_key: string; // 开发者 API Key，在DeBox开放平台获取
   app_secret: string; // 开发者 App Secret，在DeBox开放平台获取
@@ -64,15 +62,15 @@ export interface CreateDeboxAccountReq {
 }
 
 // 添加DeBox账号 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
-export interface CreateDeboxAccountResp { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CreateDeboxAccountResp {}
 
 // 更新DeBox账号 请求体
 export type UpdateDeboxAccountReq = DeboxAccount;
 
 // 更新DeBox账号 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
-export interface UpdateDeboxAccountResp { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface UpdateDeboxAccountResp {}
 
 // 更新DeBox账号状态 请求体
 export interface UpdateDeboxAccountStatusReq {
@@ -81,8 +79,8 @@ export interface UpdateDeboxAccountStatusReq {
 }
 
 // 更新DeBox账号状态 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
-export interface UpdateDeboxAccountStatusResp { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface UpdateDeboxAccountStatusResp {}
 
 // 删除数据 请求体
 export interface DeleteDeboxAccountReq {
@@ -90,29 +88,28 @@ export interface DeleteDeboxAccountReq {
 }
 
 // 删除数据 响应体
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
-export interface DeleteDeboxAccountResp { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface DeleteDeboxAccountResp {}
 
-export interface UpdateAllAccountsInfoReq {
-  user_id: number; // 用户ID
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface UpdateAllAccountsInfoReq {}
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
-export interface UpdateAllAccountsInfoResp { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface UpdateAllAccountsInfoResp {}
 
 export interface UpdateAccountInfoReq {
   id: number; // 账号ID
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
-export interface UpdateAccountInfoResp { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface UpdateAccountInfoResp {}
 
 // 下载配置文件 请求体
 export interface DownloadConfigReq {
   id: number; // 账号ID
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type, prettier/prettier
-export interface DownloadConfigResp { }
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface DownloadConfigResp {}
 
 export type UploadConfigResp = DeboxAccount;

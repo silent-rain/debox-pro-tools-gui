@@ -12,11 +12,10 @@ import Empty from '@/components/empty';
 import styles from './index.module.less';
 
 // 获取账号列表
-const fetchAccounts = async (userId: number): Promise<DeboxAccount[]> => {
+const fetchAccounts = async (): Promise<DeboxAccount[]> => {
   const data: GetDeboxAccountsReq = {
     page: 0,
     page_size: 0,
-    user_id: userId,
     all: true,
   };
   const response = await DeboxAccountApi.list(data);
@@ -64,7 +63,6 @@ const downloadConfigFile = async (accountId: number) => {
 // 用户列表
 const AccountList = () => {
   const navigate = useNavigate();
-  const authStore = useAuthStore();
 
   const [visible, setVisible] = useState(false);
   const [currentAccountId, setCurrentAccountId] = useState<number | null>(null);
@@ -76,7 +74,7 @@ const AccountList = () => {
     const loadAccounts = async () => {
       try {
         setLoading(true);
-        const data = await fetchAccounts(authStore.user_id!);
+        const data = await fetchAccounts();
         setAccounts(data);
       } catch (err) {
         console.error(err);
@@ -86,7 +84,7 @@ const AccountList = () => {
     };
 
     loadAccounts();
-  }, [authStore.user_id]);
+  }, []);
 
   const actions: Action[] = [
     { text: '更新', key: 'update', onClick: () => handleMenuAction('update', currentAccountId!) },
@@ -103,7 +101,7 @@ const AccountList = () => {
           // 更新账号信息
           await updateAccountInfo(accountId);
           // 重新获取账号列表
-          const data = await fetchAccounts(authStore.user_id!);
+          const data = await fetchAccounts();
           setAccounts(data);
         } catch (err) {
           console.error(err);
@@ -120,7 +118,7 @@ const AccountList = () => {
           // 删除账号
           await deleteAccount(accountId);
           // 重新获取账号列表
-          const data = await fetchAccounts(authStore.user_id!);
+          const data = await fetchAccounts();
           setAccounts(data);
         } catch (err) {
           console.error(err);
