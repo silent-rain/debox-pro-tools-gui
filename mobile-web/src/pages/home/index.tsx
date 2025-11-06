@@ -22,7 +22,7 @@ const Home = () => {
       icon: <UserOutline />,
       description: '管理DeBox账号',
     },
-    { title: '同步群组', path: ROUTES.SYNC_GROUP, icon: <TeamOutline />, description: '同步DeBox账号下的群组' },
+    { title: '同步群组', path: ROUTES.SYNC_GROUP, icon: <TeamOutline />, description: '同步账号的群组' },
     {
       title: '同步群员',
       path: ROUTES.SYNC_GROUP_MEMBER,
