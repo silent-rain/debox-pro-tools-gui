@@ -29,5 +29,7 @@ export const ROUTES = {
 
   // 同步群员
   SYNC_GROUP_MEMBER: '/sync-group-member',
-  SYNC_GROUP_MEMBER_FORM: '/sync-group-member/form',
+
+  // 一键关注用户
+  FOLLOW_USER: '/follow-user',
 };
