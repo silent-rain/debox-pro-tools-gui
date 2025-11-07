@@ -19,6 +19,7 @@ impl MigratorTrait for Migrator {
             // DeBox 管理
             Box::new(debox::debox_account::Migration),
             Box::new(debox::debox_group::Migration),
+            Box::new(debox::debox_group_member::Migration),
             // 系统管理
             Box::new(system::config::Migration),
             Box::new(system::dict_dimension::Migration),

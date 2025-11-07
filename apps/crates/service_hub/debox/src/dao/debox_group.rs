@@ -14,6 +14,7 @@ use crate::dto::debox_group::GetDeboxGroupsReq;
 
 /// 数据访问
 #[injectable]
+#[derive(Clone)]
 pub struct DeboxGroupDao {
     db: Arc<dyn PoolTrait>,
 }

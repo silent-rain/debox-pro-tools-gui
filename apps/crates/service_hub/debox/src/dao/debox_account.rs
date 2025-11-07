@@ -14,6 +14,7 @@ use crate::dto::debox_account::{DeboxAccountSort, GetDeboxAccountsReq};
 
 /// 数据访问
 #[injectable]
+#[derive(Clone)]
 pub struct DeboxAccountDao {
     db: Arc<dyn PoolTrait>,
 }

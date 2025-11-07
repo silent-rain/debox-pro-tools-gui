@@ -1750,6 +1750,7 @@ dependencies = [
  "debox-pro-rs",
  "entity 0.1.0",
  "err_code 0.1.0",
+ "futures",
  "inject",
  "log 0.4.28",
  "nject",
@@ -1759,6 +1760,7 @@ dependencies = [
  "serde_repr",
  "tempfile",
  "thiserror 2.0.17",
+ "tokio",
  "utils",
  "validator",
 ]
@@ -2110,6 +2112,7 @@ dependencies = [
  "serde",
  "tauri",
  "thiserror 2.0.17",
+ "tokio",
  "utils",
 ]
 

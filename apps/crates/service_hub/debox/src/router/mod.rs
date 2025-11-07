@@ -4,6 +4,7 @@ use axum::Router;
 
 pub mod debox_account;
 pub mod debox_group;
+pub mod debox_group_member;
 
 /// 路由器
 pub struct DeboxRouter;

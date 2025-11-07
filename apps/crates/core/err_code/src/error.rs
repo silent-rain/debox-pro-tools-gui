@@ -63,6 +63,8 @@ pub enum Error {
     UtilsError(#[from] utils::error::Error),
     #[error("date time parse error, {0}")]
     DateTimeParseError(String),
+    #[error(transparent)]
+    AcquireError(#[from] tokio::sync::AcquireError),
 
     // 数据库操作
     #[error("db initialized error, {0}")]
