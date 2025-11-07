@@ -2110,6 +2110,7 @@ dependencies = [
  "serde",
  "tauri",
  "thiserror 2.0.17",
+ "utils",
 ]
 
 [[package]]

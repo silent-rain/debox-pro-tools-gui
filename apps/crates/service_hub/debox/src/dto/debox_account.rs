@@ -92,8 +92,22 @@ impl From<debox_account::Model> for GetDeboxAccountResp {
 /// 添加DeBox账号 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct CreateDeboxAccountReq {
-    #[serde(flatten)]
-    pub model: debox_account::Model,
+    /// 应用唯一标识，在DeBox开放平台申请
+    pub app_id: String,
+    /// 开发者 API Key，在DeBox开放平台获取
+    pub api_key: String,
+    /// 开发者 App Secret，在DeBox开放平台获取
+    pub app_secret: String,
+    /// 登录授权, 有效期较短
+    pub access_token: String,
+    /// WEB登录授权
+    pub web_token: String,
+    /// DeBox 用户ID
+    pub debox_user_id: String,
+    /// 描述信息
+    pub desc: String,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 /// 添加DeBox账号 响应体
@@ -103,8 +117,24 @@ pub struct CreateDeboxAccountResp {}
 /// 更新DeBox账号信息 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDeboxAccountReq {
-    #[serde(flatten)]
-    pub model: debox_account::Model,
+    /// 账号ID
+    pub id: i32,
+    /// 应用唯一标识，在DeBox开放平台申请
+    pub app_id: String,
+    /// 开发者 API Key，在DeBox开放平台获取
+    pub api_key: String,
+    /// 开发者 App Secret，在DeBox开放平台获取
+    pub app_secret: String,
+    /// 登录授权, 有效期较短
+    pub access_token: String,
+    /// WEB登录授权
+    pub web_token: String,
+    /// DeBox 用户ID
+    pub debox_user_id: String,
+    /// 描述信息
+    pub desc: String,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 /// 更新DeBox账号信息 响应体

@@ -15,6 +15,7 @@ use debox_pro_rs::{
 };
 use entity::debox::debox_account;
 use err_code::{Error, ErrorMsg};
+use utils::json::struct_to_struct;
 
 use crate::{
     dao::debox_account::DeboxAccountDao,
@@ -44,22 +45,23 @@ impl DeboxAccountService {
             ..Default::default()
         };
 
-        let client = DeBoxClient::new(config).map_err(|e| {
+        DeBoxClient::new(config).map_err(|e| {
             error!("获取DeBox客户端失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("获取DeBox客户端失败")
-        })?;
-        Ok(client)
+        })
     }
 
     /// 检查 ApiKey 状态
     async fn check_api_key_status(&self, model: &debox_account::Model) -> Result<(), ErrorMsg> {
         let client = self.debox_client(model)?;
 
+        // 使用测试钱包地址进行状态检查
         let data = IsUserFollowReq {
             wallet_address: "0xe409b19729ed02ca6a2b05f4d2cdae86b6a0ddbd".to_string(),
             follow_address: "0x0f4c6380a3864ced10ee1064f6a0d21233880c5d".to_string(),
         };
-        let _resp = client.is_user_follow(data).await.map_err(|e| {
+
+        client.is_user_follow(data).await.map_err(|e| {
             error!("Api Key 状态检查失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("Api Key 状态检查失败")
         })?;
@@ -74,10 +76,12 @@ impl DeboxAccountService {
     ) -> Result<(), ErrorMsg> {
         let client = self.debox_client(model)?;
 
+        // 使用测试用户ID进行状态检查
         let data = UserInfoReq {
             user_id: "2y9u8fkw".to_string(),
         };
-        let _resp = UserApi::user_info(&client, data).await.map_err(|e| {
+
+        UserApi::user_info(&client, data).await.map_err(|e| {
             error!("Access Token 状态检查失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("Access Token 状态检查失败")
         })?;
@@ -104,12 +108,43 @@ impl DeboxAccountService {
             iversion: 1,
             use_menu: 1,
         };
-        let resp = UserExtApi::user_info(&client, data).await.map_err(|e| {
+
+        UserExtApi::user_info(&client, data).await.map_err(|e| {
             error!("获取 DeBox 账号信息失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("获取 DeBox 账号信息失败")
-        })?;
+        })
+    }
 
-        Ok(resp)
+    /// 更新账号用户信息和状态
+    async fn update_account_info_and_status(
+        &self,
+        active_model: &mut debox_account::ActiveModel,
+        model: &debox_account::Model,
+    ) {
+        // 检查 API Key 状态
+        if self.check_api_key_status(model).await.is_ok() {
+            active_model.api_key_status = Set(true);
+        }
+
+        // 检查 Access Token 状态
+        if self.check_access_token_status(model).await.is_ok() {
+            active_model.access_token_status = Set(true);
+        }
+
+        // 获取并更新用户信息
+        if let Ok(user_info) = self.get_debox_account(model).await {
+            let name = if user_info.name.is_empty() {
+                user_info.address[user_info.address.len() - 8..].to_string()
+            } else {
+                user_info.name
+            };
+
+            active_model.name = Set(name);
+            active_model.avatar = Set(Some(user_info.pic));
+            active_model.invite_code = Set(user_info.invite_code);
+            active_model.wallet_address = Set(user_info.address);
+            active_model.web_token_status = Set(true);
+        }
     }
 }
 
@@ -187,51 +222,39 @@ impl DeboxAccountService {
 
         // 是否存在 DeBox 账号
         if self
-            .exist_debox_user_id(user_id, req.model.debox_user_id.clone())
+            .exist_debox_user_id(user_id, req.debox_user_id.clone())
             .await?
         {
             error!(
                 "DeBox账号已存在, user_id: {:#?}, debox_user_id: {:#?}",
-                user_id, req.model.debox_user_id
+                user_id, req.debox_user_id
             );
             return Err(Error::DbDataExistError.into_err_with_msg("DeBox账号已存在"));
         }
 
-        // 创建用户
+        // 类型转换
+        let model: debox_account::Model = struct_to_struct(&req).map_err(|e| {
+            error!("DeBox账号信息转换失败, err: {:#?}", e);
+            Error::UtilsError(e).into_err_with_msg("DeBox账号信息转换失败")
+        })?;
+
+        // 创建基础模型
         let mut active_model = debox_account::ActiveModel {
             user_id: Set(user_id),
-            app_id: Set(req.model.app_id.clone()),
-            api_key: Set(req.model.api_key.clone()),
-            app_secret: Set(req.model.app_secret.clone()),
-            access_token: Set(req.model.access_token.clone()),
-            web_token: Set(req.model.web_token.clone()),
-            debox_user_id: Set(req.model.debox_user_id.clone()),
-            wallet_address: Set(req.model.wallet_address.clone()),
-            desc: Set(req.model.desc.clone()),
-            status: Set(req.model.status),
+            app_id: Set(req.app_id.clone()),
+            api_key: Set(req.api_key.clone()),
+            app_secret: Set(req.app_secret.clone()),
+            access_token: Set(req.access_token.clone()),
+            web_token: Set(req.web_token.clone()),
+            debox_user_id: Set(req.debox_user_id.clone()),
+            desc: Set(req.desc.clone()),
+            status: Set(req.status),
             ..Default::default()
         };
 
-        // 账号检测
-        if self.check_api_key_status(&req.model).await.is_ok() {
-            active_model.api_key_status = Set(true)
-        }
-        if self.check_access_token_status(&req.model).await.is_ok() {
-            active_model.access_token_status = Set(true)
-        }
-
-        if let Ok(user_info) = self.get_debox_account(&req.model).await {
-            if user_info.name.is_empty() {
-                active_model.name =
-                    Set(user_info.address[user_info.address.len() - 8..].to_string());
-            } else {
-                active_model.name = Set(user_info.name);
-            }
-            active_model.avatar = Set(Some(user_info.pic));
-            active_model.invite_code = Set(user_info.invite_code);
-            active_model.wallet_address = Set(user_info.address);
-            active_model.web_token_status = Set(true);
-        }
+        // 更新账号状态和用户信息
+        self.update_account_info_and_status(&mut active_model, &model)
+            .await;
 
         let result = self
             .debox_account_dao
@@ -248,51 +271,37 @@ impl DeboxAccountService {
     /// 更新DeBox账号
     pub async fn update(&self, ctx: &Context, req: UpdateDeboxAccountReq) -> Result<u64, ErrorMsg> {
         let user_id = ctx.get_user_id();
-        let id = req.model.id;
+        let id = req.id;
+
+        // 类型转换
+        let model: debox_account::Model = struct_to_struct(&req).map_err(|e| {
+            error!("DeBox账号信息转换失败, err: {:#?}", e);
+            Error::UtilsError(e).into_err_with_msg("DeBox账号信息转换失败")
+        })?;
 
         let mut active_model = debox_account::ActiveModel {
-            app_id: Set(req.model.app_id.clone()),
-            api_key: Set(req.model.api_key.clone()),
-            app_secret: Set(req.model.app_secret.clone()),
-            access_token: Set(req.model.access_token.clone()),
-            web_token: Set(req.model.web_token.clone()),
-            debox_user_id: Set(req.model.debox_user_id.clone()),
-            desc: Set(req.model.desc.clone()),
-            status: Set(req.model.status),
+            app_id: Set(req.app_id.clone()),
+            api_key: Set(req.api_key.clone()),
+            app_secret: Set(req.app_secret.clone()),
+            access_token: Set(req.access_token.clone()),
+            web_token: Set(req.web_token.clone()),
+            debox_user_id: Set(req.debox_user_id.clone()),
+            desc: Set(req.desc.clone()),
+            status: Set(req.status),
             ..Default::default()
         };
 
-        // 账号检测
-        if self.check_api_key_status(&req.model).await.is_ok() {
-            active_model.api_key_status = Set(true)
-        }
-        if self.check_access_token_status(&req.model).await.is_ok() {
-            active_model.access_token_status = Set(true)
-        }
+        // 更新账号状态和用户信息
+        self.update_account_info_and_status(&mut active_model, &model)
+            .await;
 
-        if let Ok(user_info) = self.get_debox_account(&req.model).await {
-            if user_info.name.is_empty() {
-                active_model.name =
-                    Set(user_info.address[user_info.address.len() - 8..].to_string());
-            } else {
-                active_model.name = Set(user_info.name);
-            }
-            active_model.avatar = Set(Some(user_info.pic));
-            active_model.invite_code = Set(user_info.invite_code);
-            active_model.wallet_address = Set(user_info.address);
-            active_model.web_token_status = Set(true);
-        }
-
-        let result = self
-            .debox_account_dao
+        self.debox_account_dao
             .update(id, user_id, active_model)
             .await
             .map_err(|err| {
                 error!("更新DeBox账号失败, err: {:#?}", err);
                 Error::DbUpdateError.into_err_with_msg("更新DeBox账号失败")
-            })?;
-
-        Ok(result)
+            })
     }
 
     /// 更新数据状态
@@ -337,12 +346,41 @@ impl DeboxAccountService {
 }
 
 impl DeboxAccountService {
+    /// 更新账户信息
+    pub async fn update_account_info(
+        &self,
+        ctx: &Context,
+        req: UpdateAccountInfoReq,
+    ) -> Result<(), ErrorMsg> {
+        // 查询账号信息
+        let account = self.info(ctx, GetDeboxAccountReq { id: req.id }).await?;
+
+        let mut active_model = debox_account::ActiveModel {
+            ..Default::default()
+        };
+
+        // 更新账号状态和用户信息
+        self.update_account_info_and_status(&mut active_model, &account)
+            .await;
+
+        self.debox_account_dao
+            .update(account.id, account.user_id, active_model)
+            .await
+            .map_err(|err| {
+                error!("更新DeBox账号失败, err: {:#?}", err);
+                Error::DbUpdateError.into_err_with_msg("更新DeBox账号失败")
+            })?;
+
+        Ok(())
+    }
+
     /// 更新所有账户信息
     pub async fn update_all_accounts_info(
         &self,
         ctx: &Context,
         req: UpdateAllAccountsInfoReq,
     ) -> Result<(), ErrorMsg> {
+        // 查询DeBox账号列表
         let (mut accounts, _) = self
             .debox_account_dao
             .accounts_by_user_id(req.user_id)
@@ -352,35 +390,17 @@ impl DeboxAccountService {
                 Error::DbQueryError.into_err_with_msg("查询DeBox账号列表失败")
             })?;
 
+        if accounts.is_empty() {
+            error!("DeBox账号列表为空");
+            return Ok(());
+        }
+
+        // 更新所有账号信息
         let total = accounts.len();
         let mut failed_count = 0;
         for account in accounts.iter_mut() {
-            if self.check_api_key_status(account).await.is_ok() {
-                account.api_key_status = true;
-            }
-            if self.check_access_token_status(account).await.is_ok() {
-                account.access_token_status = true;
-            }
-
-            if let Ok(user_info) = self.get_debox_account(account).await {
-                account.web_token_status = true;
-                if user_info.name.is_empty() {
-                    account.name = user_info.address[user_info.address.len() - 8..].to_string();
-                } else {
-                    account.name = user_info.name;
-                }
-                account.avatar = Some(user_info.pic);
-                account.invite_code = user_info.invite_code;
-                account.wallet_address = user_info.address;
-            }
-
             if let Err(e) = self
-                .update(
-                    ctx,
-                    UpdateDeboxAccountReq {
-                        model: account.clone(),
-                    },
-                )
+                .update_account_info(ctx, UpdateAccountInfoReq { id: account.id })
                 .await
             {
                 error!("更新DeBox账号失败, err: {e:#?}");
@@ -395,57 +415,17 @@ impl DeboxAccountService {
         Ok(())
     }
 
-    /// 更新账户信息
-    pub async fn update_account_info(
-        &self,
-        ctx: &Context,
-        req: UpdateAccountInfoReq,
-    ) -> Result<(), ErrorMsg> {
-        let mut account = self.info(ctx, GetDeboxAccountReq { id: req.id }).await?;
-
-        if self.check_api_key_status(&account).await.is_ok() {
-            account.api_key_status = true;
-        }
-        if self.check_access_token_status(&account).await.is_ok() {
-            account.access_token_status = true;
-        }
-
-        let user_info = self.get_debox_account(&account).await?;
-        if user_info.name.is_empty() {
-            account.name = user_info.address[user_info.address.len() - 8..].to_string();
-        } else {
-            account.name = user_info.name;
-        }
-        account.avatar = Some(user_info.pic);
-        account.invite_code = user_info.invite_code;
-        account.wallet_address = user_info.address;
-        account.web_token_status = true;
-
-        self.update(
-            ctx,
-            UpdateDeboxAccountReq {
-                model: account.clone(),
-            },
-        )
-        .await
-        .map_err(|err| {
-            error!("更新DeBox账号失败, err: {:#?}", err);
-            Error::DbUpdateError.into_err_with_msg("更新DeBox账号失败")
-        })?;
-
-        Ok(())
-    }
-
     /// 上传配置文件
     ///
     /// 上传 json 文件
+    /// ```json
+    /// {"app_id":"","api_key":"","app_secret":"","access_token":"","web_token":"","debox_user_id":""}
+    /// ```
     pub async fn upload_config_file(
         &self,
         ctx: &Context,
         mut req: UploadConfigFileReq,
     ) -> Result<debox_account::Model, ErrorMsg> {
-        let user_id = ctx.get_user_id();
-
         // 读取json文件数据
         let mut buffer = vec![];
         req.file
@@ -458,14 +438,11 @@ impl DeboxAccountService {
             Error::FromUtf8(e).into_err_with_msg("文件内容转换失败")
         })?;
 
-        let mut model: debox_account::Model = serde_json::from_str(&file_content).map_err(|e| {
+        // 添加
+        let data: CreateDeboxAccountReq = serde_json::from_str(&file_content).map_err(|e| {
             error!("文件内容转换失败, err: {:#?}", e);
             Error::ConvertType(e.to_string()).into_err_with_msg("文件内容转换失败")
         })?;
-        model.user_id = user_id;
-
-        // 添加
-        let data = CreateDeboxAccountReq { model };
         let result = self.create(ctx, data).await?;
 
         Ok(result)

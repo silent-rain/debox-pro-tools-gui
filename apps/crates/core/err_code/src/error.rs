@@ -59,6 +59,8 @@ pub enum Error {
     /// from utf8 error, from std::string::FromUtf8Error
     #[error(transparent)]
     FromUtf8(#[from] std::string::FromUtf8Error),
+    #[error(transparent)]
+    UtilsError(#[from] utils::error::Error),
     #[error("date time parse error, {0}")]
     DateTimeParseError(String),
 

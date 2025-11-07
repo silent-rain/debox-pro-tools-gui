@@ -61,8 +61,20 @@ impl From<debox_group::Model> for GetDeboxGroupResp {
 /// 添加DeBox群组 请求体
 #[derive(Serialize, Deserialize, Validate)]
 pub struct CreateDeboxGroupReq {
-    #[serde(flatten)]
-    pub model: debox_group::Model,
+    /// 账号ID
+    pub account_id: i32,
+    /// 群组ID
+    pub gid: String,
+    /// 群组名称
+    pub name: String,
+    /// 群组邀请码
+    pub invite_code: String,
+    /// 群组头像
+    pub pic: String,
+    /// 描述信息
+    pub desc: Option<String>,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 /// 添加DeBox群组 响应体
@@ -72,8 +84,22 @@ pub struct CreateDeboxGroupResp {}
 /// 更新数据 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDeboxGroupReq {
-    #[serde(flatten)]
-    pub model: debox_group::Model,
+    /// 群组ID
+    pub id: i32,
+    /// 账号ID
+    pub account_id: i32,
+    /// 群组ID
+    pub gid: String,
+    /// 群组名称
+    pub name: String,
+    /// 群组邀请码
+    pub invite_code: String,
+    /// 群组头像
+    pub pic: String,
+    /// 描述信息
+    pub desc: Option<String>,
+    /// 状态(false:停用,true:正常)
+    pub status: bool,
 }
 
 /// 更新数据 响应体

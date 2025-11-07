@@ -79,12 +79,13 @@ impl DeboxGroupService {
 
         let model = debox_group::ActiveModel {
             user_id: Set(user_id),
-            account_id: Set(req.model.account_id),
-            name: Set(req.model.name),
-            invite_code: Set(req.model.invite_code),
-            pic: Set(req.model.pic),
-            desc: Set(req.model.desc),
-            status: Set(true),
+            account_id: Set(req.account_id),
+            gid: Set(req.gid),
+            name: Set(req.name),
+            invite_code: Set(req.invite_code),
+            pic: Set(req.pic),
+            desc: Set(req.desc),
+            status: Set(req.status),
             ..Default::default()
         };
         let result = self.debox_group_dao.create(model).await.map_err(|err| {
@@ -99,18 +100,19 @@ impl DeboxGroupService {
     pub async fn update(&self, ctx: &Context, req: UpdateDeboxGroupReq) -> Result<u64, ErrorMsg> {
         let user_id = ctx.get_user_id();
         let active_model = debox_group::ActiveModel {
-            account_id: Set(req.model.account_id),
-            name: Set(req.model.name),
-            invite_code: Set(req.model.invite_code),
-            pic: Set(req.model.pic),
-            desc: Set(req.model.desc),
-            status: Set(true),
+            account_id: Set(req.account_id),
+            gid: Set(req.gid),
+            name: Set(req.name),
+            invite_code: Set(req.invite_code),
+            pic: Set(req.pic),
+            desc: Set(req.desc),
+            status: Set(req.status),
             ..Default::default()
         };
 
         let result = self
             .debox_group_dao
-            .update(req.model.id, user_id, active_model)
+            .update(req.id, user_id, active_model)
             .await
             .map_err(|err| {
                 error!("更新DeBox群组失败, err: {:#?}", err);
@@ -184,17 +186,15 @@ impl DeboxGroupService {
 
 impl DeboxGroupService {
     /// 创建或更新群组
-    async fn create_or_update(
+    async fn create_or_update_dao(
         &self,
-        user_id: i32,
-        account_id: i32,
-        invite_code: String,
+        account: &debox_account::Model,
         data: &MyDao,
     ) -> Result<(), ErrorMsg> {
         // 查询dao
         let dao_info = self
             .debox_group_dao
-            .info_by_gid(user_id, account_id, data.gid.clone())
+            .info_by_gid(account.user_id, account.id, data.gid.clone())
             .await
             .map_err(|e| {
                 error!("查询DeBox DAO信息失败, err: {:#?}", e);
@@ -202,36 +202,36 @@ impl DeboxGroupService {
             })?;
 
         let mut active_model = debox_group::ActiveModel {
-            gid: Set(data.gid.clone()),
             name: Set(data.name.clone()),
-            invite_code: Set(invite_code),
             pic: Set(data.info.pic.clone()),
             ..Default::default()
         };
 
-        match dao_info {
-            Some(data) => {
-                self.debox_group_dao
-                    .update(data.id, data.user_id, active_model)
-                    .await
-                    .map_err(|e| {
-                        error!("更新DeBox DAO信息失败, err: {e:#?}");
-                        Error::DbUpdateError.into_err_with_msg("更新DeBox DAO信息失败")
-                    })?;
-            }
-            None => {
-                active_model.user_id = Set(user_id);
-                active_model.account_id = Set(account_id);
-                active_model.status = Set(true);
-                self.debox_group_dao
-                    .create(active_model)
-                    .await
-                    .map_err(|e| {
-                        error!("添加DeBox DAO信息失败, err: {e:#?}");
-                        Error::DbAddError.into_err_with_msg("添加DeBox DAO信息失败")
-                    })?;
-            }
+        // 更新dao
+        if let Some(data) = dao_info {
+            self.debox_group_dao
+                .update(data.id, data.user_id, active_model)
+                .await
+                .map_err(|e| {
+                    error!("更新DeBox DAO信息失败, err: {e:#?}");
+                    Error::DbUpdateError.into_err_with_msg("更新DeBox DAO信息失败")
+                })?;
+            return Ok(());
         }
+
+        // 创建dao
+        active_model.user_id = Set(account.user_id);
+        active_model.account_id = Set(account.id);
+        active_model.gid = Set(data.gid.clone());
+        active_model.invite_code = Set(account.invite_code.clone());
+        active_model.status = Set(true);
+        self.debox_group_dao
+            .create(active_model)
+            .await
+            .map_err(|e| {
+                error!("添加DeBox DAO信息失败, err: {e:#?}");
+                Error::DbAddError.into_err_with_msg("添加DeBox DAO信息失败")
+            })?;
 
         Ok(())
     }
@@ -272,12 +272,11 @@ impl DeboxGroupService {
                 }
             };
 
-            let invite_code = account_info.invite_code;
-
-            // https://m.debox.pro/group?id=bzqg8m3n&code=peqt8jxu
+            // 添加或更新群组信息
+            // 群组分享链接: https://m.debox.pro/group?id=bzqg8m3n&code=peqt8jxu
             for dao in daos {
                 if self
-                    .create_or_update(user_id, account_id, invite_code.clone(), &dao)
+                    .create_or_update_dao(&account_info, &dao)
                     .await
                     .is_err()
                 {
