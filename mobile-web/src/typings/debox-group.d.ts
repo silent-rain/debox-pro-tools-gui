@@ -21,6 +21,7 @@ export interface GetDeboxGroupsReq {
   start_time?: string; // 开始时间
   end_time?: string; // 结束时间
   all?: boolean; // 返回所有数据
+  status?: boolean; // 群组状态
   account_ids: number[]; // 账号ID
   name?: string; // 群组名称
 }

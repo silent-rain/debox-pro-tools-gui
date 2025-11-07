@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Modal } from 'antd-mobile';
-import { cacheTokenKey } from '@/constant/auth';
+import { cacheTokenKey } from '@/constants/auth';
 
 function dispatchLogout() {
   Modal.confirm({

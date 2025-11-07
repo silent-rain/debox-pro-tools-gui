@@ -1,7 +1,7 @@
 // DeBox账号管理
 
 import request from '@/utils/request';
-import { server } from './constant';
+import { SERVER } from '@/constants/http';
 import {
   CreateDeboxAccountReq,
   CreateDeboxAccountResp,
@@ -28,7 +28,7 @@ export const DeboxAccountApi = {
   // 获取账号列表
   list: async (data: GetDeboxAccountsReq): Promise<GetDeboxAccountsResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts`,
+      url: `${SERVER}/debox/debox-accounts`,
       method: 'GET',
       params: data,
     });
@@ -38,7 +38,7 @@ export const DeboxAccountApi = {
   // 获取账号信息
   info: async (data: GetDeboxAccountReq): Promise<GetDeboxAccountResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/${data.id}`,
+      url: `${SERVER}/debox/debox-accounts/${data.id}`,
       method: 'GET',
       params: {},
     });
@@ -48,7 +48,7 @@ export const DeboxAccountApi = {
   // 创建账号
   create: async (data: CreateDeboxAccountReq): Promise<CreateDeboxAccountResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts`,
+      url: `${SERVER}/debox/debox-accounts`,
       method: 'POST',
       data,
     });
@@ -58,7 +58,7 @@ export const DeboxAccountApi = {
   // 更新账号信息
   update: async (data: UpdateDeboxAccountReq): Promise<UpdateDeboxAccountResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/update`,
+      url: `${SERVER}/debox/debox-accounts/update`,
       method: 'PUT',
       data,
     });
@@ -68,7 +68,7 @@ export const DeboxAccountApi = {
   // 更新账号状态
   updateStatus: async (data: UpdateDeboxAccountStatusReq): Promise<UpdateDeboxAccountStatusResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/update-status`,
+      url: `${SERVER}/debox/debox-accounts/update-status`,
       method: 'PUT',
       data,
     });
@@ -78,7 +78,7 @@ export const DeboxAccountApi = {
   // 删除账号
   delete: async (data: DeleteDeboxAccountReq): Promise<DeleteDeboxAccountResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/${data.id}`,
+      url: `${SERVER}/debox/debox-accounts/${data.id}`,
       method: 'DELETE',
       data: {},
     });
@@ -88,7 +88,7 @@ export const DeboxAccountApi = {
   // 更新所有账户信息
   updateAllAccountsInfo: async (data: UpdateAllAccountsInfoReq): Promise<UpdateAllAccountsInfoResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/update-all-accounts-info`,
+      url: `${SERVER}/debox/debox-accounts/update-all-accounts-info`,
       method: 'PUT',
       data,
     });
@@ -98,7 +98,7 @@ export const DeboxAccountApi = {
   // 更新账户信息
   updateAccountInfo: async (data: UpdateAccountInfoReq): Promise<UpdateAccountInfoResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/update-account-info`,
+      url: `${SERVER}/debox/debox-accounts/update-account-info`,
       method: 'PUT',
       data,
     });
@@ -108,7 +108,7 @@ export const DeboxAccountApi = {
   // 下载配置
   downloadConfig: async (data: DownloadConfigReq): Promise<DownloadConfigResp> => {
     const response = await request({
-      url: `${server}/debox/debox-accounts/${data.id}/download-config`,
+      url: `${SERVER}/debox/debox-accounts/${data.id}/download-config`,
       method: 'GET',
       params: {},
       responseType: 'blob', // 关键：指定响应类型为 blob
@@ -123,7 +123,7 @@ export const DeboxAccountApi = {
     formData.append('author', author);
 
     const response = await request({
-      url: `${server}/debox/debox-accounts/upload-config`,
+      url: `${SERVER}/debox/debox-accounts/upload-config`,
       method: 'POST',
       // headers: { // 取消headers，让 axios 自动处理 Content-Type 的设置
       //   'Content-Type': 'multipart/form-data',

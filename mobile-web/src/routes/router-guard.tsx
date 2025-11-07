@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { Modal } from 'antd-mobile';
-import { cacheTokenKey } from '@/constant/auth';
+import { cacheTokenKey } from '@/constants/auth';
 import { RouteConfig } from '@/typings/routes';
 import { useAuthStore } from '@/stores';
 import { ROUTES } from '@/constants/routes';

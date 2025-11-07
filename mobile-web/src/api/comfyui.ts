@@ -1,7 +1,7 @@
 import { AddPromptReq, AddPromptRsp, HistoryReq, HistoryRsp, QueueReq, QueueRsp, ViewReq } from '@/typings/api';
 import request from '@/utils/request';
 import { invoke } from '@tauri-apps/api/core';
-import { server } from './constant';
+import { SERVER } from '@/constants/http';
 
 export async function greet(data: string) {
   // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -25,7 +25,7 @@ export const comfyuiView = async (data: ViewReq): Promise<any> => {
 
 export const hello = (data: any): Promise<any> => {
   return request({
-    url: `${server}/hello`,
+    url: `${SERVER}/hello`,
     method: 'GET',
     params: data,
   });

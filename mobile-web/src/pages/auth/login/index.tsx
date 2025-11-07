@@ -10,7 +10,7 @@ import styles from './index.module.less';
 import PhoneLogin from './components/PhoneLogin';
 import BaseLogin from './components/BaseLogin';
 import EmailLogin from './components/EmailLogin';
-import { cacheTokenKey } from '@/constant/auth';
+import { cacheTokenKey } from '@/constants/auth';
 
 export default function Login(): JSX.Element {
   const navigate = useNavigate();

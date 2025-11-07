@@ -3,7 +3,7 @@ import { Form, Input, Button, Checkbox } from 'antd-mobile';
 import { EyeInvisibleOutline, EyeOutline } from 'antd-mobile-icons';
 import { LoginReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
-import { cachedPasswordPhoneKey, cachedPhoneKey } from '@/constant/auth';
+import { cachedPasswordPhoneKey, cachedPhoneKey } from '@/constants/auth';
 import styles from './index.module.less';
 
 export interface PhoneLoginProps {

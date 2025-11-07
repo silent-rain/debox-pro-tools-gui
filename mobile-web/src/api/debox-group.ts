@@ -1,8 +1,7 @@
 // DeBox群组管理
 
 import request from '@/utils/request';
-import { server } from './constant';
-import {} from '@/typings/debox-account';
+import { SERVER } from '@/constants/http';
 import {
   CreateDeboxGroupReq,
   CreateDeboxGroupResp,
@@ -24,7 +23,7 @@ export const DeboxGroupApi = {
   // 获取群组列表
   list: async (data: GetDeboxGroupsReq): Promise<GetDeboxGroupsResp> => {
     const response = await request({
-      url: `${server}/debox/debox-groups`,
+      url: `${SERVER}/debox/debox-groups`,
       method: 'GET',
       params: data,
     });
@@ -34,7 +33,7 @@ export const DeboxGroupApi = {
   // 获取群组信息
   info: async (data: GetDeboxGroupReq): Promise<GetDeboxGroupResp> => {
     const response = await request({
-      url: `${server}/debox/debox-groups/${data.id}`,
+      url: `${SERVER}/debox/debox-groups/${data.id}`,
       method: 'GET',
       params: {},
     });
@@ -44,7 +43,7 @@ export const DeboxGroupApi = {
   // 创建群组
   create: async (data: CreateDeboxGroupReq): Promise<CreateDeboxGroupResp> => {
     const response = await request({
-      url: `${server}/debox/debox-groups`,
+      url: `${SERVER}/debox/debox-groups`,
       method: 'POST',
       data,
     });
@@ -54,7 +53,7 @@ export const DeboxGroupApi = {
   // 更新群组信息
   update: async (data: UpdateDeboxGroupReq): Promise<UpdateDeboxGroupResp> => {
     const response = await request({
-      url: `${server}/debox/debox-groups/update`,
+      url: `${SERVER}/debox/debox-groups/update`,
       method: 'PUT',
       data,
     });
@@ -64,7 +63,7 @@ export const DeboxGroupApi = {
   // 更新群组状态
   updateStatus: async (data: UpdateDeboxGroupStatusReq): Promise<UpdateDeboxGroupStatusResp> => {
     const response = await request({
-      url: `${server}/debox/debox-groups/update-status`,
+      url: `${SERVER}/debox/debox-groups/update-status`,
       method: 'PUT',
       data,
     });
@@ -74,7 +73,7 @@ export const DeboxGroupApi = {
   // 删除群组
   delete: async (data: DeleteDeboxGroupReq): Promise<DeleteDeboxGroupResp> => {
     const response = await request({
-      url: `${server}/debox/debox-groups/${data.id}`,
+      url: `${SERVER}/debox/debox-groups/${data.id}`,
       method: 'DELETE',
       data: {},
     });
@@ -84,7 +83,7 @@ export const DeboxGroupApi = {
   // 同步DeBox群组列表
   syncGroups: async (data: SyncDeboxGroupReq): Promise<SyncDeboxGroupResp> => {
     const response = await request({
-      url: `${server}/debox/debox-groups/sync-groups`,
+      url: `${SERVER}/debox/debox-groups/sync-groups`,
       method: 'POST',
       data,
     });
