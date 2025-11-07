@@ -3,10 +3,11 @@
 // DeBox群组表
 export interface DeboxGroup {
   id: number; // 群组ID
+  user_id: number; // 用户ID
   account_id: number; // 账号ID
-  url: string; // 群组分享链接
+  gid: string; // DeBox群组ID
   name: string; // 群组名称
-  group_code: string; // 群组邀请码
+  invite_code: string; // 群组邀请码
   pic: string; // 群组头像
   desc: string; // 描述信息
   status: boolean; // 状态(false:停用,true:正常)
@@ -21,9 +22,9 @@ export interface GetDeboxGroupsReq {
   start_time?: string; // 开始时间
   end_time?: string; // 结束时间
   all?: boolean; // 返回所有数据
-  status?: boolean; // 群组状态
-  account_ids: number[]; // 账号ID
+  account_ids: number[]; // 账号IDs
   name?: string; // 群组名称
+  status?: boolean; // 群组状态
 }
 
 // 查询DeBox群组列表 响应体

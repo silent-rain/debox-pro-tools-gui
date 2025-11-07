@@ -34,7 +34,14 @@ impl DeboxGroupMemberDao {
             .apply_if(req.end_time, |query, v| {
                 query.filter(debox_group_member::Column::CreatedAt.lt(v))
             })
-            .apply_if(req.member_ids, |query, v| {
+            .apply_if(req.account_ids, |query, v| {
+                if v.is_empty() {
+                    query // 不添加过滤条件
+                } else {
+                    query.filter(debox_group_member::Column::AccountId.is_in(v))
+                }
+            })
+            .apply_if(req.group_ids, |query, v| {
                 if v.is_empty() {
                     query // 不添加过滤条件
                 } else {

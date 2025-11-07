@@ -1,24 +1,25 @@
 import { useState } from 'react';
 import { Button, Toast } from 'antd-mobile';
-import AccountList from './components/AccountList';
+import AccountList from './components/AccountGroupList';
 import GroupMemberList from './components/GroupMemberList';
 import styles from './index.module.less';
-import { DeboxGroupApi } from '@/api/debox-group';
+import { DeboxGroupMemberApi } from '@/api';
 
 // 同步DeBox群组列表
-const syncGroups = async (accountIds: number[]) => {
+const syncGroupMembers = async (groupIds: number[]) => {
   const data = {
-    account_ids: accountIds,
+    group_ids: groupIds,
   };
-  await DeboxGroupApi.syncGroups(data);
+  await DeboxGroupMemberApi.syncGroupMembers(data);
 };
 
 const GroupMemberManagement = () => {
   const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
-  const [groupsUpdateState, setGroupsUpdateState] = useState<number>(0);
+  const [selectedGroups, setGroups] = useState<number[]>([]);
+  const [groupMembersUpdateState, setGroupMembersUpdateState] = useState<number>(0);
 
-  // 同步群组
-  const handleSyncGroups = async () => {
+  // 同步群组成员
+  const handleSyncGroupMembers = async () => {
     if (selectedAccounts.length === 0) {
       Toast.show({
         content: '请选择账号',
@@ -27,25 +28,34 @@ const GroupMemberManagement = () => {
       return;
     }
 
-    await syncGroups(selectedAccounts);
+    await syncGroupMembers(selectedAccounts);
 
     // 更新 GroupList
-    setGroupsUpdateState((prev) => prev + 1);
+    setGroupMembersUpdateState((prev) => prev + 1);
   };
 
   return (
     <div className='group-management'>
       {/* 选择账号 */}
-      <AccountList selectedAccounts={selectedAccounts} onAccountChange={setSelectedAccounts} />
+      <AccountList
+        selectedAccounts={selectedAccounts}
+        selectedGroups={selectedGroups}
+        onAccountChange={setSelectedAccounts}
+        onGroupChange={setGroups}
+      />
 
       <div className={styles.groupMgmtSyncBtn}>
-        <Button color='primary' size='small' fill='solid' onClick={handleSyncGroups}>
+        <Button color='primary' size='small' fill='solid' onClick={handleSyncGroupMembers}>
           同步群员
         </Button>
       </div>
 
       {/* 群组成员列表 */}
-      <GroupMemberList accountIds={selectedAccounts} groupsUpdateState={groupsUpdateState} />
+      <GroupMemberList
+        accountIds={selectedAccounts}
+        groupIds={selectedGroups}
+        groupsMemberUpdateState={groupMembersUpdateState}
+      />
     </div>
   );
 };

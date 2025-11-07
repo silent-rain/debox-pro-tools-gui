@@ -2,44 +2,46 @@ import { FC, useEffect, useState } from 'react';
 import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
 import styles from './GroupMemberList.module.less';
-import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
-import { DeboxGroupApi } from '@/api/debox-group';
 import Empty from '@/components/empty';
+import { DeboxGroupMemberApi } from '@/api';
+import { DeboxGroupMember, GetDeboxGroupMembersReq } from '@/typings/debox-group-member';
 
 interface GroupListProps {
   accountIds: number[];
-  groupsUpdateState: number;
+  groupIds: number[];
+  groupsMemberUpdateState: number;
 }
 
-// 获取群组列表
-const fetchGroups = async (accountIds: number[]): Promise<DeboxGroup[]> => {
-  const data: GetDeboxGroupsReq = {
+// 获取群组成员列表
+const fetchGroupMembers = async (groupIds: number[]): Promise<DeboxGroupMember[]> => {
+  const data: GetDeboxGroupMembersReq = {
     all: true,
-    account_ids: accountIds,
+    group_ids: groupIds,
+    status: true,
   };
-  const response = await DeboxGroupApi.list(data);
+  const response = await DeboxGroupMemberApi.list(data);
   return response.data_list;
 };
 
 // 更新群组状态
-const updateGroupStatus = async (groupId: number, status: boolean) => {
-  const data = await DeboxGroupApi.updateStatus({
-    id: groupId,
+const updateGroupMemberStatus = async (memberId: number, status: boolean) => {
+  const data = await DeboxGroupMemberApi.updateStatus({
+    id: memberId,
     status,
   });
   return data;
 };
 
-const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
-  const [groups, setGroups] = useState<DeboxGroup[]>([]);
+const GroupMemberList: FC<GroupListProps> = ({ accountIds, groupIds, groupsMemberUpdateState }) => {
+  const [groupMembers, setGroupMembers] = useState<DeboxGroupMember[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadAccounts = async () => {
       try {
         setLoading(true);
-        const data = await fetchGroups(accountIds);
-        setGroups(data);
+        const data = await fetchGroupMembers(groupIds);
+        setGroupMembers(data);
       } catch (err) {
         console.error(`fetchGroups error: ${err}`);
       } finally {
@@ -48,13 +50,13 @@ const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
     };
 
     loadAccounts();
-  }, [accountIds, groupsUpdateState]);
+  }, [groupIds, groupsMemberUpdateState]);
 
   const handleSwitchChange = async (groupId: number, checked: boolean) => {
-    await updateGroupStatus(groupId, checked);
+    await updateGroupMemberStatus(groupId, checked);
 
-    const data = await fetchGroups(accountIds);
-    setGroups(data);
+    const data = await fetchGroupMembers(groupIds);
+    setGroupMembers(data);
   };
 
   if (loading) {
@@ -65,27 +67,31 @@ const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
     return <Empty title='请先选择账号' description='暂无数据' />;
   }
 
-  if (groups.length === 0) {
+  if (groupIds.length === 0) {
+    return <Empty title='请先选择群组' description='暂无数据' />;
+  }
+
+  if (groupMembers.length === 0) {
     return <Empty />;
   }
 
   return (
     <>
       <List className={styles.groupList}>
-        {groups.map((group) => (
+        {groupMembers.map((groupMember) => (
           <List.Item
-            key={group.id}
-            prefix={<Avatar className={styles.groupAvatar} src={group.pic ?? ''} />}
+            key={groupMember.id}
+            prefix={<Avatar className={styles.groupAvatar} src={groupMember.pic ?? ''} />}
             extra={
               <Switch
                 checkedText={<CheckOutline fontSize={18} />}
                 uncheckedText={<CloseOutline fontSize={18} />}
-                defaultChecked={group.status}
-                onChange={(checked) => handleSwitchChange(group.id, checked)}
+                defaultChecked={groupMember.status}
+                onChange={(checked) => handleSwitchChange(groupMember.id, checked)}
               />
             }
           >
-            {group.name}
+            {groupMember.name}
           </List.Item>
         ))}
       </List>
@@ -93,4 +99,4 @@ const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
   );
 };
 
-export default GroupList;
+export default GroupMemberList;

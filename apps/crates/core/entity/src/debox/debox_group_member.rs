@@ -14,7 +14,7 @@ use crate::{
 };
 
 #[derive(Clone, Debug, Default, PartialEq, DeriveEntityModel, Eq, Serialize, Deserialize)]
-#[sea_orm(table_name = "debox_group_member")]
+#[sea_orm(table_name = "t_debox_group_member")]
 pub struct Model {
     /// 群组成员ID
     #[sea_orm(primary_key)]

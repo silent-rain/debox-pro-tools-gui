@@ -32,6 +32,7 @@ const AccountList: FC<AccountListProps> = ({ selectedAccounts, onAccountChange }
         const data = await fetchAccounts();
         setAccounts(data);
 
+        // 默认第一个账号选中
         if (data.length > 0) {
           onAccountChange([data[0].id]);
         }

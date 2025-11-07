@@ -16,7 +16,8 @@ impl DeboxRouter {
             "/debox",
             Router::new()
                 .merge(debox_account::DeboxAccountRouter::register()) // DeBox账号管理
-                .merge(debox_group::DeboxGroupRouter::register()), // DeBox群组管理
+                .merge(debox_group::DeboxGroupRouter::register()) // DeBox群组管理
+                .merge(debox_group_member::DeboxGroupMemberRouter::register()), // DeBox群组成员管理
         )
     }
 }

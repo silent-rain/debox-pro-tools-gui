@@ -19,8 +19,10 @@ pub struct GetDeboxGroupMembersReq {
     pub end_time: Option<String>,
     /// 返回所有数据
     pub all: Option<bool>,
-    /// 账号ID
-    pub member_ids: Option<Vec<i32>>,
+    /// 账号IDs
+    pub account_ids: Option<Vec<i32>>,
+    /// 群组IDs
+    pub group_ids: Option<Vec<i32>>,
     /// 成员名称
     pub name: Option<String>,
     /// 成员状态
