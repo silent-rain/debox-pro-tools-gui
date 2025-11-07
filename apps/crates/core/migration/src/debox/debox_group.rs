@@ -9,9 +9,8 @@ use sea_orm::{
 use sea_orm_migration::{DbErr, MigrationTrait, SchemaManager, async_trait};
 
 use crate::{
-    debox::debox_account::DeboxAccount,
-    user::user_base::UserBase,
-    utils::{if_not_exists_create_index, if_not_exists_create_unique_index},
+    debox::debox_account::DeboxAccount, user::user_base::UserBase,
+    utils::if_not_exists_create_index,
 };
 
 #[derive(DeriveMigrationName)]
@@ -36,7 +35,7 @@ impl MigrationTrait for Migration {
                             .comment("群组ID"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccount::UserId)
+                        ColumnDef::new(DeboxGroup::UserId)
                             .integer()
                             .not_null()
                             .comment("用户ID"),
@@ -147,12 +146,12 @@ impl MigrationTrait for Migration {
         .await?;
 
         // create unique index
-        if_not_exists_create_unique_index(
-            manager,
-            DeboxGroup::Table,
-            vec![DeboxGroup::UserId, DeboxGroup::AccountId, DeboxGroup::Gid],
-        )
-        .await?;
+        // if_not_exists_create_unique_index(
+        //     manager,
+        //     DeboxGroup::Table,
+        //     vec![DeboxGroup::UserId, DeboxGroup::AccountId, DeboxGroup::Gid],
+        // )
+        // .await?;
 
         Ok(())
     }

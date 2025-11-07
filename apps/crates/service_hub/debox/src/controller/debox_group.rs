@@ -7,20 +7,20 @@ use axum_validator::{Extension, Json, Query};
 use inject::AInjectProvider;
 
 use crate::{
+    DeboxGroupService,
     dto::debox_group::{
         CreateDeboxGroupReq, CreateDeboxGroupResp, DeleteDeboxGroupReq, DeleteDeboxGroupResp,
         GetDeboxGroupReq, GetDeboxGroupResp, GetDeboxGroupsReq, GetDeboxGroupsResp,
         SyncDeboxGroupReq, SyncDeboxGroupResp, UpdateDeboxGroupReq, UpdateDeboxGroupResp,
         UpdateDeboxGroupStatusReq, UpdateDeboxGroupStatusResp,
     },
-    service::debox_group::DeboxGroupService,
 };
 
 /// 控制器
 pub struct DeboxGroupController;
 
 impl DeboxGroupController {
-    /// 获DeBox群组列表
+    /// 获取DeBox群组列表
     pub async fn list(
         ctx: Context,
         Extension(provider): Extension<AInjectProvider>,

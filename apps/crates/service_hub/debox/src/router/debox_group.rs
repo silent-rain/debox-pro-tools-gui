@@ -5,7 +5,7 @@ use axum::{
     routing::{get, post, put},
 };
 
-use crate::controller::debox_group::DeboxGroupController;
+use crate::DeboxGroupController;
 
 /// 路由器
 pub struct DeboxGroupRouter;

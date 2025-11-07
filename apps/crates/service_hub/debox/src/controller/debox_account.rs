@@ -12,6 +12,7 @@ use err_code::Error;
 use inject::AInjectProvider;
 
 use crate::{
+    DeboxAccountService,
     dto::debox_account::{
         CreateDeboxAccountReq, CreateDeboxAccountResp, DeleteDeboxAccountReq,
         DeleteDeboxAccountResp, DownloadConfigFileReq, GetDeboxAccountReq, GetDeboxAccountResp,
@@ -20,7 +21,6 @@ use crate::{
         UpdateDeboxAccountResp, UpdateDeboxAccountStatusReq, UpdateDeboxAccountStatusResp,
         UploadConfigFileReq, UploadConfigFileResp,
     },
-    service::debox_account::DeboxAccountService,
 };
 
 /// 控制器

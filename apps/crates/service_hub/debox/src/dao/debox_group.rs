@@ -123,7 +123,7 @@ impl DeboxGroupDao {
 }
 
 impl DeboxGroupDao {
-    /// 根据 account_id 和 gid 获取群组信息
+    /// 根据 user_id\account_id\gid 获取群组信息
     pub async fn info_by_gid(
         &self,
         user_id: i32,

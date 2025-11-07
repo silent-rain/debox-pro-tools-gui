@@ -21,7 +21,7 @@ pub struct Model {
     pub user_id: i32,
     /// 账号ID
     pub account_id: i32,
-    /// 群组ID
+    /// DeBox群组ID
     pub gid: String,
     /// 群组名称
     pub name: String,
@@ -42,7 +42,7 @@ pub struct Model {
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     UserBase,
-    DeboxGroup,
+    DeboxAccount,
 }
 
 impl RelationTrait for Relation {
@@ -52,7 +52,7 @@ impl RelationTrait for Relation {
                 .from(Column::UserId)
                 .to(user_base::Column::Id)
                 .into(),
-            Self::DeboxGroup => Entity::belongs_to(debox_account::Entity)
+            Self::DeboxAccount => Entity::belongs_to(debox_account::Entity)
                 .from(Column::AccountId)
                 .to(debox_account::Column::Id)
                 .into(),
@@ -68,7 +68,7 @@ impl Related<user_base::Entity> for Entity {
 
 impl Related<debox_account::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::DeboxGroup.def()
+        Relation::DeboxAccount.def()
     }
 }
 

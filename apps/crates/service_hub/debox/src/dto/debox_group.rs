@@ -42,7 +42,7 @@ impl From<(Vec<debox_group::Model>, u64)> for GetDeboxGroupsResp {
 /// 查询数据 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
 pub struct GetDeboxGroupReq {
-    /// DeBox群组ID
+    /// 群组ID
     pub id: i32,
 }
 
@@ -63,7 +63,7 @@ impl From<debox_group::Model> for GetDeboxGroupResp {
 pub struct CreateDeboxGroupReq {
     /// 账号ID
     pub account_id: i32,
-    /// 群组ID
+    /// Debox群组ID
     pub gid: String,
     /// 群组名称
     pub name: String,
@@ -88,7 +88,7 @@ pub struct UpdateDeboxGroupReq {
     pub id: i32,
     /// 账号ID
     pub account_id: i32,
-    /// 群组ID
+    /// Debox群组ID
     pub gid: String,
     /// 群组名称
     pub name: String,
@@ -109,7 +109,7 @@ pub struct UpdateDeboxGroupResp {}
 /// 更新数据状态 请求体
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Validate)]
 pub struct UpdateDeboxGroupStatusReq {
-    /// DeBox群组ID
+    /// 群组ID
     pub id: i32,
     /// 状态(false:停用,true:正常)
     pub status: bool,
@@ -122,7 +122,7 @@ pub struct UpdateDeboxGroupStatusResp {}
 /// 删除数据 请求体
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct DeleteDeboxGroupReq {
-    /// DeBox群组ID
+    /// 群组ID
     pub id: i32,
 }
 

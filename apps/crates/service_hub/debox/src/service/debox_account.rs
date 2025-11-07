@@ -18,7 +18,7 @@ use err_code::{Error, ErrorMsg};
 use utils::json::struct_to_struct;
 
 use crate::{
-    dao::debox_account::DeboxAccountDao,
+    DeboxAccountDao,
     dto::debox_account::{
         CreateDeboxAccountReq, DeleteDeboxAccountReq, GetDeboxAccountReq, GetDeboxAccountsReq,
         UpdateAccountInfoReq, UpdateAllAccountsInfoReq, UpdateDeboxAccountReq,
