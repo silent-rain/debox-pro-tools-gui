@@ -90,7 +90,7 @@ impl DeboxGroupMemberService {
     ) -> Result<debox_group_member::Model, ErrorMsg> {
         let user_id = ctx.get_user_id();
 
-        let model = debox_group_member::ActiveModel {
+        let mut active_model = debox_group_member::ActiveModel {
             user_id: Set(user_id),
             account_id: Set(req.account_id),
             group_id: Set(req.group_id),
@@ -101,9 +101,12 @@ impl DeboxGroupMemberService {
             pic: Set(req.pic),
             ..Default::default()
         };
+        // TODO 添加是否高危用户判断
+        active_model.is_dangerous = Set(false);
+
         let result = self
             .debox_group_member_dao
-            .create(model)
+            .create(active_model)
             .await
             .map_err(|err| {
                 error!("添加DeBox群组成员信息失败, err: {:#?}", err);
@@ -315,6 +318,9 @@ impl DeboxGroupMemberService {
     ) -> Result<(), ErrorMsg> {
         let mut active_models = Vec::with_capacity(members.len());
         for member in members {
+            // TODO 添加是否高危用户判断
+            let is_dangerous = false;
+
             active_models.push(debox_group_member::ActiveModel {
                 user_id: Set(user_id),
                 account_id: Set(account_id),
@@ -324,9 +330,12 @@ impl DeboxGroupMemberService {
                 address: Set(member.address),
                 name: Set(member.name),
                 pic: Set(Some(member.pic)),
+                is_dangerous: Set(is_dangerous),
                 ..Default::default()
             });
         }
+
+        // TODO 更新?
 
         // 添加成员
         self.debox_group_member_dao

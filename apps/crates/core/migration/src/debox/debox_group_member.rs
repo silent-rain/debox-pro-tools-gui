@@ -89,6 +89,13 @@ impl MigrationTrait for Migration {
                             .comment("成员头像"),
                     )
                     .col(
+                        ColumnDef::new(DeboxGroupMember::IsDangerous)
+                            .boolean()
+                            .not_null()
+                            .default(false)
+                            .comment("是否高危用户,可能导致封号的用户"),
+                    )
+                    .col(
                         ColumnDef::new(DeboxGroupMember::Desc)
                             .string()
                             .string_len(200)
@@ -208,6 +215,8 @@ pub enum DeboxGroupMember {
     Address,
     Name,
     Pic,
+    // 是否高危用户
+    IsDangerous,
     Desc,
     Status,
     CreatedAt,

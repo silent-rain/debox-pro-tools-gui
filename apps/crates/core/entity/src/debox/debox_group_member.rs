@@ -35,6 +35,8 @@ pub struct Model {
     pub name: String,
     /// 成员头像
     pub pic: Option<String>,
+    /// 是否高危用户,可能导致封号的用户
+    pub is_dangerous: bool,
     /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)
