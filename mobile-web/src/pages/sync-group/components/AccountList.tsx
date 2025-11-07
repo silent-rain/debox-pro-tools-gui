@@ -15,6 +15,7 @@ const fetchAccounts = async (): Promise<DeboxAccount[]> => {
     page: 0,
     page_size: 0,
     all: true,
+    status: true,
   };
   const response = await DeboxAccountApi.list(data);
   return response.data_list;
