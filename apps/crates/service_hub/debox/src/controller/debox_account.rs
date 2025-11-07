@@ -7,7 +7,7 @@ use bytes::Bytes;
 use serde_json::json;
 
 use axum_response::{Responder, Response, ResponseErr};
-use axum_validator::{Extension, Json, Path, Query};
+use axum_validator::{Extension, Json, Path};
 use err_code::Error;
 use inject::AInjectProvider;
 
@@ -31,7 +31,7 @@ impl DeboxAccountController {
     pub async fn list(
         ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<GetDeboxAccountsReq>,
+        Json(req): Json<GetDeboxAccountsReq>,
     ) -> Responder<GetDeboxAccountsResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
         let (results, total) = debox_account_service.list(&ctx, req).await?;

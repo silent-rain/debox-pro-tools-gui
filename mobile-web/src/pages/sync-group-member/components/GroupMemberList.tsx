@@ -17,7 +17,7 @@ const fetchGroupMembers = async (groupIds: number[]): Promise<DeboxGroupMember[]
   const data: GetDeboxGroupMembersReq = {
     all: true,
     group_ids: groupIds,
-    status: true,
+    // status: true,
   };
   const response = await DeboxGroupMemberApi.list(data);
   return response.data_list;

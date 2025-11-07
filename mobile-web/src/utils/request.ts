@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Modal } from 'antd-mobile';
+import qs from 'qs';
 import { cacheTokenKey } from '@/constants/auth';
 
 function dispatchLogout() {
@@ -16,6 +17,9 @@ function dispatchLogout() {
 const service = axios.create({
   baseURL: import.meta.env.BASE_URL,
   timeout: 30000,
+  paramsSerializer: (params) => {
+    return qs.stringify(params, { arrayFormat: 'repeat' });
+  },
 });
 
 // 请求拦截器

@@ -23,9 +23,9 @@ export const DeboxGroupApi = {
   // 获取群组列表
   list: async (data: GetDeboxGroupsReq): Promise<GetDeboxGroupsResp> => {
     const response = await request({
-      url: `${SERVER}/debox/debox-groups`,
-      method: 'GET',
-      params: data,
+      url: `${SERVER}/debox/debox-groups/list`,
+      method: 'POST',
+      data,
     });
     return response.data;
   },

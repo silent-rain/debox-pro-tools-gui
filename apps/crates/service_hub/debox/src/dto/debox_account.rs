@@ -9,6 +9,7 @@ use entity::debox::debox_account;
 
 /// 查询DeBox账号列表 请求体
 #[derive(Default, Deserialize, Validate)]
+#[serde(default)]
 pub struct GetDeboxAccountsReq {
     /// 当前分页
     pub page: u64,
@@ -91,6 +92,7 @@ impl From<debox_account::Model> for GetDeboxAccountResp {
 
 /// 添加DeBox账号 请求体
 #[derive(Debug, Default, Serialize, Deserialize, Validate)]
+#[serde(default)]
 pub struct CreateDeboxAccountReq {
     /// 应用唯一标识，在DeBox开放平台申请
     pub app_id: String,

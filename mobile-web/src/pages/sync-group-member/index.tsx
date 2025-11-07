@@ -28,9 +28,14 @@ const GroupMemberManagement = () => {
       return;
     }
 
-    await syncGroupMembers(selectedAccounts);
+    await syncGroupMembers(selectedGroups);
 
     // 更新 GroupList
+    setGroupMembersUpdateState((prev) => prev + 1);
+  };
+
+  // 刷新群员列表
+  const handleRefreshGroupMembers = () => {
     setGroupMembersUpdateState((prev) => prev + 1);
   };
 
@@ -45,6 +50,9 @@ const GroupMemberManagement = () => {
       />
 
       <div className={styles.groupMgmtSyncBtn}>
+        <Button color='primary' size='small' fill='solid' onClick={handleRefreshGroupMembers}>
+          刷新
+        </Button>
         <Button color='primary' size='small' fill='solid' onClick={handleSyncGroupMembers}>
           同步群员
         </Button>

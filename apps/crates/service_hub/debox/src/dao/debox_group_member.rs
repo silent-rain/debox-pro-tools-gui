@@ -155,13 +155,13 @@ impl DeboxGroupMemberDao {
         &self,
         user_id: i32,
         account_id: i32,
-        group_gid: String,
-        debox_user_id: String,
+        group_id: i32,
+        debox_user_id: u64,
     ) -> Result<Option<debox_group_member::Model>, DbErr> {
         DeboxGroupMember::find()
             .filter(debox_group_member::Column::UserId.eq(user_id))
             .filter(debox_group_member::Column::AccountId.eq(account_id))
-            .filter(debox_group_member::Column::GroupGid.eq(group_gid))
+            .filter(debox_group_member::Column::GroupId.eq(group_id))
             .filter(debox_group_member::Column::DeboxUserId.eq(debox_user_id))
             .one(self.db.db())
             .await

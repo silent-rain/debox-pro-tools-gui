@@ -16,10 +16,8 @@ impl DeboxAccountRouter {
         Router::new().nest(
             "/debox-accounts",
             Router::new()
-                .route(
-                    "/",
-                    get(DeboxAccountController::list).post(DeboxAccountController::create),
-                )
+                .route("/", post(DeboxAccountController::create))
+                .route("/list", post(DeboxAccountController::list))
                 .route(
                     "/{id}",
                     get(DeboxAccountController::info).delete(DeboxAccountController::delete),

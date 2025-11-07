@@ -19,6 +19,7 @@ const fetchGroups = async (accountIds: number[]): Promise<DeboxGroup[]> => {
   const data: GetDeboxGroupsReq = {
     all: true,
     account_ids: accountIds,
+    status: true,
   };
   const response = await DeboxGroupApi.list(data);
   return response.data_list;
@@ -40,6 +41,7 @@ const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
   useEffect(() => {
     const loadAccounts = async () => {
       try {
+        setGroups([]);
         setLoading(true);
         const data = await fetchGroups(accountIds);
         setGroups(data);

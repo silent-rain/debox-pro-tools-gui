@@ -26,7 +26,7 @@ use crate::{
 };
 
 const CONCURRENCY_LIMIT: usize = 2; // 控制并发数
-const SYNC_PAGE_LIMIT: usize = 10; // 同步页面数
+const SYNC_PAGE_LIMIT: usize = 2; // 同步页面数
 
 /// 服务层
 #[injectable]
@@ -90,19 +90,23 @@ impl DeboxGroupMemberService {
     ) -> Result<debox_group_member::Model, ErrorMsg> {
         let user_id = ctx.get_user_id();
 
-        let mut active_model = debox_group_member::ActiveModel {
+        let active_model = debox_group_member::ActiveModel {
             user_id: Set(user_id),
             account_id: Set(req.account_id),
             group_id: Set(req.group_id),
             group_gid: Set(req.group_gid),
-            debox_user_id: Set(req.debox_user_id),
+            debox_user_id: Set(req.debox_user_id as i64),
             address: Set(req.address),
             name: Set(req.name),
             pic: Set(req.pic),
+            is_admin: Set(req.is_admin),
+            is_builder: Set(req.is_builder),
+            is_founder: Set(req.is_founder),
+            is_role: Set(req.is_role),
+            desc: Set(req.desc),
+            status: Set(req.status),
             ..Default::default()
         };
-        // TODO 添加是否高危用户判断
-        active_model.is_dangerous = Set(false);
 
         let result = self
             .debox_group_member_dao
@@ -124,11 +128,15 @@ impl DeboxGroupMemberService {
     ) -> Result<u64, ErrorMsg> {
         let user_id = ctx.get_user_id();
         let active_model = debox_group_member::ActiveModel {
-            user_id: Set(user_id),
-            debox_user_id: Set(req.debox_user_id),
             address: Set(req.address),
             name: Set(req.name),
             pic: Set(req.pic),
+            is_admin: Set(req.is_admin),
+            is_builder: Set(req.is_builder),
+            is_founder: Set(req.is_founder),
+            is_role: Set(req.is_role),
+            desc: Set(req.desc),
+            status: Set(req.status),
             ..Default::default()
         };
 
@@ -211,6 +219,77 @@ impl DeboxGroupMemberService {
 }
 
 impl DeboxGroupMemberService {
+    /// 创建或更新群组成员
+    async fn crate_or_update_group_member(
+        &self,
+        user_id: i32,
+        account_id: i32,
+        group_id: i32,
+        group_gid: String,
+        member: DaoMember,
+    ) -> Result<(), ErrorMsg> {
+        let group_member_info = self
+            .debox_group_member_dao
+            .info_by_group_member(user_id, account_id, group_id, member.user_id)
+            .await
+            .map_err(|err| {
+                error!("查询DeBox群组成员信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox群组成员信息失败")
+            })?;
+
+        if let Some(data) = group_member_info {
+            let active_model = debox_group_member::ActiveModel {
+                address: Set(member.address),
+                name: Set(member.name),
+                pic: Set(Some(member.pic)),
+                is_admin: Set(member.is_admin > 0),
+                is_builder: Set(member.is_builder > 0),
+                is_founder: Set(member.is_founder > 0),
+                is_role: Set(member.is_role > 0),
+                ..Default::default()
+            };
+
+            let _result = self
+                .debox_group_member_dao
+                .update(data.id, user_id, active_model)
+                .await
+                .map_err(|err| {
+                    error!("更新DeBox群组成员失败, err: {:#?}", err);
+                    Error::DbUpdateError.into_err_with_msg("更新DeBox群组成员失败")
+                })?;
+
+            return Ok(());
+        }
+
+        let active_model = debox_group_member::ActiveModel {
+            user_id: Set(user_id),
+            account_id: Set(account_id),
+            group_id: Set(group_id),
+            group_gid: Set(group_gid.clone()),
+            debox_user_id: Set(member.user_id as i64),
+            address: Set(member.address),
+            name: Set(member.name),
+            pic: Set(Some(member.pic)),
+            // is_admin: Set(member.is_admin > 0),
+            // is_builder: Set(member.is_builder > 0),
+            // is_founder: Set(member.is_founder > 0),
+            // is_role: Set(member.is_role > 0),
+            status: Set(true),
+            ..Default::default()
+        };
+
+        let _result = self
+            .debox_group_member_dao
+            .create(active_model)
+            .await
+            .map_err(|err| {
+                error!("添加DeBox群组成员信息失败, err: {:#?}", err);
+                Error::DbAddError.into_err_with_msg("添加DeBox群组成员信息失败")
+            })?;
+
+        Ok(())
+    }
+
     /// 同步DeBox群组成员列表
     ///
     /// 该方法会立即返回，实际同步任务会在后台异步执行
@@ -290,13 +369,18 @@ impl DeboxGroupMemberService {
                 let members = match self.get_all_group_members(&client, &group.gid).await {
                     Ok(members) => members,
                     Err(e) => {
-                        error!("获取DeBox群组成员列表失败, err: {:#?}", e);
+                        error!("并发获取DeBox群组成员列表失败, err: {:#?}", e);
                         continue;
                     }
                 };
 
+                if members.is_empty() {
+                    info!("DeBox群组 gid: {} name: {} 没有成员", group.gid, group.name);
+                    continue;
+                }
+
                 // 批量添加群组成员
-                self.batch_add_group_members(user_id, account_id, group, members)
+                self.add_group_members(user_id, account_id, group, members)
                     .await
                     .map_err(|e| {
                         error!("添加DeBox群组成员信息失败, err: {:#?}", e);
@@ -308,43 +392,25 @@ impl DeboxGroupMemberService {
         Ok(())
     }
 
-    /// 批量添加群组成员
-    pub async fn batch_add_group_members(
+    /// 添加群组成员
+    pub async fn add_group_members(
         &self,
         user_id: i32,
         account_id: i32,
         group: debox_group::Model,
         members: Vec<DaoMember>,
     ) -> Result<(), ErrorMsg> {
-        let mut active_models = Vec::with_capacity(members.len());
         for member in members {
-            // TODO 添加是否高危用户判断
-            let is_dangerous = false;
-
-            active_models.push(debox_group_member::ActiveModel {
-                user_id: Set(user_id),
-                account_id: Set(account_id),
-                group_id: Set(group.id),
-                group_gid: Set(group.gid.clone()),
-                debox_user_id: Set(member.user_id),
-                address: Set(member.address),
-                name: Set(member.name),
-                pic: Set(Some(member.pic)),
-                is_dangerous: Set(is_dangerous),
-                ..Default::default()
-            });
+            let _ = self
+                .crate_or_update_group_member(
+                    user_id,
+                    account_id,
+                    group.id,
+                    group.gid.clone(),
+                    member,
+                )
+                .await;
         }
-
-        // TODO 更新?
-
-        // 添加成员
-        self.debox_group_member_dao
-            .creates(active_models)
-            .await
-            .map_err(|e| {
-                error!("添加DeBox群组成员信息失败, err: {:#?}", e);
-                Error::DbAddError.into_err_with_msg("添加DeBox群组成员信息失败")
-            })?;
 
         Ok(())
     }
@@ -358,7 +424,11 @@ impl DeboxGroupMemberService {
         gid: &str,
     ) -> Result<Vec<DaoMember>, ErrorMsg> {
         // 每页 20 条, 设置仅取前100页的数据
-        let total_pages = self.get_group_members_total_pages(client, gid, 0).await?;
+        let total_pages = self.get_group_members_total_pages(client, gid).await?;
+        if total_pages == 0 {
+            return Ok(vec![]);
+        }
+
         let semaphore = Arc::new(Semaphore::new(CONCURRENCY_LIMIT));
 
         // 生成所有页的 Future
@@ -398,21 +468,21 @@ impl DeboxGroupMemberService {
         &self,
         client: &DeBoxClient,
         gid: &str,
-        page: u64,
     ) -> Result<usize, ErrorMsg> {
         let data = DaoMemberReq {
             gid: gid.to_string(),
-            page,
+            page: 0,
             size: 20,
             search: "".to_string(),
             sort_type: 0,
         };
         let resp = client.dao_member(data).await.map_err(|e| {
-            error!("获取DeBox群组成员列表失败, err: {:#?}", e);
-            Error::DeboxProRs(e).into_err_with_msg("获取DeBox群组成员列表失败")
+            error!("获取DeBox gid: {gid:?} 群组成员总页数失败, err: {e:#?}");
+            Error::DeboxProRs(e).into_err_with_msg("获取DeBox群组成员总页数失败")
         })?;
 
-        let total_pages = SYNC_PAGE_LIMIT.min(resp.total / 20);
+        let mut total_pages = (resp.total as f64 / 20.0).ceil() as usize;
+        total_pages = SYNC_PAGE_LIMIT.min(total_pages);
 
         Ok(total_pages)
     }
@@ -432,7 +502,7 @@ impl DeboxGroupMemberService {
             sort_type: 0,
         };
         let resp = client.dao_member(data).await.map_err(|e| {
-            error!("获取DeBox群组成员列表失败, err: {:#?}", e);
+            error!("获取DeBox gid: {gid:?} 群组成员列表失败, err: {e:#?}");
             Error::DeboxProRs(e).into_err_with_msg("获取DeBox群组成员列表失败")
         })?;
         Ok(resp.data)

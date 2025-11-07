@@ -16,10 +16,8 @@ impl DeboxGroupRouter {
         Router::new().nest(
             "/debox-groups",
             Router::new()
-                .route(
-                    "/",
-                    get(DeboxGroupController::list).post(DeboxGroupController::create),
-                )
+                .route("/", post(DeboxGroupController::create))
+                .route("/list", post(DeboxGroupController::list))
                 .route(
                     "/{id}",
                     get(DeboxGroupController::info).delete(DeboxGroupController::delete),

@@ -77,6 +77,14 @@ pub struct CreateDeboxGroupMemberReq {
     pub name: String,
     /// 成员头像
     pub pic: Option<String>,
+    /// 是否管理员
+    pub is_admin: bool,
+    /// 是否构建者
+    pub is_builder: bool,
+    /// 是否创始人
+    pub is_founder: bool,
+    /// 是否角色
+    pub is_role: bool,
     /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)
@@ -92,14 +100,20 @@ pub struct CreateDeboxGroupMemberResp {}
 pub struct UpdateDeboxGroupMemberReq {
     /// 群组成员ID
     pub id: i32,
-    /// Debox用户ID
-    pub debox_user_id: u64,
     /// 钱包地址
     pub address: String,
     /// 成员名称
     pub name: String,
     /// 成员头像
     pub pic: Option<String>,
+    /// 是否管理员
+    pub is_admin: bool,
+    /// 是否构建者
+    pub is_builder: bool,
+    /// 是否创始人
+    pub is_founder: bool,
+    /// 是否角色
+    pub is_role: bool,
     /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)

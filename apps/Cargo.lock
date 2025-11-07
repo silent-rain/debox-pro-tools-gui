@@ -1768,7 +1768,7 @@ dependencies = [
 [[package]]
 name = "debox-pro-rs"
 version = "0.1.0"
-source = "git+https://github.com/silent-rain/debox-pro-rs.git?branch=master#0908fbb596f67074b0a82ae45c9728cfc881f6ca"
+source = "git+https://github.com/silent-rain/debox-pro-rs.git?branch=master#d50e15f350af1e86289eece14a9a0a9fdc26d5f1"
 dependencies = [
  "anyhow",
  "async-trait",

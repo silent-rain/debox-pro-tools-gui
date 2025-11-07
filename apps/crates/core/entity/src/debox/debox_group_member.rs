@@ -28,15 +28,21 @@ pub struct Model {
     /// Debox群组ID
     pub group_gid: String,
     /// Debox用户ID
-    pub debox_user_id: u64,
+    pub debox_user_id: i64,
     /// 钱包地址
     pub address: String,
     /// 成员名称
     pub name: String,
     /// 成员头像
     pub pic: Option<String>,
-    /// 是否高危用户,可能导致封号的用户
-    pub is_dangerous: bool,
+    /// 是否管理员
+    pub is_admin: bool,
+    /// 是否构建者
+    pub is_builder: bool,
+    /// 是否创始人
+    pub is_founder: bool,
+    /// 是否角色
+    pub is_role: bool,
     /// 描述信息
     pub desc: Option<String>,
     /// 状态(false:停用,true:正常)

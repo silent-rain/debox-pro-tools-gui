@@ -24,7 +24,7 @@ impl DeboxGroupController {
     pub async fn list(
         ctx: Context,
         Extension(provider): Extension<AInjectProvider>,
-        Query(req): Query<GetDeboxGroupsReq>,
+        Json(req): Json<GetDeboxGroupsReq>,
     ) -> Responder<GetDeboxGroupsResp> {
         let debox_group_service: DeboxGroupService = provider.provide();
         let (results, total) = debox_group_service.list(&ctx, req).await?;

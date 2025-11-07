@@ -69,9 +69,7 @@ const AccountList: FC<AccountListProps> = ({ selectedAccounts, selectedGroups, o
   // 获取群组列表
   useEffect(() => {
     const loadGroups = async () => {
-      console.log('selectedAccounts1');
       if (selectedAccounts.length === 0) {
-        console.log('selectedAccounts2');
         setGroups([]);
         return;
       }

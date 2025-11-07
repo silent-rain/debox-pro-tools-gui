@@ -28,9 +28,9 @@ export const DeboxAccountApi = {
   // 获取账号列表
   list: async (data: GetDeboxAccountsReq): Promise<GetDeboxAccountsResp> => {
     const response = await request({
-      url: `${SERVER}/debox/debox-accounts`,
-      method: 'GET',
-      params: data,
+      url: `${SERVER}/debox/debox-accounts/list`,
+      method: 'POST',
+      data,
     });
     return response.data;
   },

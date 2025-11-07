@@ -6,7 +6,7 @@ use validator::Validate;
 use entity::debox::debox_group;
 
 /// 查询DeBox群组列表 请求体
-#[derive(Default, Deserialize, Validate)]
+#[derive(Debug, Default, Deserialize, Validate)]
 #[serde[default]]
 pub struct GetDeboxGroupsReq {
     /// 当前分页
@@ -20,7 +20,7 @@ pub struct GetDeboxGroupsReq {
     /// 返回所有数据
     pub all: Option<bool>,
     /// 账号IDs
-    pub account_ids: Option<Vec<i32>>,
+    pub account_ids: Option<Vec<u64>>,
     /// 群组名称
     pub name: Option<String>,
     /// 群组状态

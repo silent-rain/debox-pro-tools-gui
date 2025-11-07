@@ -89,11 +89,32 @@ impl MigrationTrait for Migration {
                             .comment("成员头像"),
                     )
                     .col(
-                        ColumnDef::new(DeboxGroupMember::IsDangerous)
+                        ColumnDef::new(DeboxGroupMember::IsAdmin)
                             .boolean()
                             .not_null()
                             .default(false)
-                            .comment("是否高危用户,可能导致封号的用户"),
+                            .comment("是否管理员"),
+                    )
+                    .col(
+                        ColumnDef::new(DeboxGroupMember::IsBuilder)
+                            .boolean()
+                            .not_null()
+                            .default(false)
+                            .comment("是否构建者"),
+                    )
+                    .col(
+                        ColumnDef::new(DeboxGroupMember::IsFounder)
+                            .boolean()
+                            .not_null()
+                            .default(false)
+                            .comment("是否创始人"),
+                    )
+                    .col(
+                        ColumnDef::new(DeboxGroupMember::IsRole)
+                            .boolean()
+                            .not_null()
+                            .default(false)
+                            .comment("是否角色"),
                     )
                     .col(
                         ColumnDef::new(DeboxGroupMember::Desc)
@@ -215,8 +236,10 @@ pub enum DeboxGroupMember {
     Address,
     Name,
     Pic,
-    // 是否高危用户
-    IsDangerous,
+    IsAdmin,
+    IsBuilder,
+    IsFounder,
+    IsRole,
     Desc,
     Status,
     CreatedAt,
