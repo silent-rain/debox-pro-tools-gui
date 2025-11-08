@@ -25,7 +25,8 @@ use crate::{
     },
 };
 
-const CONCURRENCY_LIMIT: usize = 2; // 控制并发数
+const MEMBER_CONCURRENCY_LIMIT: usize = 2; // 用户并发数
+const ACCOUNT_CONCURRENCY_LIMIT: usize = 2; // 账号并发数
 const SYNC_PAGE_LIMIT: usize = 2; // 同步页面数
 
 /// 服务层
@@ -270,10 +271,10 @@ impl DeboxGroupMemberService {
             address: Set(member.address),
             name: Set(member.name),
             pic: Set(Some(member.pic)),
-            // is_admin: Set(member.is_admin > 0),
-            // is_builder: Set(member.is_builder > 0),
-            // is_founder: Set(member.is_founder > 0),
-            // is_role: Set(member.is_role > 0),
+            is_admin: Set(member.is_admin > 0),
+            is_builder: Set(member.is_builder > 0),
+            is_founder: Set(member.is_founder > 0),
+            is_role: Set(member.is_role > 0),
             status: Set(true),
             ..Default::default()
         };
@@ -314,7 +315,7 @@ impl DeboxGroupMemberService {
     }
 
     /// 非阻塞线程任务 同步DeBox群组成员列表
-    pub async fn task_sync_group_members(
+    async fn task_sync_group_members(
         &self,
         ctx: Context,
         req: SyncDeboxGroupMemberReq,
@@ -341,75 +342,83 @@ impl DeboxGroupMemberService {
             }
         }
 
-        for (account_id, groups) in account_group_map.into_iter() {
-            // 获取账号信息
-            let account_info = match self.debox_account_dao.info(account_id, user_id).await {
-                Ok(Some(account_info)) => account_info,
-                Ok(_account_info) => {
-                    error!("DeBox账号不存在, account_id: {}", account_id);
-                    continue;
-                }
-                Err(e) => {
-                    error!("查询DeBox账号信息失败, err: {:#?}", e);
-                    continue;
-                }
-            };
+        // 生成所有页的 Future
+        let semaphore = Arc::new(Semaphore::new(ACCOUNT_CONCURRENCY_LIMIT));
+        let futures = account_group_map.into_iter().map(|(account_id, groups)| {
+            let semaphore = Arc::clone(&semaphore);
 
-            // 生成debox客户端
-            let client = match self.debox_client(&account_info) {
-                Ok(client) => client,
-                Err(e) => {
-                    error!("获取DeBox客户端失败, err: {:#?}", e);
-                    continue;
-                }
-            };
-
-            // 获取群组成员列表
-            for group in groups {
-                let members = match self.get_all_group_members(&client, &group.gid).await {
-                    Ok(members) => members,
-                    Err(e) => {
-                        error!("并发获取DeBox群组成员列表失败, err: {:#?}", e);
-                        continue;
-                    }
-                };
-
-                if members.is_empty() {
-                    info!("DeBox群组 gid: {} name: {} 没有成员", group.gid, group.name);
-                    continue;
-                }
-
-                // 批量添加群组成员
-                self.add_group_members(user_id, account_id, group, members)
+            async move {
+                let _permit = semaphore.acquire().await.map_err(|e| {
+                    error!("获取 account_id: {account_id:?} Semaphore许可失败, err: {e:#?}");
+                    Error::AcquireError(e).into_err_with_msg("获取Semaphore许可失败")
+                })?;
+                self.get_account_group_members(user_id, account_id, groups)
                     .await
                     .map_err(|e| {
-                        error!("添加DeBox群组成员信息失败, err: {:#?}", e);
-                        Error::DbAddError.into_err_with_msg("添加DeBox群组成员信息失败")
+                        error!("并发获取DeBox群组成员列表失败, err: {:#?}", e);
+                        Error::DbQueryError.into_err_with_msg("并发获取DeBox群组成员列表失败")
                     })?;
+
+                Ok::<(), ErrorMsg>(())
             }
-        }
+        });
+
+        // 并发执行所有 Future
+        join_all(futures).await;
 
         Ok(())
     }
 
-    /// 添加群组成员
-    pub async fn add_group_members(
+    /// 并发以账号的力度进行拉取数据
+    async fn get_account_group_members(
         &self,
         user_id: i32,
         account_id: i32,
-        group: debox_group::Model,
-        members: Vec<DaoMember>,
+        groups: Vec<debox_group::Model>,
     ) -> Result<(), ErrorMsg> {
-        for member in members {
-            let _ = self
-                .crate_or_update_group_member(
-                    user_id,
-                    account_id,
-                    group.id,
-                    group.gid.clone(),
-                    member,
-                )
-                .await;
+        if groups.is_empty() {
+            return Ok(());
+        }
+
+        // 获取账号信息
+        let account_info = self
+            .debox_account_dao
+            .info(account_id, user_id)
+            .await
+            .map_err(|e| {
+                error!("查询DeBox账号信息失败, err: {:#?}", e);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("DeBox账号不存在, account_id: {}", account_id);
+                Error::DbQueryEmptyError.into_err_with_msg("DeBox账号不存在")
+            })?;
+
+        // 生成debox客户端
+        let client = self.debox_client(&account_info)?;
+
+        // 获取群组成员列表
+        for group in groups {
+            let members = match self.get_group_all_members(&client, &group.gid).await {
+                Ok(members) => members,
+                Err(e) => {
+                    error!("并发获取DeBox群组成员列表失败, err: {:#?}", e);
+                    continue;
+                }
+            };
+
+            if members.is_empty() {
+                info!("DeBox群组 gid: {} name: {} 没有成员", group.gid, group.name);
+                continue;
+            }
+
+            // 批量添加群组成员
+            self.add_group_members(user_id, account_id, group, members)
+                .await
+                .map_err(|e| {
+                    error!("添加DeBox群组成员信息失败, err: {:#?}", e);
+                    Error::DbAddError.into_err_with_msg("添加DeBox群组成员信息失败")
+                })?;
         }
 
         Ok(())
@@ -418,7 +427,7 @@ impl DeboxGroupMemberService {
     /// 并发获取所有群组成员列表
     ///
     /// 群组分享链接: https://m.debox.pro/group?id=oes85edz&code=peqt8jxu
-    async fn get_all_group_members(
+    async fn get_group_all_members(
         &self,
         client: &DeBoxClient,
         gid: &str,
@@ -429,7 +438,7 @@ impl DeboxGroupMemberService {
             return Ok(vec![]);
         }
 
-        let semaphore = Arc::new(Semaphore::new(CONCURRENCY_LIMIT));
+        let semaphore = Arc::new(Semaphore::new(MEMBER_CONCURRENCY_LIMIT));
 
         // 生成所有页的 Future
         let futures = (0..total_pages).map(|page| {
@@ -459,6 +468,29 @@ impl DeboxGroupMemberService {
             .collect();
 
         Ok(members)
+    }
+
+    /// 添加群组成员
+    async fn add_group_members(
+        &self,
+        user_id: i32,
+        account_id: i32,
+        group: debox_group::Model,
+        members: Vec<DaoMember>,
+    ) -> Result<(), ErrorMsg> {
+        for member in members {
+            let _ = self
+                .crate_or_update_group_member(
+                    user_id,
+                    account_id,
+                    group.id,
+                    group.gid.clone(),
+                    member,
+                )
+                .await;
+        }
+
+        Ok(())
     }
 
     /// 获取群组成员总分页数
