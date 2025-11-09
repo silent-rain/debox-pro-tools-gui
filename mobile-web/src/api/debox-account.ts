@@ -132,4 +132,24 @@ export const DeboxAccountApi = {
     });
     return response.data;
   },
+
+  // 账号相互关注
+  followAccounts: async () => {
+    const response = await request({
+      url: `${SERVER}/debox/debox-accounts/follow-account`,
+      method: 'POST',
+      data: {},
+    });
+    return response.data;
+  },
+
+  // 账号之间的群组相互拉群
+  crossAccountGroupInvite: async () => {
+    const response = await request({
+      url: `${SERVER}/debox/debox-accounts/cross-account-group-invite`,
+      method: 'POST',
+      data: {},
+    });
+    return response.data;
+  },
 };

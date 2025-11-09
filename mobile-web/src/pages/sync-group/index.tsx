@@ -33,12 +33,21 @@ const GroupManagement = () => {
     setGroupsUpdateState((prev) => prev + 1);
   };
 
+  // 刷新群组列表
+  const handleRefreshGroups = () => {
+    setGroupsUpdateState((prev) => prev + 1);
+  };
+
   return (
     <div className='group-management'>
       {/* 选择账号 */}
       <AccountList selectedAccounts={selectedAccounts} onAccountChange={setSelectedAccounts} />
 
       <div className={styles.groupMgmtSyncBtn}>
+        <Button color='primary' size='small' fill='solid' onClick={handleRefreshGroups}>
+          刷新
+        </Button>
+
         <Button color='primary' size='small' fill='solid' onClick={handleSyncGroups}>
           同步群组
         </Button>

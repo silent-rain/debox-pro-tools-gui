@@ -186,4 +186,30 @@ impl DeboxAccountController {
         let resp = Response::ok();
         Ok(resp)
     }
+
+    /// 账号相互关注
+    pub async fn follow_account(
+        ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
+    ) -> Responder<()> {
+        let debox_account_service: DeboxAccountService = provider.provide();
+        debox_account_service.follow_account(&ctx).await?;
+
+        let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 账号之间的群组相互拉群
+    pub async fn cross_account_group_invite(
+        ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
+    ) -> Responder<()> {
+        let debox_account_service: DeboxAccountService = provider.provide();
+        debox_account_service
+            .cross_account_group_invite(&ctx)
+            .await?;
+
+        let resp = Response::ok();
+        Ok(resp)
+    }
 }

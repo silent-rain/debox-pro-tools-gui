@@ -33,6 +33,8 @@ const SyncGroup = lazy(() => import('@/pages/sync-group'));
 // 同步群员
 const SyncGroupMember = lazy(() => import('@/pages/sync-group-member'));
 
+const FollowMutualInvite = lazy(() => import('@/pages/follow-mutual-invite'));
+
 // TabBar Routes
 export const tabBarRoutes: RouteConfig = {
   path: '/',
@@ -45,6 +47,7 @@ export const tabBarRoutes: RouteConfig = {
       meta: {
         title: '首页',
         icon: <AppOutline />,
+        auth: true,
       },
     },
     {
@@ -53,6 +56,7 @@ export const tabBarRoutes: RouteConfig = {
       meta: {
         title: '拉群',
         icon: <UnorderedListOutline />,
+        auth: true,
       },
     },
     {
@@ -61,6 +65,7 @@ export const tabBarRoutes: RouteConfig = {
       meta: {
         title: '聊天',
         icon: <MessageOutline />,
+        auth: true,
       },
     },
     {
@@ -68,8 +73,8 @@ export const tabBarRoutes: RouteConfig = {
       element: <PersonalCenter />,
       meta: {
         title: '我的',
-        auth: true,
         icon: <UserOutline />,
+        auth: true,
       },
     },
   ],
@@ -86,6 +91,7 @@ const PersonalCenterRoutes: RouteConfig = {
       element: <UserDetail />,
       meta: {
         title: '用户详情',
+        auth: true,
       },
     },
     {
@@ -93,6 +99,7 @@ const PersonalCenterRoutes: RouteConfig = {
       element: <ImportGroup />,
       meta: {
         title: '导入群组',
+        auth: true,
       },
     },
     {
@@ -100,6 +107,7 @@ const PersonalCenterRoutes: RouteConfig = {
       element: <Settings />,
       meta: {
         title: '设置',
+        auth: true,
       },
     },
     {
@@ -107,6 +115,7 @@ const PersonalCenterRoutes: RouteConfig = {
       element: <Logs />,
       meta: {
         title: '日志',
+        auth: true,
       },
     },
     {
@@ -137,6 +146,7 @@ const AccountManagementRoutes: RouteConfig = {
       element: <AccountManagement />,
       meta: {
         title: '导入账号',
+        auth: true,
       },
     },
     {
@@ -144,6 +154,7 @@ const AccountManagementRoutes: RouteConfig = {
       element: <AccountManagementForm />,
       meta: {
         title: '账号表单',
+        auth: true,
       },
     },
   ],
@@ -160,6 +171,7 @@ const SyncGroupRoutes: RouteConfig = {
       element: <SyncGroup />,
       meta: {
         title: '同步群组',
+        auth: true,
       },
     },
   ],
@@ -176,6 +188,24 @@ const SyncGroupMemberRoutes: RouteConfig = {
       element: <SyncGroupMember />,
       meta: {
         title: '同步群组成员',
+        auth: true,
+      },
+    },
+  ],
+};
+
+// 账号互助 Routes
+const FollowMutualInviteRoutes: RouteConfig = {
+  path: '/follow-mutual-invite',
+  element: <Layout />,
+  isLayout: true,
+  children: [
+    {
+      path: '',
+      element: <FollowMutualInvite />,
+      meta: {
+        title: '账号互助',
+        auth: true,
       },
     },
   ],
@@ -201,7 +231,6 @@ export const RootRoutes: RouteConfig[] = [
     meta: {
       title: '用户注册',
       key: 'register',
-      auth: true,
     },
   },
   tabBarRoutes, // TabBar
@@ -209,6 +238,7 @@ export const RootRoutes: RouteConfig[] = [
   AccountManagementRoutes, // 账号管理
   SyncGroupRoutes, // 同步群组
   SyncGroupMemberRoutes, // 同步群员
+  FollowMutualInviteRoutes, // 账号互助
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,

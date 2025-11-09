@@ -39,6 +39,14 @@ impl DeboxAccountRouter {
                 .route(
                     "/upload-config",
                     post(DeboxAccountController::upload_config_file),
+                )
+                .route(
+                    "/follow-account",
+                    post(DeboxAccountController::follow_account),
+                )
+                .route(
+                    "/cross-account-group-invite",
+                    post(DeboxAccountController::cross_account_group_invite),
                 ),
         )
     }

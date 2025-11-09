@@ -30,9 +30,9 @@ export const ROUTES = {
   // 同步群员
   SYNC_GROUP_MEMBER: '/sync-group-member',
 
+  // 账号互助
+  FOLLOW_MUTUAL_INVITE: '/follow-mutual-invite',
+
   // 一键关注用户
   FOLLOW_USER: '/follow-user',
-
-  // 自动互关
-  AUTO_FOLLOW: '/auto-follow',
 };
