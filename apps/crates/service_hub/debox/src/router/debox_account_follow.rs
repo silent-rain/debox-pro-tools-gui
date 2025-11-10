@@ -14,7 +14,7 @@ impl DeboxAccountFollowRouter {
     /// 注册`DeBox账号关注人管理`路由
     pub fn register() -> Router {
         Router::new().nest(
-            "/debox-accounts",
+            "/debox-account-follows",
             Router::new()
                 .route("/", post(DeboxAccountFollowController::create))
                 .route("/list", post(DeboxAccountFollowController::list))
