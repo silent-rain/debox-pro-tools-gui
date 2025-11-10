@@ -3,14 +3,39 @@ import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
 import styles from './GroupMemberList.module.less';
 import Empty from '@/components/empty';
-import { DeboxGroupMemberApi } from '@/api';
+import { DeboxAccountApi, DeboxGroupApi, DeboxGroupMemberApi } from '@/api';
 import { DeboxGroupMember, GetDeboxGroupMembersReq } from '@/typings/debox-group-member';
+import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
+import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
 
 interface GroupListProps {
   accountIds: number[];
   groupIds: number[];
   groupsMemberUpdateState: number;
 }
+
+// 获取账号列表
+const fetchAccounts = async (): Promise<DeboxAccount[]> => {
+  const data: GetDeboxAccountsReq = {
+    page: 0,
+    page_size: 0,
+    all: true,
+    status: true,
+  };
+  const response = await DeboxAccountApi.list(data);
+  return response.data_list;
+};
+
+// 获取群组列表
+const fetchGroups = async (): Promise<DeboxGroup[]> => {
+  const data: GetDeboxGroupsReq = {
+    all: true,
+    account_ids: [],
+    status: true,
+  };
+  const response = await DeboxGroupApi.list(data);
+  return response.data_list;
+};
 
 // 获取群组成员列表
 const fetchGroupMembers = async (groupIds: number[]): Promise<DeboxGroupMember[]> => {
@@ -35,6 +60,38 @@ const updateGroupMemberStatus = async (memberId: number, status: boolean) => {
 const GroupMemberList: FC<GroupListProps> = ({ accountIds, groupIds, groupsMemberUpdateState }) => {
   const [groupMembers, setGroupMembers] = useState<DeboxGroupMember[]>([]);
   const [loading, setLoading] = useState(false);
+  const [accountNameMap, setAccountNameMap] = useState<{ [key: number]: string }>({});
+  const [groupNameMap, setGroupNameMap] = useState<{ [key: number]: string }>({});
+
+  useEffect(() => {
+    const loadAccounts = async () => {
+      try {
+        const accountResponse = await fetchAccounts();
+        const accountNameMap = accountResponse.reduce(
+          (acc, cur) => {
+            acc[cur.id] = cur.name;
+            return acc;
+          },
+          {} as { [key: number]: string },
+        );
+        setAccountNameMap(accountNameMap);
+
+        const groupResponse = await fetchGroups();
+        const groupNameMap = groupResponse.reduce(
+          (acc, cur) => {
+            acc[cur.id] = cur.name;
+            return acc;
+          },
+          {} as { [key: number]: string },
+        );
+        setGroupNameMap(groupNameMap);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadAccounts();
+  }, []);
 
   useEffect(() => {
     const loadAccounts = async () => {
@@ -82,6 +139,7 @@ const GroupMemberList: FC<GroupListProps> = ({ accountIds, groupIds, groupsMembe
           <List.Item
             key={groupMember.id}
             prefix={<Avatar className={styles.groupAvatar} src={groupMember.pic ?? ''} />}
+            description={`${accountNameMap[groupMember.account_id]}/${groupNameMap[groupMember.group_id]}`}
             extra={
               <Switch
                 checkedText={<CheckOutline fontSize={18} />}

@@ -5,11 +5,25 @@ import styles from './GroupList.module.less';
 import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
 import { DeboxGroupApi } from '@/api/debox-group';
 import Empty from '@/components/empty';
+import { DeboxAccountApi } from '@/api';
+import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 
 interface GroupListProps {
   accountIds: number[];
   groupsUpdateState: number;
 }
+
+// 获取账号列表
+const fetchAccounts = async (): Promise<DeboxAccount[]> => {
+  const data: GetDeboxAccountsReq = {
+    page: 0,
+    page_size: 0,
+    all: true,
+    status: true,
+  };
+  const response = await DeboxAccountApi.list(data);
+  return response.data_list;
+};
 
 // 获取群组列表
 const fetchGroups = async (accountIds: number[]): Promise<DeboxGroup[]> => {
@@ -37,6 +51,28 @@ const updateGroupStatus = async (groupId: number, status: boolean) => {
 const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
   const [groups, setGroups] = useState<DeboxGroup[]>([]);
   const [loading, setLoading] = useState(false);
+  const [accountNameMap, setAccountNameMap] = useState<{ [key: number]: string }>({});
+
+  useEffect(() => {
+    const loadAccounts = async () => {
+      try {
+        const data = await fetchAccounts();
+
+        const accountNameMap = data.reduce(
+          (acc, cur) => {
+            acc[cur.id] = cur.name;
+            return acc;
+          },
+          {} as { [key: number]: string },
+        );
+        setAccountNameMap(accountNameMap);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadAccounts();
+  }, []);
 
   useEffect(() => {
     const loadAccounts = async () => {
@@ -81,6 +117,7 @@ const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
           <List.Item
             key={group.id}
             prefix={<Avatar className={styles.groupAvatar} src={group.pic ?? ''} />}
+            description={accountNameMap[group.account_id]!}
             extra={
               <Switch
                 checkedText={<CheckOutline fontSize={18} />}
