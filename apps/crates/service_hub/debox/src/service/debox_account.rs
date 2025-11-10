@@ -565,11 +565,12 @@ impl DeboxAccountService {
 
         // 账号群组匹配
         let mut pairs = Vec::new();
-        for (i, id1) in accounts.iter().enumerate() {
-            let mut debox_user_ids = Vec::new();
-            for id2 in accounts[i + 1..].iter().clone() {
-                debox_user_ids.push(id2.debox_user_id.clone());
-            }
+        for id1 in accounts.iter() {
+            let debox_user_ids: Vec<String> = accounts
+                .iter()
+                .map(|id2| id2.debox_user_id.clone())
+                .filter(|v| *v != id1.debox_user_id)
+                .collect();
             if debox_user_ids.is_empty() {
                 error!("account_id: {} ref debox_user_ids is empty", id1.id);
                 continue;
