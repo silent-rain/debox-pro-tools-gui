@@ -1768,7 +1768,7 @@ dependencies = [
 [[package]]
 name = "debox-pro-rs"
 version = "0.1.0"
-source = "git+ssh://git@github.com/silent-rain/debox-pro-rs.git?branch=master#c1fd2b25e9980177ef88e77cbce05684589e9d23"
+source = "git+ssh://git@github.com/silent-rain/debox-pro-rs.git?branch=master#8d134dd8e20c9fafbd2a2149419e30c6c2f15dca"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1780,6 +1780,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
+ "serde_repr",
  "serde_urlencoded",
  "sha1",
  "thiserror 2.0.17",
