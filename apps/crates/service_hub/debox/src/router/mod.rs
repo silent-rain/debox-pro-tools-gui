@@ -3,6 +3,7 @@
 use axum::Router;
 
 pub mod debox_account;
+pub mod debox_account_follow;
 pub mod debox_group;
 pub mod debox_group_member;
 
@@ -17,7 +18,8 @@ impl DeboxRouter {
             Router::new()
                 .merge(debox_account::DeboxAccountRouter::register()) // DeBox账号管理
                 .merge(debox_group::DeboxGroupRouter::register()) // DeBox群组管理
-                .merge(debox_group_member::DeboxGroupMemberRouter::register()), // DeBox群组成员管理
+                .merge(debox_group_member::DeboxGroupMemberRouter::register()) // DeBox群组成员管理
+                .merge(debox_account_follow::DeboxAccountFollowRouter::register()), // DeBox账号关注人管理
         )
     }
 }
