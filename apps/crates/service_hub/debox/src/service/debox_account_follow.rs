@@ -5,7 +5,10 @@ use nject::injectable;
 use sea_orm::{ActiveValue::Set, DbErr::RecordNotUpdated};
 
 use axum_context::Context;
-use debox_pro_rs::{Config as DeBoxConfig, DeBoxClient};
+use debox_pro_rs::{
+    Config as DeBoxConfig, DeBoxClient, UserExtApi,
+    dto::user_ext::{Relation, RelationListReq, RelationStatus},
+};
 use entity::debox::{debox_account, debox_account_follow};
 use err_code::{Error, ErrorMsg};
 
@@ -39,6 +42,29 @@ impl DeboxAccountFollowService {
         DeBoxClient::new(config).map_err(|e| {
             error!("获取DeBox客户端失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("获取DeBox客户端失败")
+        })
+    }
+
+    /// 关注/粉丝/好友列表
+    async fn relation_list(
+        &self,
+        page: u64,
+        status: RelationStatus,
+        look_user_id: Option<u64>,
+        model: &debox_account::Model,
+    ) -> Result<Vec<Relation>, ErrorMsg> {
+        let client = self.debox_client(model)?;
+
+        let data = RelationListReq {
+            page,
+            size: 20,
+            status,
+            look_user_id,
+        };
+
+        UserExtApi::relation_list(&client, data).await.map_err(|e| {
+            error!("获取 DeBox 账号信息失败, err: {:#?}", e);
+            Error::DeboxProRs(e).into_err_with_msg("获取 DeBox 账号信息失败")
         })
     }
 }
