@@ -30,14 +30,14 @@ const Home = () => {
       description: '同步群组成员列表',
     },
     { title: '账号互助', path: ROUTES.FOLLOW_MUTUAL_INVITE, icon: <LoopOutline />, description: '相互关注/相互拉群' }, // 群组互关/账号互关
-    { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline />, description: '批量发送消息' },
-    { title: '一键拉群', path: ROUTES.CREATE_GROUP, icon: <TruckOutline />, description: '快速创建群组' },
     {
-      title: '一键关注',
-      path: ROUTES.FOLLOW_USER,
+      title: '关注管理',
+      path: ROUTES.AccountFollowManagement,
       icon: <HeartOutline />,
       description: '一键关注目标账号',
     },
+    { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline />, description: '批量发送消息' },
+    { title: '一键拉群', path: ROUTES.CREATE_GROUP, icon: <TruckOutline />, description: '快速创建群组' },
   ];
 
   return (

@@ -27,6 +27,10 @@ impl DeboxAccountFollowRouter {
                 .route(
                     "/update-status",
                     put(DeboxAccountFollowController::update_status),
+                )
+                .route(
+                    "/sync-follows",
+                    post(DeboxAccountFollowController::sync_follows),
                 ),
         )
     }

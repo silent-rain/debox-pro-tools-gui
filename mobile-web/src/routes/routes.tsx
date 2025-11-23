@@ -33,7 +33,11 @@ const SyncGroup = lazy(() => import('@/pages/sync-group'));
 // 同步群员
 const SyncGroupMember = lazy(() => import('@/pages/sync-group-member'));
 
+// 账号互助
 const FollowMutualInvite = lazy(() => import('@/pages/follow-mutual-invite'));
+
+// 关注管理
+const AccountFollowManagement = lazy(() => import('@/pages/account-follow-management'));
 
 // TabBar Routes
 export const tabBarRoutes: RouteConfig = {
@@ -211,6 +215,23 @@ const FollowMutualInviteRoutes: RouteConfig = {
   ],
 };
 
+// 关注管理 Routes
+const AccountFollowManagementRoutes: RouteConfig = {
+  path: '/account-follow-management',
+  element: <Layout />,
+  isLayout: true,
+  children: [
+    {
+      path: '',
+      element: <AccountFollowManagement />,
+      meta: {
+        title: '关注管理',
+        auth: true,
+      },
+    },
+  ],
+};
+
 // 主路由
 export const RootRoutes: RouteConfig[] = [
   // {
@@ -239,6 +260,7 @@ export const RootRoutes: RouteConfig[] = [
   SyncGroupRoutes, // 同步群组
   SyncGroupMemberRoutes, // 同步群员
   FollowMutualInviteRoutes, // 账号互助
+  AccountFollowManagementRoutes, // 账号关注管理
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,

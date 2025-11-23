@@ -24,7 +24,7 @@ impl MigrationTrait for Migration {
             .create_table(
                 Table::create()
                     .table(DeboxAccountFollow::Table)
-                    .comment("DeBox群组表")
+                    .comment("账号关注表")
                     .if_not_exists()
                     .col(
                         ColumnDef::new(DeboxAccountFollow::Id)
@@ -32,7 +32,7 @@ impl MigrationTrait for Migration {
                             .primary_key()
                             .auto_increment()
                             .not_null()
-                            .comment("群组ID"),
+                            .comment("关注ID"),
                     )
                     .col(
                         ColumnDef::new(DeboxAccountFollow::UserId)
@@ -58,7 +58,7 @@ impl MigrationTrait for Migration {
                             .string()
                             .string_len(50)
                             .not_null()
-                            .comment("群组名称"),
+                            .comment("用户名称"),
                     )
                     .col(
                         ColumnDef::new(DeboxAccountFollow::Avatar)

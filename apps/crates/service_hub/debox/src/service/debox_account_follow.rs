@@ -16,7 +16,8 @@ use crate::{
     DeboxAccountFollowDao,
     dto::debox_account_follow::{
         CreateDeboxAccountFollowReq, DeleteDeboxAccountFollowReq, GetDeboxAccountFollowReq,
-        GetDeboxAccountFollowsReq, UpdateDeboxAccountFollowReq, UpdateDeboxAccountFollowStatusReq,
+        GetDeboxAccountFollowsReq, SyncDeboxAccountFollowsReq, UpdateDeboxAccountFollowReq,
+        UpdateDeboxAccountFollowStatusReq,
     },
 };
 
@@ -246,5 +247,18 @@ impl DeboxAccountFollowService {
             })?;
 
         Ok(result)
+    }
+}
+
+impl DeboxAccountFollowService {
+    /// 同步关注人列表
+    pub async fn sync_follows(
+        &self,
+        ctx: &Context,
+        req: SyncDeboxAccountFollowsReq,
+    ) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
+        Ok(())
     }
 }

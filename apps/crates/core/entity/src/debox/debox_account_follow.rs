@@ -14,7 +14,7 @@ use crate::{debox::debox_account, user::user_base};
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize, DeriveEntityModel)]
 #[sea_orm(table_name = "t_debox_account_follow")]
 pub struct Model {
-    /// 群组ID
+    /// 关注ID
     #[sea_orm(primary_key)]
     pub id: i32,
     /// 用户ID
@@ -23,7 +23,7 @@ pub struct Model {
     pub account_id: i32,
     /// DeBox 用户ID
     pub debox_user_id: String,
-    /// 群组名称
+    /// 用户名称
     pub name: String,
     /// 账号头像
     pub avatar: Option<String>,

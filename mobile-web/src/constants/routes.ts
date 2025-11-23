@@ -33,6 +33,6 @@ export const ROUTES = {
   // 账号互助
   FOLLOW_MUTUAL_INVITE: '/follow-mutual-invite',
 
-  // 一键关注用户
-  FOLLOW_USER: '/follow-user',
+  // 关注管理
+  AccountFollowManagement: '/account-follow-management',
 };
