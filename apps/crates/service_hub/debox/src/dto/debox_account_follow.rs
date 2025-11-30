@@ -157,7 +157,7 @@ pub struct DeleteDeboxAccountFollowResp {}
 #[derive(Debug, Default, Deserialize, Validate)]
 pub struct SyncDeboxAccountFollowsReq {
     /// 账号ID
-    pub account_id: i32,
+    pub account_ids: Vec<i32>,
 }
 
 /// 同步关注人列表 响应体

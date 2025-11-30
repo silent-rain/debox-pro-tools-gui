@@ -36,6 +36,9 @@ impl DeboxAccountFollowDao {
             })
             .apply_if(req.status, |query, v| {
                 query.filter(debox_account_follow::Column::Status.eq(v))
+            })
+            .apply_if(req.account_ids, |query, v| {
+                query.filter(debox_account_follow::Column::AccountId.is_in(v))
             });
 
         let total = states.clone().count(self.db.db()).await?;
@@ -121,6 +124,23 @@ impl DeboxAccountFollowDao {
             .await?;
         Ok(result.rows_affected)
     }
+
+    /// 清空表数据
+    pub async fn truncate(&self) -> Result<u64, DbErr> {
+        let result = DeboxAccountFollow::delete_many().exec(self.db.db()).await?;
+        Ok(result.rows_affected)
+    }
+
+    /// 批量插入数据
+    pub async fn creates(
+        &self,
+        active_models: Vec<debox_account_follow::ActiveModel>,
+    ) -> Result<(), DbErr> {
+        DeboxAccountFollow::insert_many(active_models)
+            .exec(self.db.db())
+            .await?;
+        Ok(())
+    }
 }
 
 impl DeboxAccountFollowDao {
@@ -138,5 +158,29 @@ impl DeboxAccountFollowDao {
             .one(self.db.db())
             .await?;
         Ok(result)
+    }
+
+    /// 获取指定账号的关注人列表
+    pub async fn follows_by_account_id(
+        &self,
+        user_id: i32,
+        account_id: i32,
+    ) -> Result<Vec<debox_account_follow::Model>, DbErr> {
+        let result = DeboxAccountFollow::find()
+            .filter(debox_account_follow::Column::UserId.eq(user_id))
+            .filter(debox_account_follow::Column::AccountId.eq(account_id))
+            .all(self.db.db())
+            .await?;
+        Ok(result)
+    }
+
+    /// 清空指定账号的关注人列表
+    pub async fn delete_by_account_id(&self, user_id: i32, account_id: i32) -> Result<u64, DbErr> {
+        let result = DeboxAccountFollow::delete_many()
+            .filter(debox_account_follow::Column::UserId.eq(user_id))
+            .filter(debox_account_follow::Column::AccountId.eq(account_id))
+            .exec(self.db.db())
+            .await?;
+        Ok(result.rows_affected)
     }
 }

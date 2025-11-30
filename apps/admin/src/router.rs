@@ -2,7 +2,7 @@
 
 use std::time::Duration;
 
-use axum::{Router, extract::DefaultBodyLimit};
+use axum::{Router, extract::DefaultBodyLimit, http::StatusCode};
 use log::warn;
 use tokio::signal;
 use tower::ServiceBuilder;
@@ -82,7 +82,10 @@ pub fn register() -> Router {
         ) // 高级跟踪/记录
         .layer(cors_layer()) // 为CORS添加标头的中间件
         .layer(CompressionLayer::new()) // 自动压缩响应
-        .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout requests after 30 seconds
+        .layer(TimeoutLayer::with_status_code(
+            StatusCode::REQUEST_TIMEOUT,
+            Duration::from_secs(30),
+        )) // Timeout requests after 30 seconds
         .layer(my_layers)
         .layer(DefaultBodyLimit::disable()) // Disable the default limit
         .layer(RequestBodyLimitLayer::new(250 * 1024 * 1024)) //250mb, 限制了传入请求的大小，防止试图通过大量请求压垮服务器的攻击

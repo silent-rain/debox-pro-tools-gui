@@ -2,6 +2,7 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Modal } from 'antd-mobile';
 import qs from 'qs';
 import { cacheTokenKey } from '@/constants/auth';
+import { ROUTES } from '@/constants/routes';
 
 function dispatchLogout() {
   Modal.confirm({
@@ -9,6 +10,8 @@ function dispatchLogout() {
     onConfirm: () => {
       // 清除登录信息
       localStorage.removeItem(cacheTokenKey);
+      // 跳转到登陆页面
+      window.location.href = ROUTES.LOGIN;
     },
   });
 }
@@ -46,7 +49,7 @@ service.interceptors.response.use(
         closeOnMaskClick: true,
       });
       // 50008：非法token，50012：其他客户端登录，50014：token失效了
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
+      if (res.code === 401 || res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // 尝试重新登录
         dispatchLogout();
       }

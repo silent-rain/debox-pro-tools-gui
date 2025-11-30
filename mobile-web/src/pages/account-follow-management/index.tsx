@@ -3,22 +3,23 @@ import { Button, Toast } from 'antd-mobile';
 import AccountList from './components/AccountList';
 import AccountFollowList from './components/AccountFollowList';
 import styles from './index.module.less';
-import { DeboxGroupApi, DeboxAccountFollowApi } from '@/api';
+import { DeboxAccountFollowFollowApi } from '@/api';
 
-// 同步DeBox群组列表
-const syncGroups = async (accountIds: number[]) => {
+// 同步关注人列表
+const syncFollows = async (accountIds: number[]) => {
   const data = {
     account_ids: accountIds,
   };
-  await DeboxGroupApi.syncGroups(data);
+  await DeboxAccountFollowFollowApi.syncFollows(data);
 };
+
+// 群组/指定人/关注人列表/用户
 
 const FollowManagement = () => {
   const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
   const [followsUpdateState, setFollowsUpdateState] = useState<number>(0);
 
   // 同步关注人
-  // 群组/指定人/关注人列表/用户
   const handleSyncFollows = async () => {
     if (selectedAccounts.length === 0) {
       Toast.show({
@@ -28,7 +29,7 @@ const FollowManagement = () => {
       return;
     }
 
-    await syncGroups(selectedAccounts);
+    await syncFollows(selectedAccounts);
 
     setFollowsUpdateState((prev) => prev + 1);
   };
@@ -49,7 +50,11 @@ const FollowManagement = () => {
         </Button>
 
         <Button color='primary' size='small' fill='solid' onClick={handleSyncFollows}>
-          新增关注人
+          同步关注人
+        </Button>
+
+        <Button color='primary' size='small' fill='solid' onClick={handleSyncFollows}>
+          添加关注人
         </Button>
       </div>
 

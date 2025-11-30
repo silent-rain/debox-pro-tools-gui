@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
+import { Avatar, DotLoading, List, Switch, Toast } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
 import styles from './AccountFollowList.module.less';
 import Empty from '@/components/empty';
@@ -13,6 +13,13 @@ interface AccountFollowListProps {
 
 // 获取账号关注人列表
 const fetchAccountFollows = async (accountIds: number[]): Promise<DeboxAccountFollow[]> => {
+  if (accountIds.length === 0) {
+    Toast.show({
+      content: '请先选择账号',
+      position: 'top',
+    });
+    return [];
+  }
   const data: GetDeboxAccountFollowsReq = {
     page: 0,
     page_size: 0,

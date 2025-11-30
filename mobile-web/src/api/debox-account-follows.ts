@@ -81,7 +81,7 @@ export const DeboxAccountFollowFollowApi = {
   },
 
   // 同步关注人列表
-  syncFollowList: async (data: SyncDeboxAccountFollowsReq): Promise<SyncDeboxAccountFollowsResp> => {
+  syncFollows: async (data: SyncDeboxAccountFollowsReq): Promise<SyncDeboxAccountFollowsResp> => {
     const response = await request({
       url: `${SERVER}/debox/debox-account-follows/sync-follows`,
       method: 'POST',

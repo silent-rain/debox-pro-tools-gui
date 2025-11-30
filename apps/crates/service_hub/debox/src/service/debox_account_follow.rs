@@ -1,5 +1,7 @@
 //! DeBox账号关注人管理
 
+use std::time::Duration;
+
 use log::error;
 use nject::injectable;
 use sea_orm::{ActiveValue::Set, DbErr::RecordNotUpdated};
@@ -11,9 +13,10 @@ use debox_pro_rs::{
 };
 use entity::debox::{debox_account, debox_account_follow};
 use err_code::{Error, ErrorMsg};
+use tokio::time::sleep;
 
 use crate::{
-    DeboxAccountFollowDao,
+    DeboxAccountDao, DeboxAccountFollowDao,
     dto::debox_account_follow::{
         CreateDeboxAccountFollowReq, DeleteDeboxAccountFollowReq, GetDeboxAccountFollowReq,
         GetDeboxAccountFollowsReq, SyncDeboxAccountFollowsReq, UpdateDeboxAccountFollowReq,
@@ -24,7 +27,8 @@ use crate::{
 /// 服务层
 #[injectable]
 pub struct DeboxAccountFollowService {
-    debox_account_dao: DeboxAccountFollowDao,
+    debox_account_follow_dao: DeboxAccountFollowDao,
+    debox_account_dao: DeboxAccountDao,
 }
 
 impl DeboxAccountFollowService {
@@ -49,13 +53,11 @@ impl DeboxAccountFollowService {
     /// 关注/粉丝/好友列表
     async fn relation_list(
         &self,
+        client: &DeBoxClient,
         page: u64,
         status: RelationStatus,
         look_user_id: Option<u64>,
-        model: &debox_account::Model,
     ) -> Result<Vec<Relation>, ErrorMsg> {
-        let client = self.debox_client(model)?;
-
         let data = RelationListReq {
             page,
             size: 20,
@@ -63,7 +65,7 @@ impl DeboxAccountFollowService {
             look_user_id,
         };
 
-        UserExtApi::relation_list(&client, data).await.map_err(|e| {
+        UserExtApi::relation_list(client, data).await.map_err(|e| {
             error!("获取 DeBox 账号信息失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("获取 DeBox 账号信息失败")
         })
@@ -79,8 +81,17 @@ impl DeboxAccountFollowService {
     ) -> Result<(Vec<debox_account_follow::Model>, u64), ErrorMsg> {
         let user_id = ctx.get_user_id();
 
+        if let Some(account_ids) = &req.account_ids
+            && account_ids.is_empty()
+        {
+            error!("请添加至少一个账号进行查询");
+            return Err(
+                Error::InvalidParameter("请添加至少一个账号进行查询".to_string()).into_err(),
+            );
+        }
+
         let (results, total) = self
-            .debox_account_dao
+            .debox_account_follow_dao
             .list(user_id, req)
             .await
             .map_err(|err| {
@@ -100,7 +111,7 @@ impl DeboxAccountFollowService {
         let user_id = ctx.get_user_id();
 
         let result = self
-            .debox_account_dao
+            .debox_account_follow_dao
             .info(req.id, user_id)
             .await
             .map_err(|err| {
@@ -123,7 +134,7 @@ impl DeboxAccountFollowService {
         debox_user_id: String,
     ) -> Result<bool, ErrorMsg> {
         let result = self
-            .debox_account_dao
+            .debox_account_follow_dao
             .follow_by_debox_user_id(user_id, account_id, debox_user_id)
             .await
             .map_err(|err| {
@@ -168,7 +179,7 @@ impl DeboxAccountFollowService {
         };
 
         let result = self
-            .debox_account_dao
+            .debox_account_follow_dao
             .create(active_model)
             .await
             .map_err(|err| {
@@ -196,7 +207,7 @@ impl DeboxAccountFollowService {
             ..Default::default()
         };
 
-        self.debox_account_dao
+        self.debox_account_follow_dao
             .update(id, user_id, active_model)
             .await
             .map_err(|err| {
@@ -213,7 +224,7 @@ impl DeboxAccountFollowService {
     ) -> Result<(), ErrorMsg> {
         let user_id = ctx.get_user_id();
 
-        self.debox_account_dao
+        self.debox_account_follow_dao
             .update_status(req.id, user_id, req.status)
             .await
             .map_err(|err| {
@@ -238,7 +249,7 @@ impl DeboxAccountFollowService {
         let user_id = ctx.get_user_id();
 
         let result = self
-            .debox_account_dao
+            .debox_account_follow_dao
             .delete(req.id, user_id)
             .await
             .map_err(|err| {
@@ -258,6 +269,115 @@ impl DeboxAccountFollowService {
         req: SyncDeboxAccountFollowsReq,
     ) -> Result<(), ErrorMsg> {
         let user_id = ctx.get_user_id();
+
+        for account_id in req.account_ids.into_iter() {
+            // 获取账号信息
+            let account = self.get_account(user_id, account_id).await?;
+
+            // 获取DeBox客户端
+            let client = self.debox_client(&account)?;
+
+            // 获取所有关注人
+            self.get_all_follows(&client, user_id, account_id).await?;
+        }
+        Ok(())
+    }
+
+    /// 获取账号信息
+    async fn get_account(
+        &self,
+        user_id: i32,
+        account_id: i32,
+    ) -> Result<debox_account::Model, ErrorMsg> {
+        let result = self
+            .debox_account_dao
+            .info(account_id, user_id)
+            .await
+            .map_err(|err| {
+                error!("查询DeBox账号信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("DeBox账号不存在");
+                Error::DbQueryEmptyError.into_err_with_msg("DeBox账号不存在")
+            })?;
+
+        Ok(result)
+    }
+
+    /// 获取所有关注人
+    async fn get_all_follows(
+        &self,
+        client: &DeBoxClient,
+        user_id: i32,
+        account_id: i32,
+    ) -> Result<(), ErrorMsg> {
+        let mut page = 1;
+        loop {
+            // 分页获取关注人
+            let follows = match self
+                .relation_list(client, page, RelationStatus::Follow, None)
+                .await
+            {
+                Ok(v) => v,
+                Err(e) => {
+                    error!("account_id: {} page: {}, err: {:#?}", account_id, page, e);
+                    break;
+                }
+            };
+
+            if follows.is_empty() {
+                break;
+            }
+            page += 1;
+
+            // 批量添加关注人
+            self.batch_create(follows, user_id, account_id).await?;
+
+            sleep(Duration::from_millis(500)).await;
+        }
+
+        Ok(())
+    }
+
+    /// 批量添加关注人
+    pub async fn batch_create(
+        &self,
+        follows: Vec<Relation>,
+        user_id: i32,
+        account_id: i32,
+    ) -> Result<(), ErrorMsg> {
+        let mut active_models = Vec::new();
+        for follow in follows {
+            let active_model = debox_account_follow::ActiveModel {
+                user_id: Set(user_id),
+                account_id: Set(account_id),
+                debox_user_id: Set(follow.user_id.to_string()),
+                name: Set(follow.name),
+                avatar: Set(Some(follow.pic)),
+                status: Set(true),
+                ..Default::default()
+            };
+            active_models.push(active_model);
+        }
+        // 删除指定账号的关注人列表
+        let _result = self
+            .debox_account_follow_dao
+            .delete_by_account_id(user_id, account_id)
+            .await
+            .map_err(|err| {
+                error!("删除DeBox账号关注人失败, err: {:#?}", err);
+                Error::DbDeleteError.into_err_with_msg("删除DeBox账号关注人失败")
+            })?;
+
+        // 批量插入关注人列表
+        self.debox_account_follow_dao
+            .creates(active_models)
+            .await
+            .map_err(|err| {
+                error!("批量添加DeBox账号关注人失败, err: {:#?}", err);
+                Error::DbBatchAddError.into_err_with_msg("批量添加DeBox账号关注人失败")
+            })?;
 
         Ok(())
     }

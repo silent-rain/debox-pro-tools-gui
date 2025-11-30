@@ -84,7 +84,7 @@ export interface DeleteDeboxAccountFollowResp {}
 
 // 同步关注人列表 请求体
 export interface SyncDeboxAccountFollowsReq {
-  account_id: number; // 账号ID
+  account_ids: number[]; // 账号IDs
 }
 
 // 同步关注人列表 响应体
