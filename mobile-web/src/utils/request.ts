@@ -5,6 +5,12 @@ import { cacheTokenKey } from '@/constants/auth';
 import { ROUTES } from '@/constants/routes';
 
 function dispatchLogout() {
+  if (!localStorage.getItem(cacheTokenKey)) {
+    // 跳转到登陆页面
+    window.location.href = ROUTES.LOGIN;
+    return;
+  }
+
   Modal.confirm({
     content: '你已被登出, 请重新登录',
     onConfirm: () => {
@@ -52,6 +58,7 @@ service.interceptors.response.use(
       if (res.code === 401 || res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // 尝试重新登录
         dispatchLogout();
+        return;
       }
       return Promise.reject(res.msg || 'Error');
     } else {

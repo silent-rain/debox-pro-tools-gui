@@ -1,6 +1,5 @@
 // 用户登录状态管理
 import { UserApi } from '@/api';
-import { Modal } from 'antd-mobile';
 import { create } from 'zustand';
 
 interface AuthState {
@@ -23,10 +22,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       set((state) => ({ ...state, user_id: response.id, username: response.username, avatar: response.avatar }));
     } catch (error) {
       console.error('获取用户信息失败:', error);
-      Modal.show({
-        content: '获取用户信息失败，请稍后重试!',
-        closeOnMaskClick: true,
-      });
+      // Modal.show({
+      //   content: '获取用户信息失败，请稍后重试!',
+      //   closeOnMaskClick: true,
+      // });
     }
   },
 }));
