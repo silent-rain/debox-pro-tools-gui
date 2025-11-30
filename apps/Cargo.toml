@@ -12,7 +12,7 @@ members = [
     "crates/service_hub",
 
     # app 应用
-    # "mobile",
+    "mobile",
     "admin",
 ]
 
@@ -52,6 +52,7 @@ tauri-plugin-log = "2.7"
 tauri-plugin-fs = "2.4"
 tauri-plugin-http = "2.5"
 tauri-plugin-notification = "2.3"
+openssl-sys = "0.9.111"
 
 # 服务框架
 axum = "0.8"

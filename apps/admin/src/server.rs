@@ -6,7 +6,7 @@ use std::{
 
 use axum::{Extension, Router};
 use colored::Colorize;
-use listenfd::ListenFd;
+// use listenfd::ListenFd;
 use tokio::net::TcpListener;
 
 use app_state::mobile::AppState;
@@ -35,20 +35,24 @@ impl HttpServer {
             .layer(Extension(inject_provider)); // 依赖注入
 
         // Run our application as a hyper server
-        let mut listenfd = ListenFd::from_env();
-        let listener = match listenfd.take_tcp_listener(0)? {
-            // if we are given a tcp listener on listen fd 0, we use that one
-            Some(listener) => {
-                listener.set_nonblocking(true)?;
-                TcpListener::from_std(listener)?
-            }
-            // otherwise fall back to local listening
-            None => {
-                let ip_addr: IpAddr = app_config.server.base.address.parse()?;
-                let addr = SocketAddr::new(ip_addr, app_config.server.base.port);
-                TcpListener::bind(addr).await?
-            }
-        };
+        // let mut listenfd = ListenFd::from_env();
+        // let listener = match listenfd.take_tcp_listener(0)? {
+        //     // if we are given a tcp listener on listen fd 0, we use that one
+        //     Some(listener) => {
+        //         listener.set_nonblocking(true)?;
+        //         TcpListener::from_std(listener)?
+        //     }
+        //     // otherwise fall back to local listening
+        //     None => {
+        //         let ip_addr: IpAddr = app_config.server.base.address.parse()?;
+        //         let addr = SocketAddr::new(ip_addr, app_config.server.base.port);
+        //         TcpListener::bind(addr).await?
+        //     }
+        // };
+
+        let ip_addr: IpAddr = app_config.server.base.address.parse()?;
+        let addr = SocketAddr::new(ip_addr, app_config.server.base.port);
+        let listener = TcpListener::bind(addr).await?;
 
         println!(
             "listening on {}",

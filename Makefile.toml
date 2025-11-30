@@ -12,7 +12,8 @@ APPS = "apps"             # 后端应用目录
 MOBILE = "apps/mobile"    # 移动端应用
 ADMIN = "apps/admin"      # 后端管理端应用
 MOBILE_WEB = "mobile-web" # 移动前端项目
-# NDK_HOME = "/home/user/.Android/Sdk/ndk/28.0.12433566" # Android NDK HOME, 支持直接读取系统环境变量
+NDK_HOME = "/home/one/.android/Sdk/ndk/29.0.14206865" # Android NDK HOME, 支持直接读取系统环境变量
+ANDROID_NDK = "/home/one/.android/Sdk/ndk/29.0.14206865" # jsonwebtoken 依赖
 # TAURI_BUNDLER_WIX_FIPS_COMPLIANT = "true" # 如果您的系统要求 MSI 软件包符合 FIPS 标准，则设置此环境变量。
 
 
@@ -93,6 +94,7 @@ args = [
     "-S",
     "--needed",
     "nsis",     # 交叉编译为 Windows Nsis 包
+    "nasm",     # Windows jsonwebtoken 依赖
 ]
 
 
@@ -224,7 +226,7 @@ args = ["tauri", "dev"]
 [tasks.android-dev]
 description = "Run android."
 category = "run"
-# env = { "CC_aarch64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
+env = { "CC_aarch64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
 cwd = "${MOBILE}"
 command = "cargo"
 args = ["tauri", "android", "dev"]
@@ -250,7 +252,7 @@ args = ["tauri", "build"]
 [tasks.android-build]
 description = "Build android build."
 category = "build"
-# env = { "CC_aarch64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
+env = { "CC_aarch64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android35-clang", "CC_armv7_linux_androideabi" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi35-clang", "CC_x86_64_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android35-clang", "CC_i686_linux_android" = "${NDK_HOME}/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android35-clang" }
 cwd = "${MOBILE}"
 command = "cargo"
 args = ["tauri", "android", "build"]

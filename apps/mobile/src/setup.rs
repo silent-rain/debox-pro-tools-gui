@@ -2,8 +2,8 @@
 
 use std::{path::Path, sync::Arc};
 
-use log::info;
-use tauri::{App, Manager, path::BaseDirectory};
+use log::error;
+use tauri::{App, Manager};
 use tracing_appender::non_blocking::WorkerGuard;
 
 use admin::server::HttpServer;
@@ -13,7 +13,10 @@ use database::Mdb;
 use err_code::Error;
 use inject::InjectProvider;
 
-use crate::utils::app_dir::{init_dir, print_app_dir};
+use crate::utils::{
+    app_dir::{init_dir, print_app_dir},
+    copy::copy_file,
+};
 
 const CONFIG_FILE: &str = "config.yaml";
 const DATA_DAT_FILE: &str = "data.dat";
@@ -82,33 +85,29 @@ impl Setup {
     ///
     /// 读取 Resources 目录中文件
     pub fn init_resources(app: &mut App, app_dir: &Path) -> Result<(), Error> {
+        // 获取资源目录
+        let resource_dir = app.path().resource_dir().map_err(|e| {
+            error!("get resource_dir failed: {e}");
+            println!("get resource_dir failed: {e}");
+            e
+        })?;
+        println!("Resource directory: {:?}", resource_dir);
+
         // 配置文件
-        let config_path = app.path().resolve(CONFIG_FILE, BaseDirectory::Resource)?;
+        let config_path = resource_dir.join(CONFIG_FILE);
         // 数据库配置
-        let db_path = app.path().resolve(DATA_DAT_FILE, BaseDirectory::Resource)?;
+        let db_path = resource_dir.join(DATA_DAT_FILE);
 
         if cfg!(target_os = "android")
             || (!cfg!(debug_assertions) && cfg!(target_os = "linux"))
             || (!cfg!(debug_assertions) && cfg!(target_os = "windows"))
         {
             if !config_path.exists() {
-                std::fs::copy(&config_path, app_dir.join(CONFIG_FILE))?;
-
-                info!(
-                    "copy resource config: {:#?} to {:#?}",
-                    config_path,
-                    app_dir.join(CONFIG_FILE)
-                );
+                copy_file(app, &config_path, &app_dir.join(CONFIG_FILE))?;
             }
 
             if !db_path.exists() {
-                std::fs::copy(&db_path, app_dir.join(DATA_DAT_FILE))?;
-
-                info!(
-                    "copy resource config: {:#?} to {:#?}",
-                    db_path,
-                    app_dir.join(DATA_DAT_FILE)
-                );
+                copy_file(app, &db_path, &app_dir.join(DATA_DAT_FILE))?;
             }
         }
         Ok(())
