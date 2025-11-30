@@ -8,11 +8,13 @@ use inject::AInjectProvider;
 use crate::{
     DeboxAccountFollowService,
     dto::debox_account_follow::{
-        CreateDeboxAccountFollowReq, CreateDeboxAccountFollowResp, DeleteDeboxAccountFollowReq,
-        DeleteDeboxAccountFollowResp, GetDeboxAccountFollowReq, GetDeboxAccountFollowResp,
-        GetDeboxAccountFollowsReq, GetDeboxAccountFollowsResp, SyncDeboxAccountFollowsReq,
-        SyncDeboxAccountFollowsResp, UpdateDeboxAccountFollowReq, UpdateDeboxAccountFollowResp,
-        UpdateDeboxAccountFollowStatusReq, UpdateDeboxAccountFollowStatusResp,
+        BatchAccountFollowsReq, BatchAccountFollowsResp, CreateDeboxAccountFollowReq,
+        CreateDeboxAccountFollowResp, DeboxUserSearchReq, DeboxUserSearchResp,
+        DeleteDeboxAccountFollowReq, DeleteDeboxAccountFollowResp, GetDeboxAccountFollowReq,
+        GetDeboxAccountFollowResp, GetDeboxAccountFollowsReq, GetDeboxAccountFollowsResp,
+        SyncDeboxAccountFollowsReq, SyncDeboxAccountFollowsResp, UpdateDeboxAccountFollowReq,
+        UpdateDeboxAccountFollowResp, UpdateDeboxAccountFollowStatusReq,
+        UpdateDeboxAccountFollowStatusResp,
     },
 };
 
@@ -112,6 +114,34 @@ impl DeboxAccountFollowController {
         debox_account_follow_service.sync_follows(&ctx, req).await?;
 
         let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 批量关注用户
+    pub async fn batch_follows(
+        ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<BatchAccountFollowsReq>,
+    ) -> Responder<BatchAccountFollowsResp> {
+        let debox_account_follow_service: DeboxAccountFollowService = provider.provide();
+        debox_account_follow_service
+            .batch_follows(&ctx, req)
+            .await?;
+        let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 用户搜索
+    pub async fn debox_user_search(
+        ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<DeboxUserSearchReq>,
+    ) -> Responder<DeboxUserSearchResp> {
+        let debox_account_follow_service: DeboxAccountFollowService = provider.provide();
+        let results = debox_account_follow_service
+            .debox_user_search(&ctx, req)
+            .await?;
+        let resp = Response::data(results.into());
         Ok(resp)
     }
 }

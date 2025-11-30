@@ -73,7 +73,6 @@ const AccountList: FC<AccountListProps> = ({ selectedAccounts, selectedGroups, o
         setGroups([]);
         return;
       }
-      console.log('selectedAccounts3');
       try {
         setLoading(true);
         const data = await fetchGroups(selectedAccounts);

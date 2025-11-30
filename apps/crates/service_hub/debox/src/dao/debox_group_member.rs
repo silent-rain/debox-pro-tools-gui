@@ -166,4 +166,19 @@ impl DeboxGroupMemberDao {
             .one(self.db.db())
             .await
     }
+
+    /// 根据 account_id 和 group_id 获取群组成员列表
+    pub async fn list_by_group(
+        &self,
+        user_id: i32,
+        account_id: i32,
+        group_id: i32,
+    ) -> Result<Vec<debox_group_member::Model>, DbErr> {
+        DeboxGroupMember::find()
+            .filter(debox_group_member::Column::UserId.eq(user_id))
+            .filter(debox_group_member::Column::AccountId.eq(account_id))
+            .filter(debox_group_member::Column::GroupId.eq(group_id))
+            .all(self.db.db())
+            .await
+    }
 }

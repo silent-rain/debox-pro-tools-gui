@@ -34,5 +34,7 @@ export const ROUTES = {
   FOLLOW_MUTUAL_INVITE: '/follow-mutual-invite',
 
   // 关注管理
-  AccountFollowManagement: '/account-follow-management',
+  ACCOUNT_FOLLOW_MANAGEMENT: '/account-follow-management',
+  // 添加关注人页面
+  ACCOUNT_FOLLOW_MANAGEMENT_FORM: '/account-follow-management/form',
 };

@@ -167,6 +167,7 @@ impl DeboxAccountFollowDao {
         account_id: i32,
     ) -> Result<Vec<debox_account_follow::Model>, DbErr> {
         let result = DeboxAccountFollow::find()
+            .filter(debox_account_follow::Column::Status.eq(true))
             .filter(debox_account_follow::Column::UserId.eq(user_id))
             .filter(debox_account_follow::Column::AccountId.eq(account_id))
             .all(self.db.db())

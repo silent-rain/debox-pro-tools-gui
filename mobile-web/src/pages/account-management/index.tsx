@@ -226,7 +226,7 @@ const ImportAccount = () => {
   };
 
   const handleFormImport = () => {
-    navigate(ROUTES.ACCOUNT_MANAGEMENT_FORM, { state: { mode: 'add' } });
+    navigate(ROUTES.ACCOUNT_MANAGEMENT_FORM, { state: { replace: true, mode: 'add' } });
   };
 
   const handleFileImport = () => {

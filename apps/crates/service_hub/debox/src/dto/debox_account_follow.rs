@@ -1,9 +1,12 @@
 //! DeBox账号关注人管理
 
+use debox_pro_rs::dto::user_ext::UserSearch;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use entity::debox::debox_account_follow;
+
+use crate::enums::debox_account_follow::FollowType;
 
 /// 查询DeBox账号关注人列表 请求体
 #[derive(Default, Deserialize, Validate)]
@@ -163,3 +166,49 @@ pub struct SyncDeboxAccountFollowsReq {
 /// 同步关注人列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SyncDeboxAccountFollowsResp {}
+
+/// 批量关注用户 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+#[serde(default)]
+pub struct BatchAccountFollowsReq {
+    /// 账号ID
+    pub account_id: i32,
+    /// 目标账号ID
+    pub target_account_id: i32,
+    /// 目标群组ID
+    pub target_group_id: i32,
+    /// DeBox用户IDs
+    pub debox_user_ids: Vec<String>,
+    /// 添加关注人账号类型
+    pub follow_type: FollowType,
+}
+
+/// 批量关注用户 响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct BatchAccountFollowsResp {}
+
+/// 用户搜索 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+#[serde(default)]
+pub struct DeboxUserSearchReq {
+    /// 账号ID
+    pub account_id: i32,
+    /// 搜索关键词
+    pub search: String,
+    /// 当前分页
+    pub page: u64,
+    /// 页面大小
+    pub size: u64,
+}
+
+/// 用户搜索 响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeboxUserSearchResp {
+    pub data_list: Vec<UserSearch>,
+}
+
+impl From<Vec<UserSearch>> for DeboxUserSearchResp {
+    fn from(data_list: Vec<UserSearch>) -> Self {
+        Self { data_list }
+    }
+}

@@ -31,6 +31,14 @@ impl DeboxAccountFollowRouter {
                 .route(
                     "/sync-follows",
                     post(DeboxAccountFollowController::sync_follows),
+                )
+                .route(
+                    "/batch-follows",
+                    post(DeboxAccountFollowController::batch_follows),
+                )
+                .route(
+                    "/debox-user-search",
+                    post(DeboxAccountFollowController::debox_user_search),
                 ),
         )
     }

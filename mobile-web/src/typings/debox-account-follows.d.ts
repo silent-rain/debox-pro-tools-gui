@@ -1,4 +1,5 @@
 /*用户关注管理 */
+import { FollowType } from '@/enums/debox-account-follow';
 
 /// DeBox账号关注表
 export interface DeboxAccountFollow {
@@ -89,3 +90,50 @@ export interface SyncDeboxAccountFollowsReq {
 
 // 同步关注人列表 响应体
 export interface SyncDeboxAccountFollowsResp {}
+
+// 批量关注用户 请求体
+export interface BatchAccountFollowsReq {
+  account_id: number; // 账号ID
+  target_account_id?: number; // 目标账号ID
+  target_group_id?: number; // 目标群组ID
+  debox_user_ids?: string[]; // DeBox用户IDs
+  follow_type: FollowType; // 添加关注人账号类型
+}
+
+// 批量关注用户 响应体
+export interface BatchAccountFollowsResp {}
+
+// 用户搜索 请求体
+export interface DeboxUserSearchReq {
+  account_id: number; // 账号ID
+  search: string; // 搜索关键词
+  page: number; // 当前分页
+  size: number; // 页面大小
+}
+
+// 用户搜索 响应体
+export interface DeboxUserSearchResp {
+  data_list: UserSearch[];
+}
+
+// 用户搜索结果
+export interface UserSearch {
+  user_id: number;
+  name: string;
+  group_alias: string;
+  alias_name: string;
+  pic: string;
+  chain_id: number;
+  address: string;
+  solana_address: string;
+  tron_address: string;
+  colors?: any;
+  is_admin: number;
+  is_builder: number;
+  is_founder: number;
+  is_role: number;
+  identity?: any;
+  user_label?: any;
+  ext_text: string;
+  icons: any[];
+}

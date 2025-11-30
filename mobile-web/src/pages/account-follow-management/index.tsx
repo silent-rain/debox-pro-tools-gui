@@ -4,6 +4,8 @@ import AccountList from './components/AccountList';
 import AccountFollowList from './components/AccountFollowList';
 import styles from './index.module.less';
 import { DeboxAccountFollowFollowApi } from '@/api';
+import { ROUTES } from '@/constants/routes';
+import { useNavigate } from 'react-router';
 
 // 同步关注人列表
 const syncFollows = async (accountIds: number[]) => {
@@ -13,9 +15,8 @@ const syncFollows = async (accountIds: number[]) => {
   await DeboxAccountFollowFollowApi.syncFollows(data);
 };
 
-// 群组/指定人/关注人列表/用户
-
 const FollowManagement = () => {
+  const navigate = useNavigate();
   const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
   const [followsUpdateState, setFollowsUpdateState] = useState<number>(0);
 
@@ -39,6 +40,13 @@ const FollowManagement = () => {
     setFollowsUpdateState((prev) => prev + 1);
   };
 
+  // 跳转到添加关注人页面
+  const handleAddFollows = () => {
+    navigate(ROUTES.ACCOUNT_FOLLOW_MANAGEMENT_FORM, {
+      state: { replace: true, mode: 'add', accountId: selectedAccounts[0] },
+    });
+  };
+
   return (
     <div className='account-follow-management'>
       {/* 选择账号 */}
@@ -53,7 +61,7 @@ const FollowManagement = () => {
           同步关注人
         </Button>
 
-        <Button color='primary' size='small' fill='solid' onClick={handleSyncFollows}>
+        <Button color='primary' size='small' fill='solid' onClick={handleAddFollows}>
           添加关注人
         </Button>
       </div>

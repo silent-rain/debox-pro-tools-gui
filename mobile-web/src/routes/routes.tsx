@@ -38,6 +38,8 @@ const FollowMutualInvite = lazy(() => import('@/pages/follow-mutual-invite'));
 
 // 关注管理
 const AccountFollowManagement = lazy(() => import('@/pages/account-follow-management'));
+// 添加关注人页面
+const AccountFollowManagementForm = lazy(() => import('@/pages/account-follow-management/form'));
 
 // TabBar Routes
 export const tabBarRoutes: RouteConfig = {
@@ -226,6 +228,14 @@ const AccountFollowManagementRoutes: RouteConfig = {
       element: <AccountFollowManagement />,
       meta: {
         title: '关注管理',
+        auth: true,
+      },
+    },
+    {
+      path: 'form',
+      element: <AccountFollowManagementForm />,
+      meta: {
+        title: '添加关注人',
         auth: true,
       },
     },

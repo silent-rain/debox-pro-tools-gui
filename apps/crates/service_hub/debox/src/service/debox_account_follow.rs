@@ -2,26 +2,29 @@
 
 use std::time::Duration;
 
-use log::error;
+use log::{error, info};
 use nject::injectable;
 use sea_orm::{ActiveValue::Set, DbErr::RecordNotUpdated};
 
 use axum_context::Context;
 use debox_pro_rs::{
     Config as DeBoxConfig, DeBoxClient, UserExtApi,
-    dto::user_ext::{Relation, RelationListReq, RelationStatus},
+    dto::user_ext::{
+        FollowNewReq, Relation, RelationListReq, RelationStatus, UserSearch, UserSearchReq,
+    },
 };
 use entity::debox::{debox_account, debox_account_follow};
 use err_code::{Error, ErrorMsg};
 use tokio::time::sleep;
 
 use crate::{
-    DeboxAccountDao, DeboxAccountFollowDao,
+    DeboxAccountDao, DeboxAccountFollowDao, DeboxGroupMemberDao,
     dto::debox_account_follow::{
-        CreateDeboxAccountFollowReq, DeleteDeboxAccountFollowReq, GetDeboxAccountFollowReq,
-        GetDeboxAccountFollowsReq, SyncDeboxAccountFollowsReq, UpdateDeboxAccountFollowReq,
-        UpdateDeboxAccountFollowStatusReq,
+        BatchAccountFollowsReq, CreateDeboxAccountFollowReq, DeboxUserSearchReq,
+        DeleteDeboxAccountFollowReq, GetDeboxAccountFollowReq, GetDeboxAccountFollowsReq,
+        SyncDeboxAccountFollowsReq, UpdateDeboxAccountFollowReq, UpdateDeboxAccountFollowStatusReq,
     },
+    enums::debox_account_follow::FollowType,
 };
 
 /// 服务层
@@ -29,6 +32,7 @@ use crate::{
 pub struct DeboxAccountFollowService {
     debox_account_follow_dao: DeboxAccountFollowDao,
     debox_account_dao: DeboxAccountDao,
+    debox_group_member_dao: DeboxGroupMemberDao,
 }
 
 impl DeboxAccountFollowService {
@@ -69,6 +73,24 @@ impl DeboxAccountFollowService {
             error!("获取 DeBox 账号信息失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("获取 DeBox 账号信息失败")
         })
+    }
+
+    /// 关注账号
+    async fn debox_follow_account(
+        &self,
+        client: &DeBoxClient,
+        follow_id: &str,
+    ) -> Result<(), ErrorMsg> {
+        let data = FollowNewReq {
+            follow_id: follow_id.to_string(),
+            status: 1,
+        };
+        client.follow_new(data).await.map_err(|e| {
+            error!("关注账号:{follow_id:?} 失败, err: {e:#?}");
+            Error::DeboxProRs(e).into_err_with_msg("关注账号失败")
+        })?;
+
+        Ok(())
     }
 }
 
@@ -380,5 +402,180 @@ impl DeboxAccountFollowService {
             })?;
 
         Ok(())
+    }
+}
+
+impl DeboxAccountFollowService {
+    /// 批量关注用户
+    pub async fn batch_follows(
+        &self,
+        ctx: &Context,
+        req: BatchAccountFollowsReq,
+    ) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
+        error!("批量关注用户开始, 请求体: {:#?}", req);
+
+        // 获取账号信息
+        let account = self.get_account(user_id, req.account_id).await?;
+
+        error!("account: {:#?}", account);
+
+        // 获取DeBox客户端
+        let client = self.debox_client(&account)?;
+
+        // 当前账号已关注的用户ID列表
+        let followed_ids = self.get_follows_by_account(user_id, req.account_id).await?;
+
+        error!("followed_ids: {:#?}", followed_ids);
+
+        let to_followed_ids = match req.follow_type {
+            FollowType::Account => {
+                // 目标账号的关注人列表
+                let target_followed_ids = self
+                    .get_follows_by_account(user_id, req.target_account_id)
+                    .await?;
+
+                // 待关注用户ID列表 = 目标账号的关注人列表 - 当前账号已关注的用户ID列表
+                let to_followed_ids: Vec<String> = target_followed_ids
+                    .into_iter()
+                    .filter(|id| !followed_ids.contains(id))
+                    .collect();
+
+                to_followed_ids
+            }
+            FollowType::Group => {
+                // 获取账号群组成员列表
+                let group_members = self
+                    .get_group_members_by_target_group(
+                        user_id,
+                        req.target_account_id,
+                        req.target_group_id,
+                    )
+                    .await?;
+
+                // 待关注用户ID列表 = 账号群组成员列表 - 当前账号已关注的用户ID列表
+                let to_followed_ids: Vec<String> = group_members
+                    .into_iter()
+                    .filter(|id| !followed_ids.contains(id))
+                    .collect();
+                to_followed_ids
+            }
+            FollowType::User => {
+                // 待关注用户ID列表 = 请求体中的用户ID列表 - 当前账号已关注的用户ID列表
+                let to_followed_ids: Vec<String> = req
+                    .debox_user_ids
+                    .into_iter()
+                    .filter(|id| !followed_ids.contains(id))
+                    .collect();
+                to_followed_ids
+            }
+        };
+
+        info!("当前账号已关注的用户ID数: {:#?}", followed_ids.len());
+        info!("待关注人数: {:#?}", to_followed_ids.len());
+
+        if to_followed_ids.is_empty() {
+            info!("没有需要关注的用户");
+            return Ok(());
+        }
+
+        // 批量添加关注人
+        for follow_id in to_followed_ids.iter() {
+            // 关注账号
+            self.debox_follow_account(&client, follow_id).await?;
+            sleep(Duration::from_millis(500)).await;
+        }
+
+        // 同步账号
+        self.sync_follows(
+            ctx,
+            SyncDeboxAccountFollowsReq {
+                account_ids: vec![req.account_id],
+            },
+        )
+        .await?;
+        Ok(())
+    }
+
+    /// 获取号的关注人列表
+    async fn get_follows_by_account(
+        &self,
+        user_id: i32,
+        account_id: i32,
+    ) -> Result<Vec<String>, ErrorMsg> {
+        let followeds = self
+            .debox_account_follow_dao
+            .follows_by_account_id(user_id, account_id)
+            .await
+            .map_err(|err| {
+                error!("查询DeBox账号关注人失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号关注人失败")
+            })?;
+
+        let followed_ids: Vec<String> = followeds
+            .into_iter()
+            .map(|followed| followed.debox_user_id)
+            .collect();
+
+        Ok(followed_ids)
+    }
+
+    /// 获取账号群组成员列表
+    async fn get_group_members_by_target_group(
+        &self,
+        user_id: i32,
+        account_id: i32,
+        group_id: i32,
+    ) -> Result<Vec<String>, ErrorMsg> {
+        let members = self
+            .debox_group_member_dao
+            .list_by_group(user_id, account_id, group_id)
+            .await
+            .map_err(|err| {
+                error!("查询DeBox账号群组成员失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号群组成员失败")
+            })?;
+        let member_ids: Vec<String> = members
+            .into_iter()
+            .map(|member| member.debox_user_id.to_string())
+            .collect();
+        Ok(member_ids)
+    }
+}
+
+impl DeboxAccountFollowService {
+    /// 用户搜索
+    pub async fn debox_user_search(
+        &self,
+        ctx: &Context,
+        req: DeboxUserSearchReq,
+    ) -> Result<Vec<UserSearch>, ErrorMsg> {
+        let user_id = ctx.get_user_id();
+        let account = self
+            .debox_account_dao
+            .info(req.account_id, user_id)
+            .await
+            .map_err(|err| {
+                error!("查询DeBox账号信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("DeBox账号不存在");
+                Error::DbQueryEmptyError.into_err_with_msg("DeBox账号不存在")
+            })?;
+
+        let client = self.debox_client(&account)?;
+
+        let data = UserSearchReq {
+            search: req.search,
+            page: req.page,
+            size: req.size,
+        };
+        let resp = client.user_search(data).await.map_err(|err| {
+            error!("DeBox用户搜索失败, err: {:#?}", err);
+            Error::DeboxProRs(err).into_err_with_msg("DeBox用户搜索失败")
+        })?;
+        Ok(resp)
     }
 }

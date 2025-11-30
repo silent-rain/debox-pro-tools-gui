@@ -8,7 +8,7 @@ import './index.module.less';
 
 const { Item } = Form;
 
-const AddAccountForm = () => {
+const AccountForm = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
   const location = useLocation();
@@ -63,7 +63,7 @@ const AddAccountForm = () => {
   };
 
   return (
-    <div className='add-account-form'>
+    <div className='account-form'>
       <Form
         form={form}
         onFinish={handleSubmit}
@@ -118,4 +118,4 @@ const AddAccountForm = () => {
   );
 };
 
-export default AddAccountForm;
+export default AccountForm;

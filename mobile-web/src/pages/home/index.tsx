@@ -32,7 +32,7 @@ const Home = () => {
     { title: '账号互助', path: ROUTES.FOLLOW_MUTUAL_INVITE, icon: <LoopOutline />, description: '相互关注/相互拉群' }, // 群组互关/账号互关
     {
       title: '关注管理',
-      path: ROUTES.AccountFollowManagement,
+      path: ROUTES.ACCOUNT_FOLLOW_MANAGEMENT,
       icon: <HeartOutline />,
       description: '一键关注目标账号',
     },

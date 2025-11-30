@@ -1,60 +1,74 @@
-import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Button, Form, Input, TextArea, Switch, Toast } from 'antd-mobile';
-import { ROUTES } from '@/constants/routes';
-import { DeboxAccountApi } from '@/api/debox-account';
-import { DeboxAccount } from '@/typings/debox-account';
-import './index.module.less';
+import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Toast, Tabs, Button } from 'antd-mobile';
+import styles from './index.module.less';
+import AccountList from '@/components/account-list';
+import AccountGroupList from '@/components/account-group-list';
+import { DeboxAccountFollowFollowApi } from '@/api';
+import { BatchAccountFollowsReq } from '@/typings/debox-account-follows';
+import { FollowType } from '@/enums/debox-account-follows';
 
-const { Item } = Form;
+import UserSearchList from './components/UserSearchList';
 
-const AddAccountForm = () => {
-  const navigate = useNavigate();
-  const [form] = Form.useForm();
+// 批量关注用户
+const batchFollows = async (data: BatchAccountFollowsReq) => {
+  await DeboxAccountFollowFollowApi.batchFollows(data);
+};
+
+const AccountFollowForm = () => {
   const location = useLocation();
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
+  const [selectedAccountGroups, setSelectedAccountGroups] = useState<number[]>([]);
+  const [userIds, setUserIds] = useState<number[]>([]);
 
-  useMemo(() => {
-    const { mode, accountId } = location.state || {};
+  const { accountId } = location.state || {};
 
-    const fetchAccountData = async (id: string) => {
-      try {
-        const data = await DeboxAccountApi.info({ id: Number(id) });
-        form.setFieldsValue(data);
-      } catch (error) {
-        console.error('获取账号数据失败, err: ', error);
-        Toast.show({
-          icon: 'fail',
-          content: '获取账号数据失败',
-        });
-      }
-    };
-
-    if (mode === 'edit' && accountId) {
-      setIsEditMode(true);
-      fetchAccountData(accountId);
-    }
-  }, [form, location.state]);
-
-  const handleSubmit = async (values: DeboxAccount) => {
+  const handleSubmit = async (followType: FollowType) => {
     try {
-      if (isEditMode) {
-        await DeboxAccountApi.update(values);
-        Toast.show({
-          icon: 'success',
-          content: '更新成功',
-        });
-      } else {
-        await DeboxAccountApi.create(values);
-        Toast.show({
-          icon: 'success',
-          content: '添加成功',
-        });
+      switch (followType) {
+        case FollowType.Account: {
+          for (const targetAccountId of selectedAccounts) {
+            const data: BatchAccountFollowsReq = {
+              account_id: accountId,
+              target_account_id: targetAccountId,
+              follow_type: FollowType.Account,
+            };
+            await batchFollows(data);
+          }
+          break;
+        }
+        case FollowType.Group: {
+          for (const targetAccountId of selectedAccounts) {
+            for (const groupId of selectedAccountGroups) {
+              const data: BatchAccountFollowsReq = {
+                account_id: accountId,
+                target_account_id: targetAccountId,
+                target_group_id: groupId,
+                follow_type: FollowType.Group,
+              };
+              await batchFollows(data);
+            }
+          }
+          break;
+        }
+        case FollowType.User: {
+          const data: BatchAccountFollowsReq = {
+            account_id: accountId,
+            debox_user_ids: userIds.map(String),
+            follow_type: FollowType.User,
+          };
+          await batchFollows(data);
+          break;
+        }
       }
-      form.resetFields();
-      navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
+
+      Toast.show({
+        icon: 'success',
+        content: '添加成功',
+      });
+      // navigate(ROUTES.ACCOUNT_FOLLOW_MANAGEMENT, { replace: true });
     } catch (error) {
-      console.error('添加账号失败, err: ', error);
+      console.error('添加关注人失败, err: ', error);
       Toast.show({
         icon: 'fail',
         content: '操作失败',
@@ -63,59 +77,71 @@ const AddAccountForm = () => {
   };
 
   return (
-    <div className='add-account-form'>
-      <Form
-        form={form}
-        onFinish={handleSubmit}
-        footer={
-          <Button block type='submit' color='primary' size='large'>
-            提交
-          </Button>
-        }
-      >
-        <Form.Item name='id' hidden>
-          <Input type='hidden' />
-        </Form.Item>
+    <div className='account-follow-form'>
+      <Tabs defaultActiveKey='1'>
+        <Tabs.Tab title='账号' key='1'>
+          <p>请选择一个账号进行批量关注用户</p>
+          <div className={styles.operationButton}>
+            <Button
+              color='primary'
+              size='small'
+              fill='solid'
+              onClick={() => {
+                handleSubmit(FollowType.Account);
+              }}
+            >
+              提交
+            </Button>
+          </div>
+          <AccountList
+            defaultSelected={true}
+            onChange={(accountIds: number[]) => {
+              setSelectedAccounts(accountIds);
+            }}
+          />
+        </Tabs.Tab>
+        <Tabs.Tab title='群组' key='2'>
+          <p>请选择一个账号的群组进行批量关注用户</p>
+          <div className={styles.operationButton}>
+            <Button
+              color='primary'
+              size='small'
+              fill='solid'
+              onClick={() => {
+                handleSubmit(FollowType.Group);
+              }}
+            >
+              提交
+            </Button>
+          </div>
+          <AccountGroupList
+            defaultSelected={true}
+            onChange={(accountIds: number[], accountGroupIds: number[]) => {
+              setSelectedAccounts(accountIds);
+              setSelectedAccountGroups(accountGroupIds);
+            }}
+          />
+        </Tabs.Tab>
+        <Tabs.Tab title='用户' key='3'>
+          <p>指定账号进行关注用户</p>
+          <div className={styles.operationButton}>
+            <Button
+              color='primary'
+              size='small'
+              fill='solid'
+              onClick={() => {
+                handleSubmit(FollowType.User);
+              }}
+            >
+              提交
+            </Button>
+          </div>
 
-        <Item name='app_id' label='App Id' rules={[{ required: true }]}>
-          <Input placeholder=' 请输入 AppId，在DeBox开放平台获取' />
-        </Item>
-        <Item name='api_key' label='API Key' rules={[{ required: true }]}>
-          <Input placeholder=' 请输入 API Key，在DeBox开放平台获取' />
-        </Item>
-        <Item name='app_secret' label='App Secret' rules={[{ required: true }]}>
-          <Input placeholder='请输入 App Secret，在DeBox开放平台获取' />
-        </Item>
-        <Item name='access_token' label='Access登录授权' rules={[{ required: false }]}>
-          <Input placeholder='请输入登录授权' />
-        </Item>
-        <Item name='web_token' label='WEB登录授权' rules={[{ required: true }]}>
-          <Input placeholder='请输入WEB登录授权' />
-        </Item>
-        <Item name='debox_user_id' label='DeBox用户ID' rules={[{ required: true }]}>
-          <Input placeholder='请输入DeBox用户ID' />
-        </Item>
-        {/* <Item name='wallet_address' label='钱包地址' rules={[{ required: true }]}>
-          <Input placeholder='请输入钱包地址' />
-        </Item>
-        <Item name='api_key_status' label='API Key状态' rules={[{ required: true }]}>
-          <Selector options={statusOptions} />
-        </Item>
-        <Item name='access_token_status' label='Access Token状态' rules={[{ required: true }]}>
-          <Selector options={statusOptions} />
-        </Item>
-        <Item name='web_token_status' label='Web Token状态' rules={[{ required: true }]}>
-          <Selector options={statusOptions} />
-        </Item> */}
-        <Item name='desc' label='描述信息'>
-          <TextArea placeholder='请输入描述信息' />
-        </Item>
-        <Item name='status' label='启用状态' valuePropName='checked'>
-          <Switch />
-        </Item>
-      </Form>
+          <UserSearchList accountId={accountId} userIds={userIds} setUserIds={setUserIds} />
+        </Tabs.Tab>
+      </Tabs>
     </div>
   );
 };
 
-export default AddAccountForm;
+export default AccountFollowForm;

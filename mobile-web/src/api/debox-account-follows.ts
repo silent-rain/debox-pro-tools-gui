@@ -3,8 +3,12 @@
 import request from '@/utils/request';
 import { SERVER } from '@/constants/http';
 import {
+  BatchAccountFollowsReq,
+  BatchAccountFollowsResp,
   CreateDeboxAccountFollowReq,
   CreateDeboxAccountFollowResp,
+  DeboxUserSearchReq,
+  DeboxUserSearchResp,
   DeleteDeboxAccountFollowReq,
   DeleteDeboxAccountFollowResp,
   GetDeboxAccountFollowReq,
@@ -84,6 +88,26 @@ export const DeboxAccountFollowFollowApi = {
   syncFollows: async (data: SyncDeboxAccountFollowsReq): Promise<SyncDeboxAccountFollowsResp> => {
     const response = await request({
       url: `${SERVER}/debox/debox-account-follows/sync-follows`,
+      method: 'POST',
+      data,
+    });
+    return response.data;
+  },
+
+  // 批量关注用户
+  batchFollows: async (data: BatchAccountFollowsReq): Promise<BatchAccountFollowsResp> => {
+    const response = await request({
+      url: `${SERVER}/debox/debox-account-follows/batch-follows`,
+      method: 'POST',
+      data,
+    });
+    return response.data;
+  },
+
+  // debox用户搜索
+  deboxUserSearch: async (data: DeboxUserSearchReq): Promise<DeboxUserSearchResp> => {
+    const response = await request({
+      url: `${SERVER}/debox/debox-account-follows/debox-user-search`,
       method: 'POST',
       data,
     });
