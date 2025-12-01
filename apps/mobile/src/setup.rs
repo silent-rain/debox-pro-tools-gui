@@ -93,21 +93,22 @@ impl Setup {
         })?;
         println!("Resource directory: {:?}", resource_dir);
 
-        // 配置文件
         let config_path = resource_dir.join(CONFIG_FILE);
-        // 数据库配置
         let db_path = resource_dir.join(DATA_DAT_FILE);
+
+        let target_config_path = app_dir.join(CONFIG_FILE);
+        let target_db_path = app_dir.join(DATA_DAT_FILE);
 
         if cfg!(target_os = "android")
             || (!cfg!(debug_assertions) && cfg!(target_os = "linux"))
             || (!cfg!(debug_assertions) && cfg!(target_os = "windows"))
         {
-            if !config_path.exists() {
-                copy_file(app, &config_path, &app_dir.join(CONFIG_FILE))?;
+            if !target_config_path.exists() {
+                copy_file(app, &config_path, &target_config_path)?;
             }
 
-            if !db_path.exists() {
-                copy_file(app, &db_path, &app_dir.join(DATA_DAT_FILE))?;
+            if !target_db_path.exists() {
+                copy_file(app, &db_path, &target_db_path)?;
             }
         }
         Ok(())
