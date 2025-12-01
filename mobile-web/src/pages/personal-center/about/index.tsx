@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, List, Button, Toast } from 'antd-mobile';
 import { InformationCircleOutline, RightOutline, GlobalOutline, MailOutline, FileOutline } from 'antd-mobile-icons';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 
 const About = () => {
   const navigate = useNavigate();

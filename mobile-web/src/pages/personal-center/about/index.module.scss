@@ -1,62 +1,59 @@
 .about {
-  padding: 16px;
   min-height: 100vh;
+  padding: 16px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
   &::before {
-    content: '';
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.95);
+    inset: 0;
     z-index: -1;
+    background: rgb(255 255 255 / 95%);
+    content: '';
   }
 }
 
 .appCard {
   margin-bottom: 20px;
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  border: none;
   overflow: hidden;
+  background: white;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
 }
 
 .appHeader {
   display: flex;
-  align-items: center;
   gap: 16px;
+  align-items: center;
   margin-bottom: 16px;
 }
 
 .appIcon {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 60px;
+  height: 60px;
   color: white;
   font-size: 28px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
 }
 
 .appInfo {
   flex: 1;
 
   h2 {
-    margin: 0 0 4px 0;
-    font-size: 20px;
-    font-weight: 600;
+    margin: 0 0 4px;
     color: #333;
+    font-weight: 600;
+    font-size: 20px;
   }
 
   .version {
-    margin: 0 0 4px 0;
-    font-size: 14px;
+    margin: 0 0 4px;
     color: #667eea;
+    font-size: 14px;
     cursor: pointer;
     transition: opacity 0.2s;
 
@@ -65,38 +62,38 @@
     }
 
     &::after {
-      content: ' 📋';
       font-size: 12px;
+      content: ' 📋';
     }
   }
 
   .buildTime {
     margin: 0;
-    font-size: 12px;
     color: #999;
+    font-size: 12px;
   }
 }
 
 .description {
   margin: 0;
-  font-size: 14px;
   color: #666;
+  font-size: 14px;
   line-height: 1.6;
 }
 
 .featuresCard {
   margin-bottom: 20px;
-  border-radius: 16px;
   background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   border: none;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
 
   :global(.adm-card-header) {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 16px 16px 0 0;
-    margin: -16px -16px 16px -16px;
+    margin: -16px -16px 16px;
     padding: 16px;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px 16px 0 0;
 
     :global(.adm-card-header-title) {
       color: white;
@@ -113,26 +110,26 @@
 
 .featureItem {
   display: flex;
-  align-items: flex-start;
   gap: 8px;
-  font-size: 14px;
+  align-items: flex-start;
   color: #555;
+  font-size: 14px;
   line-height: 1.5;
 }
 
 .featureBullet {
+  flex-shrink: 0;
+  margin-top: 2px;
   color: #667eea;
   font-weight: bold;
-  margin-top: 2px;
-  flex-shrink: 0;
 }
 
 .contactList {
   margin-bottom: 20px;
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgb(0 0 0 / 8%);
 
   :global(.adm-list-item) {
     padding: 16px;
@@ -150,8 +147,8 @@
   }
 
   :global(.adm-list-item-content) {
-    font-size: 15px;
     color: #333;
+    font-size: 15px;
   }
 
   :global(.adm-list-item-content-prefix) {
@@ -166,13 +163,13 @@
 }
 
 .footer {
+  margin: 30px 0 20px;
   text-align: center;
-  margin: 30px 0 20px 0;
 
   p {
     margin: 4px 0;
-    font-size: 12px;
     color: #999;
+    font-size: 12px;
   }
 }
 
@@ -183,17 +180,17 @@
 
   :global(.adm-button) {
     height: 48px;
-    font-size: 16px;
     font-weight: 500;
-    border-radius: 12px;
+    font-size: 16px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     border: none;
-    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgb(102 126 234 / 30%);
     transition: all 0.3s ease;
 
     &:hover {
+      box-shadow: 0 6px 25px rgb(102 126 234 / 40%);
       transform: translateY(-2px);
-      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
     }
 
     &:active {
@@ -203,7 +200,7 @@
 }
 
 // 响应式设计
-@media (max-width: 375px) {
+@media (width <= 375px) {
   .about {
     padding: 12px;
   }

@@ -8,7 +8,6 @@
 
   /* 不伸缩，不收缩，自动高度 */
   flex: 0 0 auto;
-  border-bottom: solid 1px var(--adm-color-border);
-
   background-color: #fff;
+  border-bottom: solid 1px var(--adm-color-border);
 }

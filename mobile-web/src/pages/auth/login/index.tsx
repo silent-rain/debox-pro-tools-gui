@@ -6,7 +6,7 @@ import { UserType } from '@/enums/auth';
 import { AuthApi } from '@/api';
 import { useAuthStore } from '@/stores';
 import { ROUTES } from '@/constants/routes';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import PhoneLogin from './components/PhoneLogin';
 import BaseLogin from './components/BaseLogin';
 import EmailLogin from './components/EmailLogin';
@@ -65,7 +65,7 @@ export default function Login(): JSX.Element {
   }, []);
 
   return (
-    <div className={styles.login_container}>
+    <div className={styles.loginContainer}>
       <div>
         <h1 className={styles.title}>欢迎登录</h1>
         <div className={styles.subtitle}>请选择登录方式并输入凭证</div>

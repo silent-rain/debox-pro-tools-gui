@@ -1,7 +1,7 @@
 import { Button, ErrorBlock } from 'antd-mobile';
 import { useNavigate } from 'react-router';
 import { ROUTES } from '@/constants/routes';
-import styles from './index.module.css';
+import styles from './index.module.scss';
 
 export default function Error404() {
   const navigate = useNavigate();

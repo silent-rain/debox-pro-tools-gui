@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Dropdown, Toast } from 'antd-mobile';
 import AccountList from '@/components/account-list';
 import GroupList from './components/GroupList';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import { DeboxGroupApi } from '@/api/debox-group';
 
 // 同步DeBox群组列表

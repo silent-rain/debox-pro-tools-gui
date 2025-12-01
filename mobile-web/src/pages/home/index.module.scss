@@ -3,23 +3,24 @@
 }
 
 .title {
-  font-size: 24px;
-  font-weight: bold;
   margin-bottom: 24px;
-  text-align: center;
   color: #409eff;
+  font-weight: bold;
+  font-size: 24px;
+  text-align: center;
 }
 
 .menuCard {
-  border-radius: 12px;
   background: #ecf5ff;
+  border-radius: 12px;
+
   // border: 1px solid #e0e0e0;
   transition: all 0.3s ease;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     background: #e6f7ff;
+    box-shadow: 0 4px 12px rgb(0 0 0 / 10%);
+    transform: translateY(-4px);
   }
 }
 
@@ -31,17 +32,17 @@
 }
 
 .cardIcon {
-  font-size: 32px;
   color: #1890ff;
+  font-size: 32px;
 }
 
 .cardTitle {
-  font-size: 16px;
-  font-weight: 500;
   color: #333;
+  font-weight: 500;
+  font-size: 16px;
 }
 
 .cardDescription {
-  font-size: 14px;
   color: #909399;
+  font-size: 14px;
 }

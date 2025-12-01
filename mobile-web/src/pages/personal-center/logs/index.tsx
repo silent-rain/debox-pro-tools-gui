@@ -1,6 +1,6 @@
 import { Button } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
-import './index.module.less';
+import './index.module.scss';
 
 const Logs = () => {
   const navigate = useNavigate();

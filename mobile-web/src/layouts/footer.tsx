@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TabBar } from 'antd-mobile';
 import { tabBarRoutes } from '@/routes/routes';
-import styles from './footer.module.less';
+import styles from './footer.module.scss';
 
 // 底部导航栏
 const Footer: FC = () => {

@@ -4,7 +4,7 @@ import { EyeInvisibleOutline, EyeOutline } from 'antd-mobile-icons';
 import { LoginReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
 import { cachedPasswordUsernameKey, cachedUsernameKey } from '@/constants/auth';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 
 export interface BaseLoginProps {
   submitting: boolean;
@@ -130,7 +130,7 @@ export default function BaseLogin({ submitting, onSubmit }: BaseLoginProps): JSX
         </Form.Item>
       </Form>
 
-      <div className={styles.remember_password}>
+      <div className={styles.rememberPassword}>
         <Checkbox checked={rememberPassword} onChange={(val) => setRememberPassword(Boolean(val))}>
           记住密码
         </Checkbox>

@@ -1,5 +1,5 @@
 import { Grid, Image } from 'antd-mobile';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import { Link } from 'react-router-dom';
 
 interface MenuItem {
@@ -48,7 +48,7 @@ interface MenuCardProps {
 const MenuCard = ({ menu: menu }: MenuCardProps) => {
   return (
     <Link className={styles.menu_card} to={menu.link}>
-      <div className={styles.card_wrapper}>
+      <div className={styles.cardWrapper}>
         <Image src={menu.image} fit='cover' className={styles.image} />
         <h2 className={styles.title}>{menu.title}</h2>
       </div>

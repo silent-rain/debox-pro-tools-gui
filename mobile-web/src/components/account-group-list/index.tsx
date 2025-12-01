@@ -1,7 +1,7 @@
 import { Checkbox, Space, Avatar, DotLoading, CheckList } from 'antd-mobile';
 import { FC, useCallback, useEffect, useState } from 'react';
 import Empty from '@/components/empty';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
 import { DeboxGroupApi } from '@/api/debox-group';
 

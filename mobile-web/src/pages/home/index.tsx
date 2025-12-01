@@ -10,7 +10,7 @@ import {
   LoopOutline,
 } from 'antd-mobile-icons';
 import { ROUTES } from '@/constants/routes';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 
 const Home = () => {
   const navigate = useNavigate();

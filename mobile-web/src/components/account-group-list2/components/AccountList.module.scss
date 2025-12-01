@@ -5,10 +5,11 @@
 .selectedAccountCount {
   font-size: 17px;
 }
+
 .allAccountsCheckbox {
-  margin: 8px 16px 0;
   display: flex;
   justify-content: flex-end;
+  margin: 8px 16px 0;
 }
 
 .accountListDivider {
@@ -22,6 +23,7 @@
 .accountItem {
   display: flex;
 }
+
 .accountItemAvatar {
   --size: 32px;
 }

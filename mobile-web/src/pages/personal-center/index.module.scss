@@ -1,9 +1,9 @@
 .userInfo {
   display: flex;
+  gap: 16px;
   align-items: center;
   padding: 16px;
   cursor: pointer;
-  gap: 16px;
 }
 
 .userText {
@@ -11,8 +11,8 @@
 
   h3 {
     margin: 0;
-    font-size: 18px;
     font-weight: 500;
+    font-size: 18px;
   }
 
   p {

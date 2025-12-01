@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button, Dropdown } from 'antd-mobile';
 import AccountList from '@/components/account-list';
 import AccountFollowList from './components/AccountFollowList';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import { DeboxAccountFollowFollowApi } from '@/api';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router';

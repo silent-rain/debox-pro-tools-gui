@@ -2,14 +2,14 @@
   .user-content {
     display: flex;
     flex-direction: column;
+    gap: 16px;
     align-items: center;
     padding: 24px;
-    gap: 16px;
 
     h2 {
       margin: 0;
-      font-size: 24px;
       font-weight: 500;
+      font-size: 24px;
     }
 
     p {

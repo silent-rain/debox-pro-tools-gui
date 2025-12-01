@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Avatar, NavBar } from 'antd-mobile';
-import './index.module.less';
+import './index.module.scss';
 
 const UserDetail = () => {
   const navigate = useNavigate();

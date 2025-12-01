@@ -1,6 +1,6 @@
 import { DotLoading, CheckList, SearchBar } from 'antd-mobile';
 import { FC, useEffect, useState } from 'react';
-import styles from './UserSearchList.module.less';
+import styles from './UserSearchList.module.scss';
 import { DeboxUserSearchReq, UserSearch } from '@/typings/debox-account-follows';
 import { DeboxAccountFollowFollowApi } from '@/api';
 

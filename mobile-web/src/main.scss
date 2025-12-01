@@ -1,14 +1,15 @@
-/* @import "tailwindcss"; */
-/* @import "tailwindcss/base"; */
-/* @import "tailwindcss/components"; */
-@import "tailwindcss/utilities";
+@layer theme, base, components, utilities;
+
+@import url("tailwindcss/theme.css") layer(theme);
+// @import "tailwindcss/preflight.css" layer(base);
+@import url("tailwindcss/utilities.css") layer(utilities);
 
 :root {
   color: rgb(255 255 255 / 87%);
-  background-color: #fafbfc;
   font-weight: 400;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
+  background-color: #fafbfc;
   color-scheme: light dark;
   font-synthesis: none;
   text-rendering: optimizelegibility;

@@ -1,8 +1,9 @@
-.register_container {
-  min-height: 100vh;
+.registerContainer {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 100vh;
+
   // background: #f7f8fa;
 }
 
@@ -12,16 +13,16 @@
 }
 
 .title {
+  margin: 0 0 8px;
+  color: #111;
   font-size: 22px;
   text-align: center;
-  color: #111;
-  margin: 0 0 8px;
 }
 
 .subtitle {
-  text-align: center;
-  color: #666;
   margin-bottom: 16px;
+  color: #666;
+  text-align: center;
 }
 
 .actions {
@@ -30,6 +31,6 @@
 
 .tips {
   margin-top: 8px;
-  text-align: center;
   color: #666;
+  text-align: center;
 }

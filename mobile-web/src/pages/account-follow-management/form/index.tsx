@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Toast, Tabs, Button } from 'antd-mobile';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import AccountList from '@/components/account-list';
 import AccountGroupList from '@/components/account-group-list2';
 import { DeboxAccountFollowFollowApi } from '@/api';

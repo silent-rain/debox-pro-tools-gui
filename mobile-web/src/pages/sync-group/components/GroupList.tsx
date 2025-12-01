@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
-import styles from './GroupList.module.less';
+import styles from './GroupList.module.scss';
 import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
 import { DeboxGroupApi } from '@/api/debox-group';
 import Empty from '@/components/empty';

@@ -3,9 +3,9 @@
 }
 
 .allGroupsCheckbox {
-  margin: 8px 16px 0;
   display: flex;
   justify-content: flex-end;
+  margin: 8px 16px 0;
 }
 
 .groupList {
@@ -15,6 +15,7 @@
 .groupItem {
   display: flex;
 }
+
 .groupItemAvatar {
   --size: 32px;
 }

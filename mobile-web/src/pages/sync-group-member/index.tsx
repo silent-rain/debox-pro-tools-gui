@@ -3,7 +3,7 @@ import { Button, Dropdown, Toast } from 'antd-mobile';
 import AccountList from '@/components/account-list';
 import AccountGroupList from '@/components/account-group-list';
 import GroupMemberList from './components/GroupMemberList';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import { DeboxGroupMemberApi } from '@/api';
 
 // 同步DeBox群组列表

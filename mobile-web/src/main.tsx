@@ -11,6 +11,6 @@ console.log(vConsole);
 import 'normalize.css';
 
 // 自定义样式
-import './main.css';
+import './main.scss';
 
 createRoot(document.getElementById('root')!).render(<App />);

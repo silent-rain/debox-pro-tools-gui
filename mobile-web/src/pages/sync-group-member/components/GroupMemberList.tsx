@@ -6,7 +6,7 @@ import { DeboxAccountApi, DeboxGroupApi, DeboxGroupMemberApi } from '@/api';
 import { DeboxGroupMember, GetDeboxGroupMembersReq } from '@/typings/debox-group-member';
 import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
-import styles from './GroupMemberList.module.less';
+import styles from './GroupMemberList.module.scss';
 
 interface GroupListProps {
   accountId: number;

@@ -3,7 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 
 import Header from './header';
 import Footer from './footer';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 
 import { PageLoading } from '../components/page-loading';
 import { useCurrentRouteMeta } from '@/routes/hooks/use-current-route-meta';

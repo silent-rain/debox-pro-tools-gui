@@ -15,7 +15,7 @@ import {
   Grid,
   ImageViewer,
 } from 'antd-mobile';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import { useEffect, useState } from 'react';
 import { comfyuiAddPrompt, comfyuiHistory, comfyuiQueue, comfyuiView } from '@/api/comfyui';
 import { AddPromptReq, QueueRsp } from '@/typings/api';

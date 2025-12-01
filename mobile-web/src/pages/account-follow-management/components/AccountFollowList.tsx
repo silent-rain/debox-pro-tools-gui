@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
 import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
-import styles from './AccountFollowList.module.less';
+import styles from './AccountFollowList.module.scss';
 import Empty from '@/components/empty';
 import { DeboxAccountFollowFollowApi } from '@/api';
 import { DeboxAccountFollow, GetDeboxAccountFollowsReq } from '@/typings/debox-account-follows';

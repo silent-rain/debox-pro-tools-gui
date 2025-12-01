@@ -6,10 +6,9 @@
 }
 
 .content {
-  height: 100vh;
-
   /* 可伸缩，可收缩，自动高度 */
   flex: 1 1 auto;
+  height: 100vh;
   padding: 10px;
 
   /* 内容超出时显示滚动条 */

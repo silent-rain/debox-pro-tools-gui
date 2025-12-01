@@ -1,6 +1,6 @@
 import { Card, Grid, Toast } from 'antd-mobile';
 import { TeamOutline, HeartOutline, UndoOutline } from 'antd-mobile-icons';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import { DeboxAccountApi } from '@/api';
 
 enum Mode {

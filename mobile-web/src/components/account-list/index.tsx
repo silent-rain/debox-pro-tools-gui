@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import Empty from '@/components/empty';
 import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 import { DeboxAccountApi } from '@/api/debox-account';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 
 interface AccountListProps {
   multiple?: boolean; // 是否多选

@@ -1,15 +1,15 @@
 .footer {
     /* 使元素固定在底部 */
     position: fixed;
+    right: 0;
     bottom: 0;
     left: 0;
-    right: 0;
 
     /* 确保footer在其他内容之上 */
     z-index: 1000;
 
     /* 不伸缩，不收缩，自动高度 */
     flex: 0 0 auto;
-    border-top: solid 1px var(--adm-color-border);
     background-color: #fff;
+    border-top: solid 1px var(--adm-color-border);
 }

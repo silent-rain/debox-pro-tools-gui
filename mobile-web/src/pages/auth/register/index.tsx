@@ -2,7 +2,7 @@ import { Button, Form, Input, Radio, Toast, Selector, DatePickerRef, DatePicker 
 import { JSX, RefObject, useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 import { AuthApi } from '@/api';
 import { RegisterReq } from '@/typings/auth';
 import { UserType } from '@/enums/auth';
@@ -83,7 +83,7 @@ export default function Register(): JSX.Element {
   };
 
   return (
-    <div className={styles.register_container}>
+    <div className={styles.registerContainer}>
       <div className={styles.card}>
         <h1 className={styles.title}>用户注册</h1>
         <div className={styles.subtitle}>请选择注册方式，并请填写以下信息</div>

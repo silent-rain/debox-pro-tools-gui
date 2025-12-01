@@ -4,7 +4,7 @@ import { Avatar, List } from 'antd-mobile';
 import { FileOutline, InformationCircleOutline, QuestionCircleOutline, SetOutline } from 'antd-mobile-icons';
 import { useAuthStore } from '@/stores';
 import { ROUTES } from '@/constants/routes';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 
 export const PersonalCenter = () => {
   const navigate = useNavigate();

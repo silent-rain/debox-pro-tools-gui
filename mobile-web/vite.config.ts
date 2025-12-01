@@ -78,6 +78,19 @@ export default defineConfig({
         }
         warn(warning);
       },
+      output: {
+        manualChunks: {
+          // 将 React 相关库打包到一个 chunk
+          'react-vendor': ['react', 'react-dom', 'react-router', 'react-router-dom'],
+          // 将 UI 库打包到一个 chunk
+          'ui-vendor': ['antd-mobile', 'antd-mobile-icons'],
+          // 将工具库打包到一个 chunk
+          'utils-vendor': ['axios', 'dayjs', 'js-cookie', 'qs', 'file-saver', 'zustand'],
+          // 将 Tauri 相关库打包到一个 chunk
+          'tauri-vendor': ['@tauri-apps/api', '@tauri-apps/plugin-shell', '@tauri-apps/plugin-websocket'],
+        },
+      },
     },
+    chunkSizeWarningLimit: 1000, // 提高警告阈值到 1MB
   },
 });

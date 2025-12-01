@@ -2,7 +2,7 @@ import { Checkbox, Space, Avatar, DotLoading } from 'antd-mobile';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 import { DeboxAccountApi } from '@/api/debox-account';
-import styles from './AccountList.module.less';
+import styles from './AccountList.module.scss';
 
 interface AccountListProps {
   selected: number[]; // 账号ID列表

@@ -9,7 +9,7 @@ import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 import { useAuthStore } from '@/stores';
 import { ROUTES } from '@/constants/routes';
 import Empty from '@/components/empty';
-import styles from './index.module.less';
+import styles from './index.module.scss';
 
 // 获取账号列表
 const fetchAccounts = async (): Promise<DeboxAccount[]> => {

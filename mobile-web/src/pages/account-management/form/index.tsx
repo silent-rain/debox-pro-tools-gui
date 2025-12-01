@@ -4,7 +4,7 @@ import { Button, Form, Input, TextArea, Switch, Toast } from 'antd-mobile';
 import { ROUTES } from '@/constants/routes';
 import { DeboxAccountApi } from '@/api/debox-account';
 import { DeboxAccount } from '@/typings/debox-account';
-import './index.module.less';
+import './index.module.scss';
 
 const { Item } = Form;
 
