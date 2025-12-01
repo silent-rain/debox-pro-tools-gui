@@ -1,9 +1,9 @@
-import { DotLoading, CheckList, DropdownRef, Avatar, Space } from 'antd-mobile';
-import { FC, useEffect, useRef, useState } from 'react';
+import { DotLoading, Avatar, Space, Checkbox } from 'antd-mobile';
+import { FC, useCallback, useEffect, useState } from 'react';
 import Empty from '@/components/empty';
 import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 import { DeboxAccountApi } from '@/api/debox-account';
-import './index.module.less';
+import styles from './index.module.less';
 
 interface AccountListProps {
   multiple?: boolean; // 是否多选
@@ -28,15 +28,6 @@ const AccountList: FC<AccountListProps> = ({ multiple = false, defaultSelected =
   const [accountIds, setAccountIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const ref = useRef<DropdownRef>(null);
-
-  useEffect(() => {
-    if (!onChange) {
-      return;
-    }
-    onChange(accountIds);
-  }, [accountIds, onChange]);
-
   useEffect(() => {
     const loadAccounts = async () => {
       try {
@@ -56,37 +47,75 @@ const AccountList: FC<AccountListProps> = ({ multiple = false, defaultSelected =
     };
 
     loadAccounts();
-  }, [defaultSelected, setAccountIds]);
+  }, [defaultSelected]);
+
+  useEffect(() => {
+    if (!onChange) {
+      return;
+    }
+    onChange(accountIds);
+  }, [accountIds, onChange]);
+
+  // 全选
+  const handleSelectAll = useCallback(
+    (checked: boolean) => {
+      if (checked) {
+        setAccountIds(accounts.map((item) => item.id));
+      } else {
+        setAccountIds([]);
+      }
+    },
+    [accounts, setAccountIds],
+  );
 
   if (loading) {
     return <DotLoading color='primary' />;
   }
+  if (accounts.length === 0) {
+    return <Empty className={styles.empty} title='暂无数据' />;
+  }
 
   return (
     <div className='account-list'>
-      {accounts.length === 0 ? <Empty title='暂无数据' /> : <></>}
+      <div className={styles.allCheckbox}>
+        {multiple ? (
+          <Checkbox
+            indeterminate={accountIds.length > 0 && accountIds.length < accounts.length}
+            checked={accountIds.length === accounts.length}
+            onChange={handleSelectAll}
+          >
+            全选
+          </Checkbox>
+        ) : (
+          <></>
+        )}
+      </div>
 
-      <CheckList
-        defaultValue={accountIds ? accountIds : []}
-        onChange={(val) => {
-          if (multiple) {
-            setAccountIds(val.map((v) => Number(v)));
-          } else {
-            setAccountIds([Number(val[0])]);
+      <Checkbox.Group
+        value={accountIds}
+        onChange={(values) => {
+          if (!values || values.length === 0) {
+            setAccountIds([]);
+            return;
           }
-
-          ref.current?.close();
+          if (multiple) {
+            setAccountIds(values as number[]);
+          } else {
+            setAccountIds([Number(values[values.length - 1])]);
+          }
         }}
       >
-        {accounts.map((item) => (
-          <CheckList.Item key={item.id} value={item.id}>
-            <Space align='center'>
-              <Avatar src={item.avatar ?? ''} />
-              <span>{item.name}</span>
-            </Space>
-          </CheckList.Item>
-        ))}
-      </CheckList>
+        <Space className={styles.accountList} direction='vertical'>
+          {accounts.map((item) => (
+            <Checkbox key={item.id} value={item.id}>
+              <Space align='center'>
+                <Avatar src={item.avatar ?? ''} />
+                <span>{item.name}</span>
+              </Space>
+            </Checkbox>
+          ))}
+        </Space>
+      </Checkbox.Group>
     </div>
   );
 };

@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { Toast, Tabs, Button } from 'antd-mobile';
 import styles from './index.module.less';
 import AccountList from '@/components/account-list';
-import AccountGroupList from '@/components/account-group-list';
+import AccountGroupList from '@/components/account-group-list2';
 import { DeboxAccountFollowFollowApi } from '@/api';
 import { BatchAccountFollowsReq } from '@/typings/debox-account-follows';
 import { FollowType } from '@/enums/debox-account-follows';
@@ -80,7 +80,7 @@ const AccountFollowForm = () => {
     <div className='account-follow-form'>
       <Tabs defaultActiveKey='1'>
         <Tabs.Tab title='账号' key='1'>
-          <p>请选择一个账号进行批量关注用户</p>
+          <p>请选择一个账号进行批量关注该账号的用户</p>
           <div className={styles.operationButton}>
             <Button
               color='primary'
@@ -101,7 +101,7 @@ const AccountFollowForm = () => {
           />
         </Tabs.Tab>
         <Tabs.Tab title='群组' key='2'>
-          <p>请选择一个账号的群组进行批量关注用户</p>
+          <p>请选择一个账号的群组进行批量关注该群组中的用户</p>
           <div className={styles.operationButton}>
             <Button
               color='primary'

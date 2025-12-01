@@ -103,11 +103,11 @@ const GroupList: FC<GroupListProps> = ({ accountIds, groupsUpdateState }) => {
   }
 
   if (accountIds.length === 0) {
-    return <Empty title='请先选择账号' description='暂无数据' />;
+    return <Empty className={styles.empty} title='请先选择账号' description='暂无数据' />;
   }
 
   if (groups.length === 0) {
-    return <Empty />;
+    return <Empty className={styles.empty} />;
   }
 
   return (

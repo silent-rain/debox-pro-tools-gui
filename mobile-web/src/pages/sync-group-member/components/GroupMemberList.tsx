@@ -1,15 +1,15 @@
 import { FC, useEffect, useState } from 'react';
 import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
-import styles from './GroupMemberList.module.less';
 import Empty from '@/components/empty';
 import { DeboxAccountApi, DeboxGroupApi, DeboxGroupMemberApi } from '@/api';
 import { DeboxGroupMember, GetDeboxGroupMembersReq } from '@/typings/debox-group-member';
 import { DeboxAccount, GetDeboxAccountsReq } from '@/typings/debox-account';
 import { DeboxGroup, GetDeboxGroupsReq } from '@/typings/debox-group';
+import styles from './GroupMemberList.module.less';
 
 interface GroupListProps {
-  accountIds: number[];
+  accountId: number;
   groupIds: number[];
   groupsMemberUpdateState: number;
 }
@@ -57,7 +57,7 @@ const updateGroupMemberStatus = async (memberId: number, status: boolean) => {
   return data;
 };
 
-const GroupMemberList: FC<GroupListProps> = ({ accountIds, groupIds, groupsMemberUpdateState }) => {
+const GroupMemberList: FC<GroupListProps> = ({ accountId, groupIds, groupsMemberUpdateState }) => {
   const [groupMembers, setGroupMembers] = useState<DeboxGroupMember[]>([]);
   const [loading, setLoading] = useState(false);
   const [accountNameMap, setAccountNameMap] = useState<{ [key: number]: string }>({});
@@ -120,7 +120,7 @@ const GroupMemberList: FC<GroupListProps> = ({ accountIds, groupIds, groupsMembe
     return <DotLoading color='primary' />;
   }
 
-  if (accountIds.length === 0) {
+  if (accountId === 0) {
     return <Empty title='请先选择账号' description='暂无数据' />;
   }
 
@@ -129,7 +129,7 @@ const GroupMemberList: FC<GroupListProps> = ({ accountIds, groupIds, groupsMembe
   }
 
   if (groupMembers.length === 0) {
-    return <Empty />;
+    return <Empty title='暂无数据' />;
   }
 
   return (

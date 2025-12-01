@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button, Toast } from 'antd-mobile';
-import AccountList from './components/AccountList';
+import { Button, Dropdown } from 'antd-mobile';
+import AccountList from '@/components/account-list';
 import AccountFollowList from './components/AccountFollowList';
 import styles from './index.module.less';
 import { DeboxAccountFollowFollowApi } from '@/api';
@@ -8,29 +8,25 @@ import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router';
 
 // 同步关注人列表
-const syncFollows = async (accountIds: number[]) => {
+const syncFollows = async (accountId: number) => {
   const data = {
-    account_ids: accountIds,
+    account_ids: [accountId],
   };
   await DeboxAccountFollowFollowApi.syncFollows(data);
 };
 
 const FollowManagement = () => {
   const navigate = useNavigate();
-  const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
+  const [accountId, setAccountId] = useState<number>(0);
   const [followsUpdateState, setFollowsUpdateState] = useState<number>(0);
 
   // 同步关注人
   const handleSyncFollows = async () => {
-    if (selectedAccounts.length === 0) {
-      Toast.show({
-        content: '请选择账号',
-        position: 'top',
-      });
+    if (accountId === 0) {
       return;
     }
 
-    await syncFollows(selectedAccounts);
+    await syncFollows(accountId);
 
     setFollowsUpdateState((prev) => prev + 1);
   };
@@ -43,14 +39,23 @@ const FollowManagement = () => {
   // 跳转到添加关注人页面
   const handleAddFollows = () => {
     navigate(ROUTES.ACCOUNT_FOLLOW_MANAGEMENT_FORM, {
-      state: { replace: true, mode: 'add', accountId: selectedAccounts[0] },
+      state: { replace: true, mode: 'add', accountId: accountId },
     });
   };
 
   return (
     <div className='account-follow-management'>
       {/* 选择账号 */}
-      <AccountList selected={selectedAccounts} setSelected={setSelectedAccounts} />
+      <Dropdown defaultActiveKey='account'>
+        <Dropdown.Item key='account' title='选择账号'>
+          <AccountList
+            defaultSelected
+            onChange={(accountIds) => {
+              setAccountId(accountIds[0]);
+            }}
+          />
+        </Dropdown.Item>
+      </Dropdown>
 
       <div className={styles.operationButton}>
         <Button color='primary' size='small' fill='solid' onClick={handleRefreshFollows}>
@@ -66,7 +71,7 @@ const FollowManagement = () => {
         </Button>
       </div>
 
-      <AccountFollowList accountIds={selectedAccounts} followsUpdateState={followsUpdateState} />
+      <AccountFollowList accountId={accountId} followsUpdateState={followsUpdateState} />
     </div>
   );
 };

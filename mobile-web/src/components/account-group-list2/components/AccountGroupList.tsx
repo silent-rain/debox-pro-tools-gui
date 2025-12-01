@@ -67,6 +67,7 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
     loadGroups();
   }, [accounts, defaultSelected, safeSetSelectedAccountGroups]);
 
+  // 全选
   const handleSelectAllGroup = useCallback(
     (checked: boolean) => {
       if (checked) {

@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Button, Toast } from 'antd-mobile';
-import AccountList from './components/AccountGroupList';
+import { Button, Dropdown, Toast } from 'antd-mobile';
+import AccountList from '@/components/account-list';
+import AccountGroupList from '@/components/account-group-list';
 import GroupMemberList from './components/GroupMemberList';
 import styles from './index.module.less';
 import { DeboxGroupMemberApi } from '@/api';
@@ -14,13 +15,13 @@ const syncGroupMembers = async (groupIds: number[]) => {
 };
 
 const GroupMemberManagement = () => {
-  const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
-  const [selectedGroups, setGroups] = useState<number[]>([]);
+  const [accountId, setAccountId] = useState<number>(0);
+  const [accountGroupIds, setAccountGroupIds] = useState<number[]>([]);
   const [groupMembersUpdateState, setGroupMembersUpdateState] = useState<number>(0);
 
   // 同步群组成员
   const handleSyncGroupMembers = async () => {
-    if (selectedAccounts.length === 0) {
+    if (accountId === 0) {
       Toast.show({
         content: '请选择账号',
         position: 'top',
@@ -28,7 +29,7 @@ const GroupMemberManagement = () => {
       return;
     }
 
-    await syncGroupMembers(selectedGroups);
+    await syncGroupMembers(accountGroupIds);
 
     // 更新 GroupList
     setGroupMembersUpdateState((prev) => prev + 1);
@@ -41,13 +42,27 @@ const GroupMemberManagement = () => {
 
   return (
     <div className='group-management'>
-      {/* 选择账号 */}
-      <AccountList
-        selectedAccounts={selectedAccounts}
-        selectedGroups={selectedGroups}
-        onAccountChange={setSelectedAccounts}
-        onGroupChange={setGroups}
-      />
+      <Dropdown defaultActiveKey='account'>
+        <Dropdown.Item key='account' title='选择账号'>
+          <AccountList
+            defaultSelected
+            onChange={(accountIds) => {
+              setAccountId(accountIds[0]);
+            }}
+          />
+        </Dropdown.Item>
+
+        <Dropdown.Item key='group' title='选择群组'>
+          <AccountGroupList
+            accountId={accountId}
+            multiple
+            defaultSelected
+            onChange={(accountGroupIds) => {
+              setAccountGroupIds(accountGroupIds);
+            }}
+          />
+        </Dropdown.Item>
+      </Dropdown>
 
       <div className={styles.groupMgmtSyncBtn}>
         <Button color='primary' size='small' fill='solid' onClick={handleRefreshGroupMembers}>
@@ -60,8 +75,8 @@ const GroupMemberManagement = () => {
 
       {/* 群组成员列表 */}
       <GroupMemberList
-        accountIds={selectedAccounts}
-        groupIds={selectedGroups}
+        accountId={accountId}
+        groupIds={accountGroupIds}
         groupsMemberUpdateState={groupMembersUpdateState}
       />
     </div>

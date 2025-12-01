@@ -1,5 +1,5 @@
 import { FC, useEffect, useState } from 'react';
-import { Avatar, DotLoading, List, Switch, Toast } from 'antd-mobile';
+import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
 import styles from './AccountFollowList.module.less';
 import Empty from '@/components/empty';
@@ -7,17 +7,13 @@ import { DeboxAccountFollowFollowApi } from '@/api';
 import { DeboxAccountFollow, GetDeboxAccountFollowsReq } from '@/typings/debox-account-follows';
 
 interface AccountFollowListProps {
-  accountIds: number[];
+  accountId: number;
   followsUpdateState: number;
 }
 
 // 获取账号关注人列表
-const fetchAccountFollows = async (accountIds: number[]): Promise<DeboxAccountFollow[]> => {
-  if (accountIds.length === 0) {
-    Toast.show({
-      content: '请先选择账号',
-      position: 'top',
-    });
+const fetchAccountFollows = async (accountId: number): Promise<DeboxAccountFollow[]> => {
+  if (!accountId || accountId === 0) {
     return [];
   }
   const data: GetDeboxAccountFollowsReq = {
@@ -25,7 +21,7 @@ const fetchAccountFollows = async (accountIds: number[]): Promise<DeboxAccountFo
     page_size: 0,
     all: true,
     status: true,
-    account_ids: accountIds,
+    account_ids: [accountId],
   };
   const response = await DeboxAccountFollowFollowApi.list(data);
   return response.data_list;
@@ -40,7 +36,7 @@ const updateAccountFollowStatus = async (followId: number, status: boolean) => {
   return data;
 };
 
-const AccountFollowList: FC<AccountFollowListProps> = ({ accountIds, followsUpdateState }) => {
+const AccountFollowList: FC<AccountFollowListProps> = ({ accountId, followsUpdateState }) => {
   const [accountFollows, setAccountFollows] = useState<DeboxAccountFollow[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +44,7 @@ const AccountFollowList: FC<AccountFollowListProps> = ({ accountIds, followsUpda
     const loadAccounts = async () => {
       try {
         setLoading(true);
-        const data = await fetchAccountFollows(accountIds);
+        const data = await fetchAccountFollows(accountId);
         setAccountFollows(data);
       } catch (err) {
         console.error(`fetchGroups error: ${err}`);
@@ -58,12 +54,12 @@ const AccountFollowList: FC<AccountFollowListProps> = ({ accountIds, followsUpda
     };
 
     loadAccounts();
-  }, [accountIds, followsUpdateState]);
+  }, [accountId, followsUpdateState]);
 
   const handleSwitchChange = async (followId: number, checked: boolean) => {
     await updateAccountFollowStatus(followId, checked);
 
-    const data = await fetchAccountFollows(accountIds);
+    const data = await fetchAccountFollows(accountId);
     setAccountFollows(data);
   };
 
@@ -71,7 +67,7 @@ const AccountFollowList: FC<AccountFollowListProps> = ({ accountIds, followsUpda
     return <DotLoading color='primary' />;
   }
 
-  if (accountIds.length === 0) {
+  if (accountId === 0) {
     return <Empty title='请先选择账号' description='暂无数据' />;
   }
 

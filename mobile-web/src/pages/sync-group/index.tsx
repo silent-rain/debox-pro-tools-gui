@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Button, Toast } from 'antd-mobile';
-import AccountList from './components/AccountList';
+import { Button, Dropdown, Toast } from 'antd-mobile';
+import AccountList from '@/components/account-list';
 import GroupList from './components/GroupList';
 import styles from './index.module.less';
 import { DeboxGroupApi } from '@/api/debox-group';
@@ -41,7 +41,17 @@ const GroupManagement = () => {
   return (
     <div className='group-management'>
       {/* 选择账号 */}
-      <AccountList selectedAccounts={selectedAccounts} onAccountChange={setSelectedAccounts} />
+      <Dropdown defaultActiveKey='account'>
+        <Dropdown.Item key='account' title='选择账号'>
+          <AccountList
+            multiple
+            defaultSelected
+            onChange={(accountIds) => {
+              setSelectedAccounts(accountIds);
+            }}
+          />
+        </Dropdown.Item>
+      </Dropdown>
 
       <div className={styles.groupMgmtSyncBtn}>
         <Button color='primary' size='small' fill='solid' onClick={handleRefreshGroups}>
