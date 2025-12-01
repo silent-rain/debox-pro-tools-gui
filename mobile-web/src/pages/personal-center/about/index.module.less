@@ -1,3 +1,220 @@
 .about {
   padding: 16px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  &::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.95);
+    z-index: -1;
+  }
+}
+
+.appCard {
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+  overflow: hidden;
+}
+
+.appHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.appIcon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 28px;
+}
+
+.appInfo {
+  flex: 1;
+
+  h2 {
+    margin: 0 0 4px 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  .version {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #667eea;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    &:hover {
+      opacity: 0.8;
+    }
+
+    &::after {
+      content: ' 📋';
+      font-size: 12px;
+    }
+  }
+
+  .buildTime {
+    margin: 0;
+    font-size: 12px;
+    color: #999;
+  }
+}
+
+.description {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+}
+
+.featuresCard {
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: none;
+
+  :global(.adm-card-header) {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 16px 16px 0 0;
+    margin: -16px -16px 16px -16px;
+    padding: 16px;
+
+    :global(.adm-card-header-title) {
+      color: white;
+      font-weight: 600;
+    }
+  }
+}
+
+.featuresList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+}
+
+.featureBullet {
+  color: #667eea;
+  font-weight: bold;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.contactList {
+  margin-bottom: 20px;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  :global(.adm-list-item) {
+    padding: 16px;
+    border-bottom: 1px solid #f5f5f5;
+    cursor: pointer;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: #f8f9ff;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  :global(.adm-list-item-content) {
+    font-size: 15px;
+    color: #333;
+  }
+
+  :global(.adm-list-item-content-prefix) {
+    color: #667eea;
+    font-size: 20px;
+  }
+
+  :global(.adm-list-item-content-extra) {
+    color: #ccc;
+    font-size: 16px;
+  }
+}
+
+.footer {
+  text-align: center;
+  margin: 30px 0 20px 0;
+
+  p {
+    margin: 4px 0;
+    font-size: 12px;
+    color: #999;
+  }
+}
+
+.backButton {
+  position: sticky;
+  bottom: 40px;
+  margin-top: 30px;
+
+  :global(.adm-button) {
+    height: 48px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+// 响应式设计
+@media (max-width: 375px) {
+  .about {
+    padding: 12px;
+  }
+
+  .appIcon {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+
+  .appInfo h2 {
+    font-size: 18px;
+  }
 }
