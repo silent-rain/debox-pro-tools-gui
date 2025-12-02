@@ -1,8 +1,9 @@
-import { DotLoading, CheckList, SearchBar } from 'antd-mobile';
-import { FC, useEffect, useState } from 'react';
+import { CheckList, SearchBar, InfiniteScroll } from 'antd-mobile';
+import { FC, useState } from 'react';
 import styles from './UserSearchList.module.scss';
 import { DeboxUserSearchReq, UserSearch } from '@/typings/debox-account-follows';
 import { DeboxAccountFollowFollowApi } from '@/api';
+import Empty from '@/components/empty';
 
 interface UserSearchListProps {
   accountId: number;
@@ -23,33 +24,22 @@ const deboxUserSearch = async (account_id: number, search: string, page: number)
 
 const UserSearchList: FC<UserSearchListProps> = ({ accountId, userIds, setUserIds }) => {
   const [users, setUsers] = useState<UserSearch[]>([]);
-  const [loading, setLoading] = useState(false);
   const [searchPage, _setSearchPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
+  const [hasMore, setHasMore] = useState(false);
 
-  useEffect(() => {
-    const loadAccounts = async () => {
-      if (!searchTerm) {
-        setUsers([]);
-        return;
-      }
-      try {
-        setLoading(true);
-        const data = await deboxUserSearch(accountId, searchTerm, searchPage);
-        setUsers(data.data_list);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadMore = async () => {
+    if (!searchTerm) {
+      setUsers([]);
+      return;
+    }
 
-    loadAccounts();
-  }, [setUsers, accountId, searchTerm, searchPage]);
-
-  if (loading) {
-    return <DotLoading color='primary' />;
-  }
+    const data = await deboxUserSearch(accountId, searchTerm, searchPage);
+    const dataList = data.data_list;
+    setUsers((val) => [...val, ...dataList]);
+    console.log(users);
+    setHasMore(dataList.length > 0);
+  };
 
   return (
     <div className='user-serch-list'>
@@ -57,15 +47,17 @@ const UserSearchList: FC<UserSearchListProps> = ({ accountId, userIds, setUserId
         placeholder='请输入检索用户'
         onSearch={(val) => {
           setSearchTerm(val.trim());
+          loadMore();
         }}
       />
+
+      {users.length === 0 ? <Empty className={styles.empty} title='' /> : <></>}
 
       <CheckList
         className={styles.allAccounts}
         multiple
         defaultValue={userIds ? userIds : []}
         onChange={(val) => {
-          console.log('selected user ids: ', val);
           setUserIds(val as number[]);
         }}
       >
@@ -75,6 +67,8 @@ const UserSearchList: FC<UserSearchListProps> = ({ accountId, userIds, setUserId
           </CheckList.Item>
         ))}
       </CheckList>
+
+      <InfiniteScroll loadMore={loadMore} hasMore={hasMore} />
     </div>
   );
 };
