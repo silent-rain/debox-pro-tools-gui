@@ -124,7 +124,7 @@ impl DeboxGroupDao {
 }
 
 impl DeboxGroupDao {
-    /// 根据 user_id\account_id\gid 获取群组信息
+    /// 根据 user_id/account_id/gid 获取群组信息
     pub async fn info_by_gid(
         &self,
         user_id: i32,
@@ -136,6 +136,19 @@ impl DeboxGroupDao {
             .filter(debox_group::Column::AccountId.eq(account_id))
             .filter(debox_group::Column::Gid.eq(gid))
             .one(self.db.db())
+            .await
+    }
+
+    /// 根据 ser_id/account_id 获取群列表
+    pub async fn list_by_account_id(
+        &self,
+        user_id: i32,
+        account_id: i32,
+    ) -> Result<Vec<debox_group::Model>, DbErr> {
+        DeboxGroup::find()
+            .filter(debox_group::Column::UserId.eq(user_id))
+            .filter(debox_group::Column::AccountId.eq(account_id))
+            .all(self.db.db())
             .await
     }
 }

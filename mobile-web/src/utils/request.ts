@@ -25,7 +25,7 @@ function dispatchLogout() {
 // 创建axios的实例
 const service = axios.create({
   baseURL: import.meta.env.BASE_URL,
-  timeout: 30000,
+  timeout: 0,
   paramsSerializer: (params) => {
     return qs.stringify(params, { arrayFormat: 'repeat' });
   },

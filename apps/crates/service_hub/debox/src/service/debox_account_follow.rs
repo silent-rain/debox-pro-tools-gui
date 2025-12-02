@@ -363,7 +363,7 @@ impl DeboxAccountFollowService {
     }
 
     /// 批量添加关注人
-    pub async fn batch_create(
+    async fn batch_create(
         &self,
         follows: Vec<Relation>,
         user_id: i32,

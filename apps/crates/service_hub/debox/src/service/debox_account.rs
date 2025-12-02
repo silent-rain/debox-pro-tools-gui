@@ -20,7 +20,7 @@ use tokio::time::sleep;
 use utils::json::struct_to_struct;
 
 use crate::{
-    DeboxAccountDao, DeboxGroupDao,
+    DeboxAccountDao, DeboxAccountFollowDao, DeboxGroupDao,
     dto::{
         debox_account::{
             CreateDeboxAccountReq, DeleteDeboxAccountReq, GetDeboxAccountReq, GetDeboxAccountsReq,
@@ -36,6 +36,7 @@ use crate::{
 pub struct DeboxAccountService {
     debox_account_dao: DeboxAccountDao,
     debox_group_dao: DeboxGroupDao,
+    debox_account_follow_dao: DeboxAccountFollowDao,
 }
 
 impl DeboxAccountService {
@@ -138,7 +139,10 @@ impl DeboxAccountService {
         }
 
         // 获取并更新用户信息
-        let user_info = self.get_debox_account(model).await?;
+        active_model.web_token_status = Set(true);
+        let user_info = self.get_debox_account(model).await.inspect_err(|_e| {
+            active_model.web_token_status = Set(false);
+        })?;
         let name = if user_info.name.is_empty() {
             user_info.address[user_info.address.len() - 8..].to_string()
         } else {
@@ -149,7 +153,6 @@ impl DeboxAccountService {
         active_model.avatar = Set(Some(user_info.pic));
         active_model.invite_code = Set(user_info.invite_code);
         active_model.wallet_address = Set(user_info.address);
-        active_model.web_token_status = Set(true);
 
         Ok(())
     }
@@ -408,8 +411,21 @@ impl DeboxAccountService {
         };
 
         // 更新账号状态和用户信息
-        self.update_account_info_and_status(&mut active_model, &account)
-            .await?;
+        if let Err(e) = self
+            .update_account_info_and_status(&mut active_model, &account)
+            .await
+        {
+            error!("更新账号状态和用户信息失败, err: {:#?}", e);
+
+            self.debox_account_dao
+                .update(account.id, account.user_id, active_model)
+                .await
+                .map_err(|err| {
+                    error!("更新DeBox账号失败, err: {:#?}", err);
+                    Error::DbUpdateError.into_err_with_msg("更新DeBox账号失败")
+                })?;
+            return Err(e);
+        };
 
         self.debox_account_dao
             .update(account.id, account.user_id, active_model)
@@ -498,6 +514,8 @@ impl DeboxAccountService {
 
     /// 账号相互关注
     pub async fn follow_account(&self, ctx: &Context) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         // 账号列表
         let data = GetDeboxAccountsReq {
             all: Some(true),
@@ -506,44 +524,84 @@ impl DeboxAccountService {
         };
         let (accounts, _) = self.list(ctx, data).await?;
 
-        // 正向账号匹配
-        let mut pairs = Vec::new();
-        for (i, id1) in accounts.iter().enumerate() {
-            for id2 in accounts[i + 1..].iter().clone() {
-                pairs.push((id1.clone(), id2.clone()));
+        // 账号相互关注列表
+        let mut account_follows = Vec::new(); // (主账号 model, 待关注账号)
+        for account in accounts.iter() {
+            // 获取主账号关注列表
+            let account_followed_ids = self.get_follows_by_account(user_id, account.id).await?;
+
+            // 待关注账号列表 = 账号列表 - 主账号 - 主账号关注列表
+            let debox_user_ids: Vec<String> = accounts
+                .iter()
+                .map(|v| v.debox_user_id.clone())
+                .filter(|v| *v != account.debox_user_id) // 过滤主账号
+                .filter(|id| !account_followed_ids.contains(id)) // 过滤已关注的账号
+                .collect();
+            if debox_user_ids.is_empty() {
+                error!("account_id: {} ref debox_user_ids is empty", account.id);
+                continue;
             }
-        }
-        // 反向账号匹配
-        let reversed_accounts: Vec<_> = accounts.iter().rev().collect(); // 将账号列表反转
-        for (i, id1) in reversed_accounts.iter().enumerate() {
-            for id2 in reversed_accounts[i + 1..].iter() {
-                pairs.push(((*id1).clone(), (*id2).clone()));
-            }
+
+            info!(
+                "account_id: {} ref debox_user_ids: {:?}",
+                account.id,
+                debox_user_ids.len()
+            );
+            account_follows.push((account.clone(), debox_user_ids));
         }
 
         // 开始批量关注
-        let total = pairs.len();
-        let mut failed_count = 0;
-        for (id1, id2) in pairs.iter() {
-            if let Err(e) = self.debox_follow_account(id1, &id2.debox_user_id).await {
-                error!(
-                    "debox_user_id: {} - {} 账号相互关注失败, err: {:#?}",
-                    id1.debox_user_id, id2.debox_user_id, e
-                );
-                failed_count += 1;
+        for (account, debox_user_ids) in account_follows.into_iter() {
+            let account_follow_total = debox_user_ids.len();
+            let mut account_follow_failed = 0;
+            for debox_user_id in debox_user_ids.iter() {
+                if let Err(e) = self.debox_follow_account(&account, debox_user_id).await {
+                    error!(
+                        "debox_user_id: {} - {} 账号相互关注失败, err: {:#?}",
+                        account.debox_user_id, debox_user_id, e
+                    );
+                    account_follow_failed += 1;
+                }
+                sleep(Duration::from_millis(100)).await;
             }
-            sleep(Duration::from_millis(100)).await;
-        }
-
-        if failed_count > 0 {
-            error!("账号相互关注失败, 总数量: {total:?}, 失败数量: {failed_count:?}");
+            if account_follow_failed > 0 {
+                error!(
+                    "account_id: {} 相互关注失败, 总数量: {:?}, 失败数量: {:?}",
+                    account.id, account_follow_total, account_follow_failed
+                );
+            }
         }
 
         Ok(())
     }
 
+    /// 获取号的关注人列表
+    async fn get_follows_by_account(
+        &self,
+        user_id: i32,
+        account_id: i32,
+    ) -> Result<Vec<String>, ErrorMsg> {
+        let followeds = self
+            .debox_account_follow_dao
+            .follows_by_account_id(user_id, account_id)
+            .await
+            .map_err(|err| {
+                error!("查询账号的关注人列表失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询账号的关注人列表失败")
+            })?;
+
+        let followed_ids: Vec<String> = followeds
+            .into_iter()
+            .map(|followed| followed.debox_user_id)
+            .collect();
+
+        Ok(followed_ids)
+    }
+
     /// 账号之间的群组相互拉群
     pub async fn cross_account_group_invite(&self, ctx: &Context) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
         // 账号列表
         let data = GetDeboxAccountsReq {
             all: Some(true),
@@ -554,61 +612,106 @@ impl DeboxAccountService {
 
         // 群组列表
         let groups = self.group_list(ctx).await?;
-        // 按账号进行群组分组
-        let mut account_groups_map = HashMap::new();
-        for group in groups {
-            account_groups_map
-                .entry(group.account_id)
+
+        // 按群组进行账号分组
+        let mut group_account_ids_map = HashMap::new();
+        for group in groups.iter() {
+            group_account_ids_map
+                .entry(group.gid.clone())
                 .or_insert(Vec::new())
-                .push(group.clone());
+                .push(group.account_id);
         }
 
-        // 账号群组匹配
-        let mut pairs = Vec::new();
-        for id1 in accounts.iter() {
-            let debox_user_ids: Vec<String> = accounts
-                .iter()
-                .map(|id2| id2.debox_user_id.clone())
-                .filter(|v| *v != id1.debox_user_id)
-                .collect();
-            if debox_user_ids.is_empty() {
-                error!("account_id: {} ref debox_user_ids is empty", id1.id);
-                continue;
-            }
-            pairs.push((id1, debox_user_ids));
+        println!("====1 group_account_ids_map: {:?}", group_account_ids_map);
+
+        for (k, v) in group_account_ids_map.iter() {
+            println!("====1  gid: {} used_account_ids: {:?}", k, v);
         }
 
-        error!("pairs: {:#?}", pairs);
+        let mut account_groups = Vec::new(); // (主账号 model, 群ID, 待加群账号列表)
+        for account in accounts.iter() {
+            let groups = self.get_group_by_account(user_id, account.id).await?;
 
-        // 开始批量加群
-        for (id1, debox_user_ids) in pairs.into_iter() {
-            // 获取群组列表
-            let groups = match account_groups_map.get(&id1.id) {
-                Some(groups) => groups.clone(),
-                None => {
-                    error!("账号 {}-{} 没有群组", id1.id, id1.name);
+            // 遍历群组列表
+            for group in groups.iter() {
+                // 已经添加过该群的账号
+                let used_account_ids = match group_account_ids_map.get(&group.gid) {
+                    Some(v) => v.clone(),
+                    None => {
+                        info!(
+                            "account_id: {} gid: {} has not added any users",
+                            account.id, group.gid
+                        );
+                        continue;
+                    }
+                };
+
+                // 待加群组账号列表 = 账号列表 - 主账号 - 已加群的账号
+                let debox_user_ids: Vec<String> = accounts
+                    .iter()
+                    .filter(|v| *v.debox_user_id != account.debox_user_id) // 过滤主账号
+                    .filter(|v| !used_account_ids.contains(&v.id)) // 过滤已加群的账号
+                    .map(|v| v.debox_user_id.clone())
+                    .collect();
+                if debox_user_ids.is_empty() {
+                    error!(
+                        "account_id: {} gid: {} ref debox_user_ids is empty",
+                        account.id, group.gid
+                    );
                     continue;
                 }
-            };
 
-            // 开始批量加群
-            for group in groups {
-                if let Err(e) = self
-                    .group_add_member(id1, &group.gid, debox_user_ids.clone())
-                    .await
-                {
-                    error!(
-                        "debox_user_id: {} gid: {} - {:#?} 拉群失败, err: {:#?}",
-                        id1.debox_user_id, group.gid, debox_user_ids, e
-                    );
-                }
                 info!(
-                    "debox_user_id: {} gid: {} - {:#?} 拉群成功",
-                    id1.debox_user_id, group.gid, debox_user_ids
+                    "account_id: {} gid: {} ref debox_user_ids: {:?}",
+                    account.id,
+                    group.gid,
+                    debox_user_ids.len()
                 );
+                account_groups.push((account.clone(), group.gid.clone(), debox_user_ids));
             }
         }
 
+        // 开始批量拉群
+        if account_groups.is_empty() {
+            info!("account_groups is empty");
+            return Ok(());
+        }
+        for (account, gid, debox_user_ids) in account_groups.into_iter() {
+            info!(
+                "account_id: {} gid: {} - {:#?} 拉群开始",
+                account.id, gid, debox_user_ids
+            );
+
+            // 拉群
+            if let Err(e) = self
+                .group_add_member(&account, &gid, debox_user_ids.clone())
+                .await
+            {
+                error!(
+                    "account_id: {} gid: {} - {:#?} 拉群失败, err: {:#?}",
+                    account.id, gid, debox_user_ids, e
+                );
+                continue;
+            }
+
+            // 将拉群结果保存到数据库
+            if let Err(e) = self
+                .add_group_to_account(ctx, &account, gid.clone(), debox_user_ids.clone())
+                .await
+            {
+                error!(
+                    "account_id: {} gid: {} - {:#?} 保存拉群结果失败, err: {:#?}",
+                    account.id, gid, debox_user_ids, e
+                );
+            } else {
+                info!(
+                    "account_id: {} gid: {} - {:#?} 拉群成功",
+                    account.id, gid, debox_user_ids
+                );
+            }
+
+            sleep(Duration::from_millis(100)).await;
+        }
         Ok(())
     }
 
@@ -632,5 +735,133 @@ impl DeboxAccountService {
             })?;
 
         Ok(results)
+    }
+    /// 获取号的群组列表
+    async fn get_group_by_account(
+        &self,
+        user_id: i32,
+        account_id: i32,
+    ) -> Result<Vec<debox_group::Model>, ErrorMsg> {
+        let groups = self
+            .debox_group_dao
+            .list_by_account_id(user_id, account_id)
+            .await
+            .map_err(|err| {
+                error!("查询账号的群组列表失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询账号的群组列表失败")
+            })?;
+
+        Ok(groups)
+    }
+
+    /// 将拉群结果保存到数据库， 将新增的群组添加到账号的群组列表中
+    async fn add_group_to_account(
+        &self,
+        ctx: &Context,
+        account: &debox_account::Model,
+        gid: String,
+        debox_user_ids: Vec<String>,
+    ) -> Result<(), ErrorMsg> {
+        if debox_user_ids.is_empty() {
+            return Ok(());
+        }
+
+        // 账号列表
+        let data = GetDeboxAccountsReq {
+            all: Some(true),
+            status: Some(true),
+            ..Default::default()
+        };
+        let (accounts, _) = self.list(ctx, data).await?;
+
+        // 群组列表
+        let groups = self
+            .get_group_by_account(account.user_id, account.id)
+            .await?;
+
+        let mut gid_map = HashMap::new();
+        for group in groups.iter() {
+            gid_map.entry(group.gid.clone()).or_insert(group.clone());
+        }
+
+        // 获取群组信息
+        let group = match gid_map.get(&gid) {
+            Some(v) => v,
+            None => {
+                error!("account_id: {} gid: {} not found", account.id, gid);
+                return Ok(());
+            }
+        };
+
+        // 目标账号
+        let target_account_ids: Vec<i32> = accounts
+            .iter()
+            .filter(|v| debox_user_ids.contains(&v.debox_user_id))
+            .map(|v| v.id)
+            .collect();
+
+        for target_account_id in target_account_ids {
+            // 创建dao
+            let active_model = debox_group::ActiveModel {
+                user_id: Set(account.user_id),
+                account_id: Set(target_account_id),
+                gid: Set(gid.clone()),
+                name: Set(group.name.clone()),
+                pic: Set(group.pic.clone()),
+                // invite_code: Set(invite_code.clone()),
+                status: Set(true),
+                ..Default::default()
+            };
+            self.debox_group_dao
+                .create(active_model.clone())
+                .await
+                .map_err(|e| {
+                    error!("添加DeBox DAO信息失败, data: {active_model:#?}, err: {e:#?}");
+                    Error::DbAddError.into_err_with_msg("添加DeBox DAO信息失败")
+                })?;
+        }
+
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_group_account_ids_map() {
+        struct Group {
+            id: i32,
+            gid: String,
+        }
+
+        let groups = [
+            Group {
+                id: 1,
+                gid: "gid1".to_string(),
+            },
+            Group {
+                id: 2,
+                gid: "gid2".to_string(),
+            },
+            Group {
+                id: 3,
+                gid: "gid1".to_string(),
+            },
+            Group {
+                id: 3,
+                gid: "gid2".to_string(),
+            },
+        ];
+
+        let mut group_account_ids_map = HashMap::new();
+        for group in groups.iter() {
+            group_account_ids_map
+                .entry(group.gid.clone())
+                .or_insert(Vec::new())
+                .push(group.id);
+        }
+        println!("{:?}", group_account_ids_map)
     }
 }
