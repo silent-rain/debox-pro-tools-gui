@@ -35,17 +35,10 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
   const [accountGroupIds, setAccountGroupIds] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!onChange) {
-      return;
-    }
-    onChange(accountGroupIds);
-  }, [accountGroupIds, onChange]);
-
   // 获取群组列表
   useEffect(() => {
     const loadGroups = async () => {
-      if (accountId === 0) {
+      if (!accountId || accountId === 0) {
         return;
       }
       try {
@@ -65,7 +58,14 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
     };
 
     loadGroups();
-  }, [accountId, defaultSelected, setAccountGroupIds]);
+  }, [accountId, defaultSelected]);
+
+  useEffect(() => {
+    if (!onChange) {
+      return;
+    }
+    onChange(accountGroupIds);
+  }, [accountGroupIds, onChange]);
 
   // 全选
   const handleSelectAllGroup = useCallback(
@@ -87,7 +87,7 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
   }
 
   return (
-    <div className='account-group'>
+    <div className='account-group-list'>
       <div className={styles.allGroupsCheckbox}>
         {multiple ? (
           <Checkbox
@@ -103,8 +103,8 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
       </div>
 
       <CheckList
-        className='account-list'
-        defaultValue={accountGroupIds ? accountGroupIds : []}
+        className='group-list'
+        value={accountGroupIds}
         onChange={(val) => {
           if (multiple) {
             setAccountGroupIds(val as number[]);

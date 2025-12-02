@@ -414,20 +414,14 @@ impl DeboxAccountFollowService {
     ) -> Result<(), ErrorMsg> {
         let user_id = ctx.get_user_id();
 
-        error!("批量关注用户开始, 请求体: {:#?}", req);
-
         // 获取账号信息
         let account = self.get_account(user_id, req.account_id).await?;
-
-        error!("account: {:#?}", account);
 
         // 获取DeBox客户端
         let client = self.debox_client(&account)?;
 
         // 当前账号已关注的用户ID列表
         let followed_ids = self.get_follows_by_account(user_id, req.account_id).await?;
-
-        error!("followed_ids: {:#?}", followed_ids);
 
         let to_followed_ids = match req.follow_type {
             FollowType::Account => {

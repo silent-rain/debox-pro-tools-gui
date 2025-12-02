@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Toast, Tabs, Button } from 'antd-mobile';
 import styles from './index.module.scss';
 import AccountList from '@/components/account-list';
-import AccountGroupList from '@/components/account-group-list2';
+import AccountGroupList from './components/AccountGroupList';
 import { DeboxAccountFollowFollowApi } from '@/api';
 import { BatchAccountFollowsReq } from '@/typings/debox-account-follows';
 import { FollowType } from '@/enums/debox-account-follows';
@@ -17,9 +17,9 @@ const batchFollows = async (data: BatchAccountFollowsReq) => {
 
 const AccountFollowForm = () => {
   const location = useLocation();
-  const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
-  const [selectedAccountGroups, setSelectedAccountGroups] = useState<number[]>([]);
   const [userIds, setUserIds] = useState<number[]>([]);
+  const selectedAccountIds = useRef<number[]>([]);
+  const selectedAccountGroupIds = useRef<number[]>([]);
 
   const { accountId } = location.state || {};
 
@@ -27,7 +27,7 @@ const AccountFollowForm = () => {
     try {
       switch (followType) {
         case FollowType.Account: {
-          for (const targetAccountId of selectedAccounts) {
+          for (const targetAccountId of selectedAccountIds.current) {
             const data: BatchAccountFollowsReq = {
               account_id: accountId,
               target_account_id: targetAccountId,
@@ -38,16 +38,18 @@ const AccountFollowForm = () => {
           break;
         }
         case FollowType.Group: {
-          for (const targetAccountId of selectedAccounts) {
-            for (const groupId of selectedAccountGroups) {
-              const data: BatchAccountFollowsReq = {
-                account_id: accountId,
-                target_account_id: targetAccountId,
-                target_group_id: groupId,
-                follow_type: FollowType.Group,
-              };
-              await batchFollows(data);
-            }
+          if (selectedAccountIds.current.length === 0 || selectedAccountGroupIds.current.length === 0) {
+            return;
+          }
+          const targetAccountId = selectedAccountIds.current[0];
+          for (const groupId of selectedAccountGroupIds.current) {
+            const data: BatchAccountFollowsReq = {
+              account_id: accountId,
+              target_account_id: targetAccountId,
+              target_group_id: groupId,
+              follow_type: FollowType.Group,
+            };
+            await batchFollows(data);
           }
           break;
         }
@@ -79,7 +81,7 @@ const AccountFollowForm = () => {
   return (
     <div className='account-follow-form'>
       <Tabs defaultActiveKey='1'>
-        <Tabs.Tab title='账号' key='1'>
+        <Tabs.Tab title='账号' key='account'>
           <p>请选择一个账号进行批量关注该账号的用户</p>
           <div className={styles.operationButton}>
             <Button
@@ -93,14 +95,18 @@ const AccountFollowForm = () => {
               提交
             </Button>
           </div>
+
           <AccountList
             defaultSelected={true}
             onChange={(accountIds: number[]) => {
-              setSelectedAccounts(accountIds);
+              if (accountIds.length === 0) {
+                return;
+              }
+              selectedAccountIds.current = accountIds;
             }}
           />
         </Tabs.Tab>
-        <Tabs.Tab title='群组' key='2'>
+        <Tabs.Tab title='群组' key='account-group'>
           <p>请选择一个账号的群组进行批量关注该群组中的用户</p>
           <div className={styles.operationButton}>
             <Button
@@ -114,15 +120,19 @@ const AccountFollowForm = () => {
               提交
             </Button>
           </div>
+
           <AccountGroupList
             defaultSelected={true}
-            onChange={(accountIds: number[], accountGroupIds: number[]) => {
-              setSelectedAccounts(accountIds);
-              setSelectedAccountGroups(accountGroupIds);
+            onChange={(accountId: number, accountGroupIds: number[]) => {
+              if (!accountId || accountId === 0 || !accountGroupIds || accountGroupIds.length === 0) {
+                return;
+              }
+              selectedAccountIds.current = [accountId];
+              selectedAccountGroupIds.current = accountGroupIds;
             }}
           />
         </Tabs.Tab>
-        <Tabs.Tab title='用户' key='3'>
+        <Tabs.Tab title='用户' key='user'>
           <p>指定账号进行关注用户</p>
           <div className={styles.operationButton}>
             <Button
