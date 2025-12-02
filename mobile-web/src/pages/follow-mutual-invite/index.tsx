@@ -25,14 +25,14 @@ const Home = () => {
       title: '自动互助',
       mode: Mode.AUTO,
       icon: <UndoOutline />,
-      description: '自动互注/拉群',
+      description: '*自动互注/拉群',
     },
-    { title: '相互关注', mode: Mode.FOLLOW, icon: <HeartOutline />, description: '账号相互关注' },
+    { title: '相互关注', mode: Mode.FOLLOW, icon: <HeartOutline />, description: '仅账号相互关注' },
     {
       title: '相互拉群',
       mode: Mode.GROUP,
       icon: <TeamOutline />,
-      description: '账号所有群组互拉',
+      description: '仅账号所有群组互拉',
     },
   ];
 

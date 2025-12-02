@@ -36,8 +36,8 @@ const Home = () => {
       icon: <HeartOutline />,
       description: '一键关注目标账号',
     },
-    { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline />, description: '批量发送消息' },
     { title: '一键拉群', path: ROUTES.CREATE_GROUP, icon: <TruckOutline />, description: '快速创建群组' },
+    { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline />, description: '批量发送消息' },
   ];
 
   return (
