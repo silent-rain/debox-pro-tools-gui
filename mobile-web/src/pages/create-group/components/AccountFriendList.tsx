@@ -109,7 +109,7 @@ const AccountFriendList: FC<AccountFriendListProps> = ({
       </div>
 
       <CheckList
-        className='group-list'
+        className={styles.friendList}
         value={accountFriendIds}
         onChange={(val) => {
           if (multiple) {

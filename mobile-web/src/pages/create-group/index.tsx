@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Button, Dropdown } from 'antd-mobile';
+import { Button, Dropdown, TextArea } from 'antd-mobile';
 import AccountList from '@/components/account-list';
 import AccountFriendList from './components/AccountFriendList';
 import styles from './index.module.scss';
 
-const FriendManagement = () => {
+const CreateGroupManagement = () => {
   const [accountId, setAccountId] = useState<number>(0);
   const [accountFriendDeboxUserIds, setAccountFriendDeboxUserIds] = useState<string[]>([]);
   const [friendsUpdateState, setFriendsUpdateState] = useState<number>(0);
@@ -15,7 +15,7 @@ const FriendManagement = () => {
   };
 
   return (
-    <div className='account-friend-management'>
+    <div className='create-group-management'>
       {/* 选择账号 */}
       <Dropdown defaultActiveKey='account'>
         <Dropdown.Item key='account' title='选择账号'>
@@ -46,4 +46,4 @@ const FriendManagement = () => {
   );
 };
 
-export default FriendManagement;
+export default CreateGroupManagement;
