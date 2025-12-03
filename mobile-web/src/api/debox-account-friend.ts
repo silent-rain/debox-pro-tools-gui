@@ -11,6 +11,8 @@ import {
   GetDeboxAccountFriendResp,
   GetDeboxAccountFriendsReq,
   GetDeboxAccountFriendsResp,
+  SendPrivateMessageTextReq,
+  SendPrivateMessageTextResp,
   SyncDeboxAccountFriendsReq,
   SyncDeboxAccountFriendsResp,
   UpdateDeboxAccountFriendReq,
@@ -84,6 +86,16 @@ export const DeboxAccountFriendApi = {
   syncFriends: async (data: SyncDeboxAccountFriendsReq): Promise<SyncDeboxAccountFriendsResp> => {
     const response = await request({
       url: `${SERVER}/debox/debox-account-friends/sync-friends`,
+      method: 'POST',
+      data,
+    });
+    return response.data;
+  },
+
+  // 发送私聊文本消息
+  sendPrivateMessageText: async (data: SendPrivateMessageTextReq): Promise<SendPrivateMessageTextResp> => {
+    const response = await request({
+      url: `${SERVER}/debox/debox-account-friends/send-private-message-text`,
       method: 'POST',
       data,
     });

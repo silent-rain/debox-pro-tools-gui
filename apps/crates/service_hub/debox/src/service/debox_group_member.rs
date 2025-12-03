@@ -11,7 +11,7 @@ use tokio::sync::Semaphore;
 use axum_context::Context;
 use debox_pro_rs::{
     Config as DeBoxConfig, DaoExtApi, DeBoxClient,
-    dto::dao_ext::{DaoMember, DaoMemberReq},
+    dto::dao_ext::{DaoMember, DaoMemberReq, MemberAddReq},
 };
 use entity::debox::{debox_account, debox_group, debox_group_member};
 use err_code::{Error, ErrorMsg};
@@ -19,9 +19,9 @@ use err_code::{Error, ErrorMsg};
 use crate::{
     DeboxAccountDao, DeboxGroupDao, DeboxGroupMemberDao,
     dto::debox_group_member::{
-        CreateDeboxGroupMemberReq, DeleteDeboxGroupMemberReq, GetDeboxGroupMemberReq,
-        GetDeboxGroupMembersReq, SyncDeboxGroupMemberReq, UpdateDeboxGroupMemberReq,
-        UpdateDeboxGroupMemberStatusReq,
+        AddDeboxGroupMemberReq, CreateDeboxGroupMemberReq, DeleteDeboxGroupMemberReq,
+        GetDeboxGroupMemberReq, GetDeboxGroupMembersReq, SyncDeboxGroupMemberReq,
+        UpdateDeboxGroupMemberReq, UpdateDeboxGroupMemberStatusReq,
     },
 };
 
@@ -216,6 +216,25 @@ impl DeboxGroupMemberService {
             Error::DeboxProRs(e).into_err_with_msg("获取DeBox客户端失败")
         })?;
         Ok(client)
+    }
+
+    /// 添加debox群组成员
+    async fn debox_member_add(
+        &self,
+        client: &DeBoxClient,
+        gid: String,
+        debox_user_ids: Vec<String>,
+    ) -> Result<(), ErrorMsg> {
+        let data = MemberAddReq {
+            gid,
+            add_user_id: debox_user_ids,
+        };
+        client.member_add(data).await.map_err(|e| {
+            error!("添加DeBox群组成员失败, err: {:#?}", e);
+            Error::DeboxProRs(e).into_err_with_msg("添加DeBox群组成员失败")
+        })?;
+
+        Ok(())
     }
 }
 
@@ -538,5 +557,52 @@ impl DeboxGroupMemberService {
             Error::DeboxProRs(e).into_err_with_msg("获取DeBox群组成员列表失败")
         })?;
         Ok(resp.data)
+    }
+}
+
+impl DeboxGroupMemberService {
+    /// 添加debox群组成员
+    pub async fn add_debox_group_member(
+        &self,
+        ctx: &Context,
+        req: AddDeboxGroupMemberReq,
+    ) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
+        // 获取群组信息
+        let group = self
+            .info(ctx, GetDeboxGroupMemberReq { id: req.group_id })
+            .await?;
+
+        // 获取账号信息
+        let account = self
+            .debox_account_dao
+            .info(group.account_id, user_id)
+            .await
+            .map_err(|e| {
+                error!("查询DeBox账号信息失败, err: {:#?}", e);
+                Error::DbQueryError.into_err_with_msg("查询DeBox账号信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("DeBox账号不存在, account_id: {}", group.account_id);
+                Error::DbQueryEmptyError.into_err_with_msg("DeBox账号不存在")
+            })?;
+
+        // 生成debox客户端
+        let client = self.debox_client(&account)?;
+
+        // 添加debox群组成员
+        self.debox_member_add(&client, group.group_gid, req.debox_user_ids)
+            .await?;
+
+        // 同步群组成员列表
+        self.sync_group_members(
+            ctx,
+            SyncDeboxGroupMemberReq {
+                group_ids: vec![group.id],
+            },
+        )
+        .await?;
+        Ok(())
     }
 }

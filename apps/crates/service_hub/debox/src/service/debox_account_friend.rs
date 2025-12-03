@@ -7,8 +7,11 @@ use tokio::time::{Duration, sleep};
 
 use axum_context::Context;
 use debox_pro_rs::{
-    Config as DeBoxConfig, DeBoxClient, UserExtApi,
-    dto::user_ext::{Relation, RelationListReq, RelationStatus},
+    Config as DeBoxConfig, DeBoxClient, MessagesApi, UserExtApi,
+    dto::{
+        messages::SendPrivateMessageReq,
+        user_ext::{Relation, RelationListReq, RelationStatus},
+    },
 };
 use entity::debox::{debox_account, debox_account_friend};
 use err_code::{Error, ErrorMsg};
@@ -17,8 +20,8 @@ use crate::{
     DeboxAccountFriendDao,
     dto::debox_account_friend::{
         CreateDeboxAccountFriendReq, DeleteDeboxAccountFriendReq, GetDeboxAccountFriendReq,
-        GetDeboxAccountFriendsReq, SyncDeboxAccountFriendsReq, UpdateDeboxAccountFriendReq,
-        UpdateDeboxAccountFriendStatusReq,
+        GetDeboxAccountFriendsReq, SendPrivateMessageTextReq, SyncDeboxAccountFriendsReq,
+        UpdateDeboxAccountFriendReq, UpdateDeboxAccountFriendStatusReq,
     },
 };
 
@@ -67,6 +70,26 @@ impl DeboxAccountFriendService {
             error!("获取 DeBox 账号信息失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("获取 DeBox 账号信息失败")
         })
+    }
+
+    /// 发送Debox私聊消息
+    async fn debox_send_private_message_text(
+        &self,
+        client: &DeBoxClient,
+        debox_user_id: String,
+        content: String,
+    ) -> Result<(), ErrorMsg> {
+        let data = SendPrivateMessageReq {
+            to_user_id: debox_user_id,
+            object_name: String::from("text"),
+            content,
+        };
+        client.send_private_message(data).await.map_err(|e| {
+            error!("发送私聊消息失败, err: {:#?}", e);
+            Error::DeboxProRs(e).into_err_with_msg("发送私聊消息失败")
+        })?;
+
+        Ok(())
     }
 }
 
@@ -388,6 +411,33 @@ impl DeboxAccountFriendService {
                 error!("批量添加DeBox账号好友失败, err: {:#?}", err);
                 Error::DbBatchAddError.into_err_with_msg("批量添加DeBox账号好友失败")
             })?;
+
+        Ok(())
+    }
+}
+
+impl DeboxAccountFriendService {
+    /// 发送私聊文本消息
+    pub async fn send_private_message_text(
+        &self,
+        ctx: &Context,
+        req: SendPrivateMessageTextReq,
+    ) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
+        // 获取账号信息
+        let account = self.get_account(user_id, req.account_id).await?;
+
+        // 获取DeBox客户端
+        let client = self.debox_client(&account)?;
+
+        // 批量发送私聊文本消息
+        for debox_user_id in req.debox_user_ids.into_iter() {
+            self.debox_send_private_message_text(&client, debox_user_id, req.content.clone())
+                .await?;
+
+            sleep(Duration::from_millis(100)).await;
+        }
 
         Ok(())
     }

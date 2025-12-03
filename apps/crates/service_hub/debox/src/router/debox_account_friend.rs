@@ -31,6 +31,10 @@ impl DeboxAccountFriendRouter {
                 .route(
                     "/sync-friends",
                     post(DeboxAccountFriendController::sync_friends),
+                )
+                .route(
+                    "/send-private-message-text",
+                    post(DeboxAccountFriendController::send_private_message_text),
                 ),
         )
     }

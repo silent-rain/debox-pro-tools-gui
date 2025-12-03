@@ -9,11 +9,12 @@ use inject::AInjectProvider;
 use crate::{
     DeboxGroupMemberService,
     dto::debox_group_member::{
-        CreateDeboxGroupMemberReq, CreateDeboxGroupMemberResp, DeleteDeboxGroupMemberReq,
-        DeleteDeboxGroupMemberResp, GetDeboxGroupMemberReq, GetDeboxGroupMemberResp,
-        GetDeboxGroupMembersReq, GetDeboxGroupMembersResp, SyncDeboxGroupMemberReq,
-        SyncDeboxGroupMemberResp, UpdateDeboxGroupMemberReq, UpdateDeboxGroupMemberResp,
-        UpdateDeboxGroupMemberStatusReq, UpdateDeboxGroupMemberStatusResp,
+        AddDeboxGroupMemberReq, AddDeboxGroupMemberResp, CreateDeboxGroupMemberReq,
+        CreateDeboxGroupMemberResp, DeleteDeboxGroupMemberReq, DeleteDeboxGroupMemberResp,
+        GetDeboxGroupMemberReq, GetDeboxGroupMemberResp, GetDeboxGroupMembersReq,
+        GetDeboxGroupMembersResp, SyncDeboxGroupMemberReq, SyncDeboxGroupMemberResp,
+        UpdateDeboxGroupMemberReq, UpdateDeboxGroupMemberResp, UpdateDeboxGroupMemberStatusReq,
+        UpdateDeboxGroupMemberStatusResp,
     },
 };
 
@@ -109,6 +110,21 @@ impl DeboxGroupMemberController {
     ) -> Responder<SyncDeboxGroupMemberResp> {
         let debox_group_service: DeboxGroupMemberService = provider.provide();
         debox_group_service.sync_group_members(&ctx, req).await?;
+
+        let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 添加debox群组成员
+    pub async fn add_debox_group_member(
+        ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<AddDeboxGroupMemberReq>,
+    ) -> Responder<AddDeboxGroupMemberResp> {
+        let debox_group_service: DeboxGroupMemberService = provider.provide();
+        debox_group_service
+            .add_debox_group_member(&ctx, req)
+            .await?;
 
         let resp = Response::ok();
         Ok(resp)

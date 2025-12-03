@@ -9,10 +9,11 @@ use inject::AInjectProvider;
 use crate::{
     DeboxGroupService,
     dto::debox_group::{
-        CreateDeboxGroupReq, CreateDeboxGroupResp, DeleteDeboxGroupReq, DeleteDeboxGroupResp,
-        GetDeboxGroupReq, GetDeboxGroupResp, GetDeboxGroupsReq, GetDeboxGroupsResp,
-        SyncDeboxGroupReq, SyncDeboxGroupResp, UpdateDeboxGroupReq, UpdateDeboxGroupResp,
-        UpdateDeboxGroupStatusReq, UpdateDeboxGroupStatusResp,
+        CreateDeboxGroupReq, CreateDeboxGroupResp, CreateDeboxSubgroupReq, CreateDeboxSubgroupResp,
+        DeleteDeboxGroupReq, DeleteDeboxGroupResp, GetDeboxGroupReq, GetDeboxGroupResp,
+        GetDeboxGroupsReq, GetDeboxGroupsResp, SyncDeboxGroupReq, SyncDeboxGroupResp,
+        UpdateDeboxGroupReq, UpdateDeboxGroupResp, UpdateDeboxGroupStatusReq,
+        UpdateDeboxGroupStatusResp,
     },
 };
 
@@ -109,6 +110,18 @@ impl DeboxGroupController {
         let debox_group_service: DeboxGroupService = provider.provide();
         debox_group_service.sync_groups(&ctx, req).await?;
 
+        let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 创建群组
+    pub async fn create_debox_subgroup(
+        ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<CreateDeboxSubgroupReq>,
+    ) -> Responder<CreateDeboxSubgroupResp> {
+        let debox_group_service: DeboxGroupService = provider.provide();
+        debox_group_service.create_debox_subgroup(&ctx, req).await?;
         let resp = Response::ok();
         Ok(resp)
     }

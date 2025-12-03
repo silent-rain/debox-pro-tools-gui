@@ -10,8 +10,9 @@ use crate::{
     dto::debox_account_friend::{
         CreateDeboxAccountFriendReq, CreateDeboxAccountFriendResp, DeleteDeboxAccountFriendReq,
         DeleteDeboxAccountFriendResp, GetDeboxAccountFriendReq, GetDeboxAccountFriendResp,
-        GetDeboxAccountFriendsReq, GetDeboxAccountFriendsResp, SyncDeboxAccountFriendsReq,
-        SyncDeboxAccountFriendsResp, UpdateDeboxAccountFriendReq, UpdateDeboxAccountFriendResp,
+        GetDeboxAccountFriendsReq, GetDeboxAccountFriendsResp, SendPrivateMessageTextReq,
+        SendPrivateMessageTextResp, SyncDeboxAccountFriendsReq, SyncDeboxAccountFriendsResp,
+        UpdateDeboxAccountFriendReq, UpdateDeboxAccountFriendResp,
         UpdateDeboxAccountFriendStatusReq, UpdateDeboxAccountFriendStatusResp,
     },
 };
@@ -110,6 +111,21 @@ impl DeboxAccountFriendController {
     ) -> Responder<SyncDeboxAccountFriendsResp> {
         let debox_account_friend_service: DeboxAccountFriendService = provider.provide();
         debox_account_friend_service.sync_friends(&ctx, req).await?;
+
+        let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 发送私聊文本消息
+    pub async fn send_private_message_text(
+        ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
+        Json(req): Json<SendPrivateMessageTextReq>,
+    ) -> Responder<SendPrivateMessageTextResp> {
+        let debox_account_friend_service: DeboxAccountFriendService = provider.provide();
+        debox_account_friend_service
+            .send_private_message_text(&ctx, req)
+            .await?;
 
         let resp = Response::ok();
         Ok(resp)

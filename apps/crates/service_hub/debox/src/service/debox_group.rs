@@ -5,15 +5,23 @@ use nject::injectable;
 use sea_orm::{DbErr::RecordNotUpdated, Set};
 
 use axum_context::Context;
-use debox_pro_rs::{Config as DeBoxConfig, DaoExtApi, DeBoxClient, dto::dao_ext::MyDao};
+use debox_pro_rs::{
+    Config as DeBoxConfig, DaoExtApi, DeBoxClient,
+    dto::dao_ext::{
+        CreateSubgroup, CreateSubgroupReq, DaoInfo, DaoInfoReq, MyDao, UpdateGroupInfoReq,
+    },
+};
 use entity::debox::{debox_account, debox_group};
 use err_code::{Error, ErrorMsg};
 
 use crate::{
-    DeboxAccountDao, DeboxGroupDao,
-    dto::debox_group::{
-        CreateDeboxGroupReq, DeleteDeboxGroupReq, GetDeboxGroupReq, GetDeboxGroupsReq,
-        SyncDeboxGroupReq, UpdateDeboxGroupReq, UpdateDeboxGroupStatusReq,
+    DeboxAccountService, DeboxGroupDao,
+    dto::{
+        debox_account::GetDeboxAccountReq,
+        debox_group::{
+            CreateDeboxGroupReq, CreateDeboxSubgroupReq, DeleteDeboxGroupReq, GetDeboxGroupReq,
+            GetDeboxGroupsReq, SyncDeboxGroupReq, UpdateDeboxGroupReq, UpdateDeboxGroupStatusReq,
+        },
     },
 };
 
@@ -21,7 +29,7 @@ use crate::{
 #[injectable]
 pub struct DeboxGroupService {
     debox_group_dao: DeboxGroupDao,
-    debox_account_dao: DeboxAccountDao,
+    debox_account_service: DeboxAccountService,
 }
 
 impl DeboxGroupService {
@@ -182,6 +190,52 @@ impl DeboxGroupService {
         })?;
         Ok(client)
     }
+
+    /// 创建群组
+    async fn debox_create_subgroup(
+        &self,
+        client: &DeBoxClient,
+        wallet_address: String,
+        group_name: String,
+        debox_user_ids: Vec<String>,
+    ) -> Result<CreateSubgroup, ErrorMsg> {
+        let data = CreateSubgroupReq {
+            name: vec![group_name.clone()],
+            subgroup: debox_user_ids,
+            wallet_address,
+            pic: vec!["https://data.debox.pro/dao/newpic/thirteen.png".to_string()], // 固定值
+            source: "3".to_string(),                                                 // 固定值
+        };
+
+        let group_info = client.create_subgroup(data).await.map_err(|e| {
+            error!("创建群组失败, err: {:#?}", e);
+            Error::DeboxProRs(e).into_err_with_msg("创建群组失败")
+        })?;
+
+        // 更新群信息
+        let data = UpdateGroupInfoReq {
+            gid: group_info.gid.clone(),
+            name: Some(group_name),
+            pic: None,
+            note: None,
+            tags: None,
+        };
+        let _result = client.update_group_info(data).await.map_err(|e| {
+            error!("更新群组信息失败, err: {:#?}", e);
+            Error::DeboxProRs(e).into_err_with_msg("更新群组信息失败")
+        })?;
+        Ok(group_info)
+    }
+
+    /// 获取群组信息
+    async fn debox_dao_info(&self, client: &DeBoxClient, gid: String) -> Result<DaoInfo, ErrorMsg> {
+        let data = DaoInfoReq { gid };
+        let resp = client.dao_info(data).await.map_err(|e| {
+            error!("获取群组信息失败, err: {:#?}", e);
+            Error::DeboxProRs(e).into_err_with_msg("获取群组信息失败")
+        })?;
+        Ok(resp)
+    }
 }
 
 impl DeboxGroupService {
@@ -238,21 +292,12 @@ impl DeboxGroupService {
 
     /// 同步DeBox群组列表
     pub async fn sync_groups(&self, ctx: &Context, req: SyncDeboxGroupReq) -> Result<(), ErrorMsg> {
-        let user_id = ctx.get_user_id();
-
         for account_id in req.account_ids {
             // 获取账号信息
-            let account_info = match self.debox_account_dao.info(account_id, user_id).await {
-                Ok(Some(account_info)) => account_info,
-                Ok(_account_info) => {
-                    error!("DeBox账号不存在, account_id: {}", account_id);
-                    continue;
-                }
-                Err(e) => {
-                    error!("查询DeBox账号信息失败, err: {:#?}", e);
-                    continue;
-                }
-            };
+            let account_info = self
+                .debox_account_service
+                .info(ctx, GetDeboxAccountReq { id: account_id })
+                .await?;
 
             // 生成debox客户端
             let client = match self.debox_client(&account_info) {
@@ -284,6 +329,57 @@ impl DeboxGroupService {
                 }
             }
         }
+
+        Ok(())
+    }
+
+    /// 创建群组
+    pub async fn create_debox_subgroup(
+        &self,
+        ctx: &Context,
+        req: CreateDeboxSubgroupReq,
+    ) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
+        // 获取账号信息
+        let account = self
+            .debox_account_service
+            .info(ctx, GetDeboxAccountReq { id: req.account_id })
+            .await?;
+
+        let client = self.debox_client(&account)?;
+
+        // 创建debox群组
+        let group_info = self
+            .debox_create_subgroup(
+                &client,
+                account.wallet_address.clone(),
+                req.group_name,
+                req.debox_user_ids,
+            )
+            .await?;
+
+        // 获取群组信息
+        let group_info = self.debox_dao_info(&client, group_info.gid.clone()).await?;
+
+        // 保存群组信息
+        let active_model = debox_group::ActiveModel {
+            user_id: Set(user_id),
+            account_id: Set(account.id),
+            gid: Set(group_info.gid.clone()),
+            name: Set(group_info.group_name.clone()),
+            invite_code: Set(account.invite_code.clone()),
+            pic: Set(group_info.group_icon.clone()),
+            status: Set(true),
+            ..Default::default()
+        };
+        self.debox_group_dao
+            .create(active_model)
+            .await
+            .map_err(|e| {
+                error!("添加DeBox DAO信息失败, err: {e:#?}");
+                Error::DbAddError.into_err_with_msg("添加DeBox DAO信息失败")
+            })?;
 
         Ok(())
     }

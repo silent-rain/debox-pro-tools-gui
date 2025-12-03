@@ -90,3 +90,13 @@ export interface SyncDeboxAccountFriendsReq {
 
 // 同步好友列表 响应体
 export interface SyncDeboxAccountFriendsResp {}
+
+// 发送私聊文本消息 请求体
+export interface SendPrivateMessageTextReq {
+  account_id: number; // 账号ID
+  debox_user_ids: string[]; // Debox用户ID列表
+  content: string; // 消息内容
+}
+
+// 发送私聊文本消息 响应体
+export interface SendPrivateMessageTextResp {}

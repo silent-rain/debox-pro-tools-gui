@@ -158,3 +158,17 @@ pub struct SyncDeboxGroupMemberReq {
 /// 同步DeBox群组成员列表  响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SyncDeboxGroupMemberResp {}
+
+/// 添加DeBox群组成员 请求体
+#[derive(Serialize, Deserialize, Validate)]
+pub struct AddDeboxGroupMemberReq {
+    /// 账号ID
+    pub account_id: i32,
+    /// 群组ID
+    pub group_id: i32,
+    /// Debox用户ID列表
+    pub debox_user_ids: Vec<String>,
+}
+/// 添加DeBox群组成员 响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct AddDeboxGroupMemberResp {}

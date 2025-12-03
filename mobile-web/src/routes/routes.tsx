@@ -11,7 +11,6 @@ const Error404 = lazy(() => import('@/pages/error404'));
 // TabBar
 const Layout = lazy(() => import('@/layouts'));
 const Home = lazy(() => import('@/pages/home'));
-const Todo = lazy(() => import('@/pages/todo'));
 const Message = lazy(() => import('@/pages/message'));
 const PersonalCenter = lazy(() => import('@/pages/personal-center'));
 
@@ -44,6 +43,10 @@ const AccountFollowManagementForm = lazy(() => import('@/pages/account-follow-ma
 // 好友管理
 const AccountFriendManagement = lazy(() => import('@/pages/account-friend-management'));
 
+// 一键拉群
+const CreateGroup = lazy(() => import('@/pages/create-group'));
+// const CreateGroupForm = lazy(() => import('@/pages/create-group/form'));
+
 // TabBar Routes
 export const tabBarRoutes: RouteConfig = {
   path: '/',
@@ -61,7 +64,7 @@ export const tabBarRoutes: RouteConfig = {
     },
     {
       path: 'create-group',
-      element: <Todo />,
+      element: <CreateGroup />,
       meta: {
         title: '拉群',
         icon: <UnorderedListOutline />,

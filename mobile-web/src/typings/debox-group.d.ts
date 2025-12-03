@@ -75,4 +75,15 @@ export interface SyncDeboxGroupReq {
   account_ids: number[]; // 账号IDs
 }
 
+// 同步DeBox群组列表  响应体
 export interface SyncDeboxGroupResp {}
+
+// 创建DeBox群组 请求体
+export interface CreateDeboxSubgroupReq {
+  account_id: number; // 账号ID
+  group_name: string; // 群组名称
+  debox_user_ids: string[]; // Debox用户IDs
+}
+
+// 创建DeBox群组 响应体
+export interface CreateDeboxSubgroupResp {}

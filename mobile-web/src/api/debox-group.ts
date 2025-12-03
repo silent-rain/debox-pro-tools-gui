@@ -5,6 +5,8 @@ import { SERVER } from '@/constants/http';
 import {
   CreateDeboxGroupReq,
   CreateDeboxGroupResp,
+  CreateDeboxSubgroupReq,
+  CreateDeboxSubgroupResp,
   DeleteDeboxGroupReq,
   DeleteDeboxGroupResp,
   GetDeboxGroupReq,
@@ -84,6 +86,16 @@ export const DeboxGroupApi = {
   syncGroups: async (data: SyncDeboxGroupReq): Promise<SyncDeboxGroupResp> => {
     const response = await request({
       url: `${SERVER}/debox/debox-groups/sync-groups`,
+      method: 'POST',
+      data,
+    });
+    return response.data;
+  },
+
+  // 创建DeBox子群组
+  createSubgroup: async (data: CreateDeboxSubgroupReq): Promise<CreateDeboxSubgroupResp> => {
+    const response = await request({
+      url: `${SERVER}/debox/debox-groups/create-debox-subgroup`,
       method: 'POST',
       data,
     });

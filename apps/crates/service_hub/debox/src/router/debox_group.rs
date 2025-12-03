@@ -24,7 +24,11 @@ impl DeboxGroupRouter {
                 )
                 .route("/update", put(DeboxGroupController::update))
                 .route("/update-status", put(DeboxGroupController::update_status))
-                .route("/sync-groups", post(DeboxGroupController::sync_groups)),
+                .route("/sync-groups", post(DeboxGroupController::sync_groups))
+                .route(
+                    "/create-debox-subgroup",
+                    post(DeboxGroupController::create_debox_subgroup),
+                ),
         )
     }
 }

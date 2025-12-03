@@ -79,3 +79,12 @@ export interface SyncDeboxGroupMemberReq {
 }
 
 export interface SyncDeboxGroupMemberResp {}
+
+// 添加DeBox群组成员 请求体
+export interface AddDeboxGroupMemberReq {
+  group_id: number; // 群组ID
+  debox_user_ids: string[]; // Debox用户ID列表
+}
+
+// 添加DeBox群组成员 响应体
+export interface AddDeboxGroupMemberResp {}

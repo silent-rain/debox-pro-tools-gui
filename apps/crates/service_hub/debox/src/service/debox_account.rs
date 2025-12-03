@@ -801,14 +801,24 @@ impl DeboxAccountService {
             .collect();
 
         for target_account_id in target_account_ids {
+            // 获取目标账号信息
+            let target_account = self
+                .info(
+                    ctx,
+                    GetDeboxAccountReq {
+                        id: target_account_id,
+                    },
+                )
+                .await?;
+
             // 创建dao
             let active_model = debox_group::ActiveModel {
                 user_id: Set(account.user_id),
-                account_id: Set(target_account_id),
+                account_id: Set(target_account.id),
                 gid: Set(gid.clone()),
                 name: Set(group.name.clone()),
                 pic: Set(group.pic.clone()),
-                // invite_code: Set(invite_code.clone()),
+                invite_code: Set(target_account.invite_code.clone()),
                 status: Set(true),
                 ..Default::default()
             };

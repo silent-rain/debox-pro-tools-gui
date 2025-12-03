@@ -163,3 +163,18 @@ pub struct SyncDeboxAccountFriendsReq {
 /// 同步好友列表 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SyncDeboxAccountFriendsResp {}
+
+/// 发送私聊文本消息 请求体
+#[derive(Debug, Default, Deserialize, Validate)]
+pub struct SendPrivateMessageTextReq {
+    /// 账号ID
+    pub account_id: i32,
+    /// 好友Debox用户ID
+    pub debox_user_ids: Vec<String>,
+    /// 消息内容    
+    pub content: String,
+}
+
+/// 发送私聊文本消息 响应体
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SendPrivateMessageTextResp {}

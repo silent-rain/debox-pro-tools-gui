@@ -8,8 +8,8 @@ export const ROUTES = {
   CHAT_FORM: '/chat/form',
 
   // 一键拉群
-  CREATE_GROUP: '/one-key-create-group',
-  CREATE_GROUP_FORM: '/one-key-create-group/form',
+  CREATE_GROUP: '/create-group',
+  CREATE_GROUP_FORM: '/create-group/form',
 
   // 个人中心
   PERSONAL_CENTER: '/personal-center',

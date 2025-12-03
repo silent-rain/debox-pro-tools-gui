@@ -20,14 +20,15 @@ const hideBackButton = (path: string) => {
 const Header = ({ title, path }: HeaderProps) => {
   const navigate = useNavigate();
 
-  // 隐藏头部导航栏的返回按钮
-  if (hideBackButton(path)) {
-    return null;
-  }
+  // 隐藏头部导航栏
+  // if (hideBackButton(path)) {
+  //   return null;
+  // }
 
   return (
     <NavBar
       className={styles.header}
+      backIcon={!hideBackButton(path)}
       onBack={() => {
         navigate(-1);
       }}

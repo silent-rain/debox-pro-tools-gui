@@ -31,6 +31,10 @@ impl DeboxGroupMemberRouter {
                 .route(
                     "/sync-group-members",
                     post(DeboxGroupMemberController::sync_group_members),
+                )
+                .route(
+                    "/add-debox-group-members",
+                    post(DeboxGroupMemberController::add_debox_group_member),
                 ),
         )
     }

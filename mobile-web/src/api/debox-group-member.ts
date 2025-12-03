@@ -3,6 +3,8 @@
 import request from '@/utils/request';
 import { SERVER } from '@/constants/http';
 import {
+  AddDeboxGroupMemberReq,
+  AddDeboxGroupMemberResp,
   CreateDeboxGroupMemberReq,
   CreateDeboxGroupMemberResp,
   DeleteDeboxGroupMemberReq,
@@ -84,6 +86,16 @@ export const DeboxGroupMemberApi = {
   syncGroupMembers: async (data: SyncDeboxGroupMemberReq): Promise<SyncDeboxGroupMemberResp> => {
     const response = await request({
       url: `${SERVER}/debox/debox-group-members/sync-group-members`,
+      method: 'POST',
+      data,
+    });
+    return response.data;
+  },
+
+  // 添加DeBox群组成员
+  addDeboxGroupMember: async (data: AddDeboxGroupMemberReq): Promise<AddDeboxGroupMemberResp> => {
+    const response = await request({
+      url: `${SERVER}/debox/debox-group-members/add-debox-group-members`,
       method: 'POST',
       data,
     });
