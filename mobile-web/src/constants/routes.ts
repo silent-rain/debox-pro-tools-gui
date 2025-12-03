@@ -37,4 +37,7 @@ export const ROUTES = {
   ACCOUNT_FOLLOW_MANAGEMENT: '/account-follow-management',
   // 添加关注人页面
   ACCOUNT_FOLLOW_MANAGEMENT_FORM: '/account-follow-management/form',
+
+  // 好友管理
+  ACCOUNT_FRIEND_MANAGEMENT: '/account-friend-management',
 };

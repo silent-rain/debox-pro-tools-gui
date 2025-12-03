@@ -1,8 +1,8 @@
 import { CheckList, SearchBar, InfiniteScroll } from 'antd-mobile';
 import { FC, useState } from 'react';
 import styles from './UserSearchList.module.scss';
-import { DeboxUserSearchReq, UserSearch } from '@/typings/debox-account-follows';
-import { DeboxAccountFollowFollowApi } from '@/api';
+import { DeboxUserSearchReq, UserSearch } from '@/typings/debox-account-follow';
+import { DeboxAccountFollowApi } from '@/api';
 import Empty from '@/components/empty';
 
 interface UserSearchListProps {
@@ -19,7 +19,7 @@ const deboxUserSearch = async (account_id: number, search: string, page: number)
     page: page,
     size: 50,
   };
-  return await DeboxAccountFollowFollowApi.deboxUserSearch(data);
+  return await DeboxAccountFollowApi.deboxUserSearch(data);
 };
 
 const UserSearchList: FC<UserSearchListProps> = ({ accountId, userIds, setUserIds }) => {

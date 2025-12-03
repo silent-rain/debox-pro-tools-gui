@@ -3,8 +3,8 @@ import { Avatar, DotLoading, List, Switch } from 'antd-mobile';
 import { CheckOutline, CloseOutline } from 'antd-mobile-icons';
 import styles from './AccountFollowList.module.scss';
 import Empty from '@/components/empty';
-import { DeboxAccountFollowFollowApi } from '@/api';
-import { DeboxAccountFollow, GetDeboxAccountFollowsReq } from '@/typings/debox-account-follows';
+import { DeboxAccountFollowApi } from '@/api';
+import { DeboxAccountFollow, GetDeboxAccountFollowsReq } from '@/typings/debox-account-follow';
 
 interface AccountFollowListProps {
   accountId: number;
@@ -23,13 +23,13 @@ const fetchAccountFollows = async (accountId: number): Promise<DeboxAccountFollo
     status: true,
     account_ids: [accountId],
   };
-  const response = await DeboxAccountFollowFollowApi.list(data);
+  const response = await DeboxAccountFollowApi.list(data);
   return response.data_list;
 };
 
 // 更新账号关注人状态
 const updateAccountFollowStatus = async (followId: number, status: boolean) => {
-  const data = await DeboxAccountFollowFollowApi.updateStatus({
+  const data = await DeboxAccountFollowApi.updateStatus({
     id: followId,
     status,
   });

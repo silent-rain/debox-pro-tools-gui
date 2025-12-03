@@ -334,6 +334,10 @@ impl DeboxAccountFollowService {
         user_id: i32,
         account_id: i32,
     ) -> Result<(), ErrorMsg> {
+        // 失败停止次数
+        let max_fail_count = 3;
+        let mut fail_count = 0;
+
         let mut page = 1;
         loop {
             // 分页获取关注人
@@ -344,6 +348,14 @@ impl DeboxAccountFollowService {
                 Ok(v) => v,
                 Err(e) => {
                     error!("account_id: {} page: {}, err: {:#?}", account_id, page, e);
+                    fail_count += 1;
+                    if fail_count >= max_fail_count {
+                        error!(
+                            "account_id: {} page: {} fail_count: {}, 失败次数超过最大次数",
+                            account_id, page, fail_count
+                        );
+                        return Err(e);
+                    }
                     break;
                 }
             };

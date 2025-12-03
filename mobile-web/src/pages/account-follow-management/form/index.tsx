@@ -4,15 +4,15 @@ import { Toast, Tabs, Button } from 'antd-mobile';
 import styles from './index.module.scss';
 import AccountList from '@/components/account-list';
 import AccountGroupList from './components/AccountGroupList';
-import { DeboxAccountFollowFollowApi } from '@/api';
-import { BatchAccountFollowsReq } from '@/typings/debox-account-follows';
+import { DeboxAccountFollowApi } from '@/api';
+import { BatchAccountFollowsReq } from '@/typings/debox-account-follow';
 import { FollowType } from '@/enums/debox-account-follows';
 
 import UserSearchList from './components/UserSearchList';
 
 // 批量关注用户
 const batchFollows = async (data: BatchAccountFollowsReq) => {
-  await DeboxAccountFollowFollowApi.batchFollows(data);
+  await DeboxAccountFollowApi.batchFollows(data);
 };
 
 const AccountFollowForm = () => {

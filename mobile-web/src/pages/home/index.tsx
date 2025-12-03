@@ -8,6 +8,7 @@ import {
   TruckOutline,
   HeartOutline,
   LoopOutline,
+  SmileOutline,
 } from 'antd-mobile-icons';
 import { ROUTES } from '@/constants/routes';
 import styles from './index.module.scss';
@@ -35,6 +36,12 @@ const Home = () => {
       path: ROUTES.ACCOUNT_FOLLOW_MANAGEMENT,
       icon: <HeartOutline />,
       description: '一键关注目标账号',
+    },
+    {
+      title: '好友管理',
+      path: ROUTES.ACCOUNT_FRIEND_MANAGEMENT,
+      icon: <SmileOutline />,
+      description: '同步好友列表',
     },
     { title: '一键拉群', path: ROUTES.CREATE_GROUP, icon: <TruckOutline />, description: '快速创建群组' },
     { title: '批量聊天', path: ROUTES.CHAT, icon: <MessageOutline />, description: '批量发送消息' },

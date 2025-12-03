@@ -4,4 +4,5 @@ export * from './user';
 export * from './debox-account';
 export * from './debox-group';
 export * from './debox-group-member';
-export * from './debox-account-follows';
+export * from './debox-account-follow';
+export * from './debox-account-friend';

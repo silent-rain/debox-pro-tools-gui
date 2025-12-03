@@ -3,7 +3,7 @@ import { Button, Dropdown } from 'antd-mobile';
 import AccountList from '@/components/account-list';
 import AccountFollowList from './components/AccountFollowList';
 import styles from './index.module.scss';
-import { DeboxAccountFollowFollowApi } from '@/api';
+import { DeboxAccountFollowApi } from '@/api';
 import { ROUTES } from '@/constants/routes';
 import { useNavigate } from 'react-router';
 
@@ -12,7 +12,7 @@ const syncFollows = async (accountId: number) => {
   const data = {
     account_ids: [accountId],
   };
-  await DeboxAccountFollowFollowApi.syncFollows(data);
+  await DeboxAccountFollowApi.syncFollows(data);
 };
 
 const FollowManagement = () => {

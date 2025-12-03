@@ -41,6 +41,9 @@ const AccountFollowManagement = lazy(() => import('@/pages/account-follow-manage
 // 添加关注人页面
 const AccountFollowManagementForm = lazy(() => import('@/pages/account-follow-management/form'));
 
+// 好友管理
+const AccountFriendManagement = lazy(() => import('@/pages/account-friend-management'));
+
 // TabBar Routes
 export const tabBarRoutes: RouteConfig = {
   path: '/',
@@ -242,6 +245,23 @@ const AccountFollowManagementRoutes: RouteConfig = {
   ],
 };
 
+// 好友管理 Routes
+const AccountFriendManagementRoutes: RouteConfig = {
+  path: '/account-friend-management',
+  element: <Layout />,
+  isLayout: true,
+  children: [
+    {
+      path: '',
+      element: <AccountFriendManagement />,
+      meta: {
+        title: '好友管理',
+        auth: true,
+      },
+    },
+  ],
+};
+
 // 主路由
 export const RootRoutes: RouteConfig[] = [
   // {
@@ -271,6 +291,7 @@ export const RootRoutes: RouteConfig[] = [
   SyncGroupMemberRoutes, // 同步群员
   FollowMutualInviteRoutes, // 账号互助
   AccountFollowManagementRoutes, // 账号关注管理
+  AccountFriendManagementRoutes, // 好友管理
   // {
   //   path: '/',
   //   element: <Navigate to='/login' />,

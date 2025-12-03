@@ -21,9 +21,9 @@ import {
   UpdateDeboxAccountFollowResp,
   UpdateDeboxAccountFollowStatusReq,
   UpdateDeboxAccountFollowStatusResp,
-} from '@/typings/debox-account-follows';
+} from '@/typings/debox-account-follow';
 
-export const DeboxAccountFollowFollowApi = {
+export const DeboxAccountFollowApi = {
   // 获取账号关注人列表
   list: async (data: GetDeboxAccountFollowsReq): Promise<GetDeboxAccountFollowsResp> => {
     const response = await request({
