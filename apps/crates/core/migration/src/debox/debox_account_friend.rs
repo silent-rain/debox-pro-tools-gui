@@ -1,4 +1,4 @@
-//! DeBox账号关注表
+//! DeBox账号好友表
 //! Entity: [`entity::user::UserBase`]
 //! Entity: [`entity::debox::DeboxAccount`]
 
@@ -23,52 +23,52 @@ impl MigrationTrait for Migration {
         manager
             .create_table(
                 Table::create()
-                    .table(DeboxAccountFollow::Table)
-                    .comment("账号关注表")
+                    .table(DeboxAccountFriend::Table)
+                    .comment("账号好友表")
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::Id)
+                        ColumnDef::new(DeboxAccountFriend::Id)
                             .integer()
                             .primary_key()
                             .auto_increment()
                             .not_null()
-                            .comment("关注ID"),
+                            .comment("好友ID"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::UserId)
+                        ColumnDef::new(DeboxAccountFriend::UserId)
                             .integer()
                             .not_null()
                             .comment("用户ID"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::AccountId)
+                        ColumnDef::new(DeboxAccountFriend::AccountId)
                             .integer()
                             .not_null()
                             .comment("账号ID"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::DeboxUserId)
+                        ColumnDef::new(DeboxAccountFriend::DeboxUserId)
                             .string()
                             .string_len(30)
                             .default("")
                             .comment("DeBox 用户ID"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::Name)
+                        ColumnDef::new(DeboxAccountFriend::Name)
                             .string()
                             .string_len(50)
                             .not_null()
                             .comment("用户名称"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::Avatar)
+                        ColumnDef::new(DeboxAccountFriend::Avatar)
                             .string()
                             .string_len(250)
                             .default("")
                             .comment("账号头像"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::Desc)
+                        ColumnDef::new(DeboxAccountFriend::Desc)
                             .string()
                             .string_len(200)
                             .default("")
@@ -77,21 +77,21 @@ impl MigrationTrait for Migration {
                             .comment("描述信息"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::Status)
+                        ColumnDef::new(DeboxAccountFriend::Status)
                             .boolean()
                             .not_null()
                             .default(false)
                             .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::CreatedAt)
+                        ColumnDef::new(DeboxAccountFriend::CreatedAt)
                             .date_time()
                             .not_null()
                             .default(Expr::current_timestamp())
                             .comment("创建时间"),
                     )
                     .col(
-                        ColumnDef::new(DeboxAccountFollow::UpdatedAt)
+                        ColumnDef::new(DeboxAccountFriend::UpdatedAt)
                             .date_time()
                             .not_null()
                             .extra({
@@ -106,10 +106,10 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .name(format!(
                                 "fk_{}_{}",
-                                DeboxAccountFollow::Table.to_string(),
-                                DeboxAccountFollow::UserId.to_string()
+                                DeboxAccountFriend::Table.to_string(),
+                                DeboxAccountFriend::UserId.to_string()
                             ))
-                            .from_col(DeboxAccountFollow::UserId)
+                            .from_col(DeboxAccountFriend::UserId)
                             .to(UserBase::Table, UserBase::Id)
                             .on_update(ForeignKeyAction::Cascade)
                             .on_delete(ForeignKeyAction::Cascade),
@@ -118,10 +118,10 @@ impl MigrationTrait for Migration {
                         ForeignKey::create()
                             .name(format!(
                                 "fk_{}_{}",
-                                DeboxAccountFollow::Table.to_string(),
-                                DeboxAccountFollow::AccountId.to_string()
+                                DeboxAccountFriend::Table.to_string(),
+                                DeboxAccountFriend::AccountId.to_string()
                             ))
-                            .from_col(DeboxAccountFollow::AccountId)
+                            .from_col(DeboxAccountFriend::AccountId)
                             .to(DeboxAccount::Table, DeboxAccount::Id)
                             .on_update(ForeignKeyAction::Cascade)
                             .on_delete(ForeignKeyAction::Cascade),
@@ -133,8 +133,8 @@ impl MigrationTrait for Migration {
         // create index
         if_not_exists_create_index(
             manager,
-            DeboxAccountFollow::Table,
-            vec![DeboxAccountFollow::UserId, DeboxAccountFollow::AccountId],
+            DeboxAccountFriend::Table,
+            vec![DeboxAccountFriend::UserId, DeboxAccountFriend::AccountId],
         )
         .await?;
 
@@ -144,14 +144,14 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         // Replace the sample below with your own migration scripts
         manager
-            .drop_table(Table::drop().table(DeboxAccountFollow::Table).to_owned())
+            .drop_table(Table::drop().table(DeboxAccountFriend::Table).to_owned())
             .await
     }
 }
 
 #[derive(DeriveIden)]
-pub enum DeboxAccountFollow {
-    #[sea_orm(iden = "t_debox_account_follow")]
+pub enum DeboxAccountFriend {
+    #[sea_orm(iden = "t_debox_account_friend")]
     Table,
     Id,
     UserId,

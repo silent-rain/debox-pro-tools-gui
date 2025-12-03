@@ -21,6 +21,7 @@ impl MigratorTrait for Migrator {
             Box::new(debox::debox_group::Migration),
             Box::new(debox::debox_group_member::Migration),
             Box::new(debox::debox_account_follow::Migration),
+            Box::new(debox::debox_account_friend::Migration),
             // 系统管理
             Box::new(system::config::Migration),
             Box::new(system::dict_dimension::Migration),

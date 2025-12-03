@@ -88,7 +88,7 @@ impl MigrationTrait for Migration {
                             .boolean()
                             .not_null()
                             .default(false)
-                            .comment("状态(0:停用,1:正常)"),
+                            .comment("状态(false:停用,true:正常)"),
                     )
                     .col(
                         ColumnDef::new(DeboxGroup::CreatedAt)
