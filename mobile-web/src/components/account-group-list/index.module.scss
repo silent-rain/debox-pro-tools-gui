@@ -8,8 +8,10 @@
   margin: 8px 16px 0;
 }
 
+
 .groupList {
   margin: 4px 16px 16px;
+  overflow-y: auto;
 }
 
 .groupItem {
@@ -18,4 +20,27 @@
 
 .groupItemAvatar {
   --size: 32px;
+}
+
+/* 自定义滚动条样式 */
+.accountGroupList::-webkit-scrollbar,
+.groupList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.accountGroupList::-webkit-scrollbar-track,
+.groupList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.accountGroupList::-webkit-scrollbar-thumb,
+.groupList::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.accountGroupList::-webkit-scrollbar-thumb:hover,
+.groupList::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }

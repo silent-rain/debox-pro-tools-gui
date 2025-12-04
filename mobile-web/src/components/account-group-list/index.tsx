@@ -9,6 +9,7 @@ interface AccountGroupListProps {
   accountId: number;
   multiple?: boolean; // 是否多选
   defaultSelected?: boolean; // 是否默认选中第一个账号
+  className?: string;
   onChange?: (accountGroupIds: number[]) => void;
 }
 
@@ -29,6 +30,7 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
   accountId,
   multiple = false,
   defaultSelected = false,
+  className,
   onChange,
 }) => {
   const [groups, setGroups] = useState<DeboxGroup[]>([]);
@@ -87,7 +89,7 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
   }
 
   return (
-    <div className='account-group-list'>
+    <div className={className}>
       <div className={styles.allGroupsCheckbox}>
         {multiple ? (
           <Checkbox
@@ -103,7 +105,7 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
       </div>
 
       <CheckList
-        className='group-list'
+        className={styles.groupList}
         multiple={multiple}
         value={accountGroupIds}
         onChange={(val) => {

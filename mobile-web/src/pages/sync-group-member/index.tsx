@@ -57,6 +57,7 @@ const GroupMemberManagement = () => {
             accountId={accountId}
             multiple
             defaultSelected
+            className={styles.accountGroupList}
             onChange={(accountGroupIds) => {
               setAccountGroupIds(accountGroupIds);
             }}
