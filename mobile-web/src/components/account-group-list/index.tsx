@@ -104,6 +104,7 @@ const AccountGroupList: FC<AccountGroupListProps> = ({
 
       <CheckList
         className='group-list'
+        multiple={multiple}
         value={accountGroupIds}
         onChange={(val) => {
           if (multiple) {

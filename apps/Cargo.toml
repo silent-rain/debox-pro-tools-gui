@@ -95,6 +95,7 @@ serde_json = "1.0"
 serde_yaml = "0.9"
 serde_repr = "0.1"
 serde_urlencoded = "0.7"
+url = "2.5"
 reqwest = "0.12"
 uuid = "1.19"
 base64 = "0.22"
@@ -113,6 +114,7 @@ rust-embed = "8.5"
 uap-rust = "0.0.4"
 dirs = "6.0"
 bytes = "1.10"
+
 
 
 # 日志

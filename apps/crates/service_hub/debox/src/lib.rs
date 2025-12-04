@@ -1,6 +1,7 @@
 //! Debox管理
 pub mod dto;
 pub mod enums;
+pub mod utils;
 
 pub(crate) mod dao;
 pub use dao::{

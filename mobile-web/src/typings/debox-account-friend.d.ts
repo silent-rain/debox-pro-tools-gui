@@ -7,6 +7,7 @@ export interface DeboxAccountFriend {
   user_id: number; // 用户ID
   account_id: number; // 账号ID
   debox_user_id: string; // DeBox 用户ID
+  invite_code: string; // 邀请码
   name: string; // 用户名称
   avatar: string; // 账号头像
   desc: string; // 描述信息
@@ -45,6 +46,7 @@ export type GetDeboxAccountFriendResp = DeboxAccountFriend;
 export interface CreateDeboxAccountFriendReq {
   account_id: number; // 账号ID
   debox_user_id: string; // DeBox 用户ID
+  invite_code: string; // 邀请码
   name: string; // 好友名称
   avatar: string; // 账号头像
   desc: string; // 描述信息
@@ -94,7 +96,7 @@ export interface SyncDeboxAccountFriendsResp {}
 // 发送私聊文本消息 请求体
 export interface SendPrivateMessageTextReq {
   account_id: number; // 账号ID
-  debox_user_ids: string[]; // Debox用户ID列表
+  to_user_ids: string[]; // Debox用户ID列表
   content: string; // 消息内容
 }
 

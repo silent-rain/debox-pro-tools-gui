@@ -23,6 +23,7 @@ use crate::{
         GetDeboxAccountFriendsReq, SendPrivateMessageTextReq, SyncDeboxAccountFriendsReq,
         UpdateDeboxAccountFriendReq, UpdateDeboxAccountFriendStatusReq,
     },
+    utils::extract_url_params,
 };
 
 /// 服务层
@@ -76,14 +77,15 @@ impl DeboxAccountFriendService {
     async fn debox_send_private_message_text(
         &self,
         client: &DeBoxClient,
-        debox_user_id: String,
+        to_user_id: String,
         content: String,
     ) -> Result<(), ErrorMsg> {
         let data = SendPrivateMessageReq {
-            to_user_id: debox_user_id,
+            to_user_id,
             object_name: String::from("text"),
             content,
         };
+        error!("============1 {:#?}", data);
         client.send_private_message(data).await.map_err(|e| {
             error!("发送私聊消息失败, err: {:#?}", e);
             Error::DeboxProRs(e).into_err_with_msg("发送私聊消息失败")
@@ -192,6 +194,7 @@ impl DeboxAccountFriendService {
             user_id: Set(user_id),
             account_id: Set(req.account_id),
             debox_user_id: Set(req.debox_user_id.clone()),
+            invite_code: Set(req.invite_code.clone()),
             name: Set(req.name.clone()),
             avatar: Set(req.avatar.clone()),
             desc: Set(req.desc.clone()),
@@ -382,10 +385,23 @@ impl DeboxAccountFriendService {
     ) -> Result<(), ErrorMsg> {
         let mut active_models = Vec::new();
         for friend in friends {
+            // https://m.debox.pro/card?id=7d2jypx2\u0026invite_code=
+            let invite_code = extract_url_params(&friend.url, "id")
+                .map_err(|e| {
+                    error!("提取URL参数失败, err: {:#?}", e);
+                    e.into_err_with_msg("提取URL参数失败")
+                })?
+                .ok_or_else(|| {
+                    error!("id not found");
+                    Error::InvalidUrlParameter("id not found".to_string())
+                        .into_err_with_msg("id not found")
+                })?;
+
             let active_model = debox_account_friend::ActiveModel {
                 user_id: Set(user_id),
                 account_id: Set(account_id),
                 debox_user_id: Set(friend.user_id.to_string()),
+                invite_code: Set(invite_code),
                 name: Set(friend.name),
                 avatar: Set(Some(friend.pic)),
                 status: Set(true),
@@ -432,8 +448,8 @@ impl DeboxAccountFriendService {
         let client = self.debox_client(&account)?;
 
         // 批量发送私聊文本消息
-        for debox_user_id in req.debox_user_ids.into_iter() {
-            self.debox_send_private_message_text(&client, debox_user_id, req.content.clone())
+        for to_user_id in req.to_user_ids.into_iter() {
+            self.debox_send_private_message_text(&client, to_user_id, req.content.clone())
                 .await?;
 
             sleep(Duration::from_millis(100)).await;

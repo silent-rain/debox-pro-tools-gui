@@ -43,6 +43,7 @@ const AccountFriendList: FC<AccountFriendListProps> = ({
   useEffect(() => {
     const loadAccounts = async () => {
       try {
+        setAccountFriendIds([]);
         setLoading(true);
         const data = await fetchAccountFriends(accountId);
         setAccountFriends(data);
@@ -110,6 +111,7 @@ const AccountFriendList: FC<AccountFriendListProps> = ({
 
       <CheckList
         className={styles.friendList}
+        multiple={multiple}
         value={accountFriendIds}
         onChange={(val) => {
           if (multiple) {

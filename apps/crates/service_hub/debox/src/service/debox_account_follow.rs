@@ -25,6 +25,7 @@ use crate::{
         SyncDeboxAccountFollowsReq, UpdateDeboxAccountFollowReq, UpdateDeboxAccountFollowStatusReq,
     },
     enums::debox_account_follow::FollowType,
+    utils::extract_url_params,
 };
 
 /// 服务层
@@ -193,6 +194,7 @@ impl DeboxAccountFollowService {
             user_id: Set(user_id),
             account_id: Set(req.account_id),
             debox_user_id: Set(req.debox_user_id.clone()),
+            invite_code: Set(req.invite_code.clone()),
             name: Set(req.name.clone()),
             avatar: Set(req.avatar.clone()),
             desc: Set(req.desc.clone()),
@@ -382,11 +384,25 @@ impl DeboxAccountFollowService {
         account_id: i32,
     ) -> Result<(), ErrorMsg> {
         let mut active_models = Vec::new();
+
         for follow in follows {
+            // https://m.debox.pro/card?id=7d2jypx2\u0026invite_code=
+            let invite_code = extract_url_params(&follow.url, "id")
+                .map_err(|e| {
+                    error!("提取URL参数失败, err: {:#?}", e);
+                    e.into_err_with_msg("提取URL参数失败")
+                })?
+                .ok_or_else(|| {
+                    error!("id not found");
+                    Error::InvalidUrlParameter("id not found".to_string())
+                        .into_err_with_msg("id not found")
+                })?;
+
             let active_model = debox_account_follow::ActiveModel {
                 user_id: Set(user_id),
                 account_id: Set(account_id),
                 debox_user_id: Set(follow.user_id.to_string()),
+                invite_code: Set(invite_code),
                 name: Set(follow.name),
                 avatar: Set(Some(follow.pic)),
                 status: Set(true),

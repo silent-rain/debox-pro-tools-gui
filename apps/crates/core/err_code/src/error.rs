@@ -29,6 +29,8 @@ pub enum Error {
     /// invalid request parameter
     #[error("invalid request parameter, {0}")]
     InvalidParameter(String),
+    #[error("invalid url parameter, {0}")]
+    InvalidUrlParameter(String),
     #[error("parse request body error, {0}")]
     RequestBodyError(String),
     #[error("parse content-type error from header, {0}")]
@@ -196,6 +198,8 @@ pub enum Error {
     AxumJwt(#[from] axum_jwt::Error),
     #[error(transparent)]
     DeboxProRs(#[from] debox_pro_rs::Error),
+    #[error(transparent)]
+    UrlParseError(#[from] url::ParseError),
 
     #[error(transparent)]
     ColorEyreReport(#[from] color_eyre::Report),

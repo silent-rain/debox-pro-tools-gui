@@ -96,6 +96,8 @@ pub struct CreateDeboxAccountFriendReq {
     pub account_id: i32,
     /// DeBox 用户ID
     pub debox_user_id: String,
+    /// 邀请码
+    pub invite_code: String,
     /// 好友名称
     pub name: String,
     /// 账号头像
@@ -169,8 +171,8 @@ pub struct SyncDeboxAccountFriendsResp {}
 pub struct SendPrivateMessageTextReq {
     /// 账号ID
     pub account_id: i32,
-    /// 好友Debox用户ID
-    pub debox_user_ids: Vec<String>,
+    /// 好友Debox用户ID - invite_code
+    pub to_user_ids: Vec<String>,
     /// 消息内容    
     pub content: String,
 }

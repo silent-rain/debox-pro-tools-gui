@@ -37,19 +37,20 @@ const AccountFriendList: FC<AccountFriendListProps> = ({
   onChange,
 }) => {
   const [accountFriends, setAccountFriends] = useState<DeboxAccountFriend[]>([]);
-  const [accountFriendIds, setAccountFriendIds] = useState<string[]>([]);
+  const [toUserIds, setToUserIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const loadAccounts = async () => {
       try {
+        setToUserIds([]);
         setLoading(true);
         const data = await fetchAccountFriends(accountId);
         setAccountFriends(data);
 
         // 默认第一个群组选中
         if (defaultSelected && data.length > 0) {
-          setAccountFriendIds([data[0].debox_user_id]);
+          setToUserIds([data[0].invite_code]);
         }
       } catch (err) {
         console.error(`fetchFriends error: ${err}`);
@@ -65,19 +66,19 @@ const AccountFriendList: FC<AccountFriendListProps> = ({
     if (!onChange) {
       return;
     }
-    onChange(accountFriendIds);
-  }, [accountFriendIds, onChange]);
+    onChange(toUserIds);
+  }, [toUserIds, onChange]);
 
   // 全选
   const handleSelectAllFriend = useCallback(
     (checked: boolean) => {
       if (checked) {
-        setAccountFriendIds(accountFriends.map((friend) => friend.debox_user_id));
+        setToUserIds(accountFriends.map((friend) => friend.invite_code));
       } else {
-        setAccountFriendIds([]);
+        setToUserIds([]);
       }
     },
-    [accountFriends, setAccountFriendIds],
+    [accountFriends, setToUserIds],
   );
 
   if (loading) {
@@ -97,8 +98,8 @@ const AccountFriendList: FC<AccountFriendListProps> = ({
       <div className={styles.allFriendsCheckbox}>
         {multiple ? (
           <Checkbox
-            indeterminate={accountFriendIds.length > 0 && accountFriendIds.length < accountFriends.length}
-            checked={accountFriendIds.length === accountFriends.length}
+            indeterminate={toUserIds.length > 0 && toUserIds.length < accountFriends.length}
+            checked={toUserIds.length === accountFriends.length}
             onChange={handleSelectAllFriend}
           >
             全选
@@ -110,17 +111,19 @@ const AccountFriendList: FC<AccountFriendListProps> = ({
 
       <CheckList
         className={styles.friendList}
-        value={accountFriendIds}
+        multiple={multiple}
+        value={toUserIds}
         onChange={(val) => {
           if (multiple) {
-            setAccountFriendIds(val as string[]);
+            console.log('val', val);
+            setToUserIds(val as string[]);
           } else {
-            setAccountFriendIds([val[0] as string]);
+            setToUserIds([val[0] as string]);
           }
         }}
       >
         {accountFriends.map((item) => (
-          <CheckList.Item key={item.debox_user_id} value={item.debox_user_id}>
+          <CheckList.Item key={item.id} value={item.invite_code}>
             <Space align='center'>
               <Avatar src={item.avatar ?? ''} />
               <span>{item.name}</span>

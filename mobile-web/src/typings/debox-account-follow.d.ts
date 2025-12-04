@@ -7,6 +7,7 @@ export interface DeboxAccountFollow {
   user_id: number; // 用户ID
   account_id: number; // 账号ID
   debox_user_id: string; // DeBox 用户ID
+  invite_code: string; // 邀请码
   name: string; // 用户名称
   avatar: string; // 账号头像
   desc: string; // 描述信息
@@ -45,6 +46,7 @@ export type GetDeboxAccountFollowResp = DeboxAccountFollow;
 export interface CreateDeboxAccountFollowReq {
   account_id: number; // 账号ID
   debox_user_id: string; // DeBox 用户ID
+  invite_code: string; // 邀请码
   name: string; // 关注人名称
   avatar: string; // 账号头像
   desc: string; // 描述信息

@@ -95,9 +95,12 @@ const AccountForm = () => {
         <Item name='debox_user_id' label='DeBox用户ID' rules={[{ required: true }]}>
           <Input placeholder='请输入DeBox用户ID' />
         </Item>
-        {/* <Item name='wallet_address' label='钱包地址' rules={[{ required: true }]}>
+
+        <Item name='wallet_address' label='钱包地址' disabled>
           <Input placeholder='请输入钱包地址' />
         </Item>
+
+        {/* 
         <Item name='api_key_status' label='API Key状态' rules={[{ required: true }]}>
           <Selector options={statusOptions} />
         </Item>

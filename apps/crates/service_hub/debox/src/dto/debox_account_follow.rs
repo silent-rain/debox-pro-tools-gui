@@ -99,6 +99,8 @@ pub struct CreateDeboxAccountFollowReq {
     pub account_id: i32,
     /// DeBox 用户ID
     pub debox_user_id: String,
+    /// 邀请码
+    pub invite_code: String,
     /// 关注人名称
     pub name: String,
     /// 账号头像
