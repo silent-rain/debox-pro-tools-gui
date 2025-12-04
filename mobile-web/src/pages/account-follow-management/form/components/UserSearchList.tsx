@@ -24,7 +24,7 @@ const deboxUserSearch = async (account_id: number, search: string, page: number)
 
 const UserSearchList: FC<UserSearchListProps> = ({ accountId, userIds, setUserIds }) => {
   const [users, setUsers] = useState<UserSearch[]>([]);
-  const [searchPage, _setSearchPage] = useState(1);
+  const [searchPage, setSearchPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [hasMore, setHasMore] = useState(false);
 
@@ -37,8 +37,8 @@ const UserSearchList: FC<UserSearchListProps> = ({ accountId, userIds, setUserId
     const data = await deboxUserSearch(accountId, searchTerm, searchPage);
     const dataList = data.data_list;
     setUsers((val) => [...val, ...dataList]);
-    console.log(users);
     setHasMore(dataList.length > 0);
+    setSearchPage((val) => val + 1);
   };
 
   return (

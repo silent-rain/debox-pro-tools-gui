@@ -28,6 +28,9 @@ use crate::{
     utils::extract_url_params,
 };
 
+// 限制一次添加的最大用户数
+const MAX_ADD_USER_COUNT: usize = 20;
+
 /// 服务层
 #[injectable]
 pub struct DeboxAccountFollowService {
@@ -493,6 +496,12 @@ impl DeboxAccountFollowService {
                 to_followed_ids
             }
         };
+
+        // 限制最大添加用户数
+        let to_followed_ids = to_followed_ids
+            .into_iter()
+            .take(MAX_ADD_USER_COUNT)
+            .collect::<Vec<String>>();
 
         info!("当前账号已关注的用户ID数: {:#?}", followed_ids.len());
         info!("待关注人数: {:#?}", to_followed_ids.len());
