@@ -83,6 +83,7 @@ const AccountFollowForm = () => {
       <Tabs defaultActiveKey='1'>
         <Tabs.Tab title='账号' key='account'>
           <p>请选择一个账号进行批量关注该账号的用户</p>
+          <p>如果没有数据请先同步账号的关注人</p>
           <div className={styles.operationButton}>
             <Button
               color='primary'
@@ -108,6 +109,7 @@ const AccountFollowForm = () => {
         </Tabs.Tab>
         <Tabs.Tab title='群组' key='account-group'>
           <p>请选择一个账号的群组进行批量关注该群组中的用户</p>
+          <p>如果群组没有数据请先同步账号的群组的成员</p>
           <div className={styles.operationButton}>
             <Button
               color='primary'

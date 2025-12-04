@@ -27,7 +27,6 @@ const AccountGroupList: FC<AccountGroupListProps> = ({ multiple = false, default
       <Dropdown defaultActiveKey='account'>
         <Dropdown.Item key='account' title='选择账号'>
           <AccountList
-            multiple
             defaultSelected
             onChange={(accountIds) => {
               if (accountIds.length === 0) {
