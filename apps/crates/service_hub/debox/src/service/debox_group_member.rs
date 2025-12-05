@@ -571,8 +571,17 @@ impl DeboxGroupMemberService {
 
         // 获取群组信息
         let group = self
-            .info(ctx, GetDeboxGroupMemberReq { id: req.group_id })
-            .await?;
+            .debox_group_dao
+            .info(req.group_id, user_id)
+            .await
+            .map_err(|err| {
+                error!("查询DeBox群组信息失败, err: {:#?}", err);
+                Error::DbQueryError.into_err_with_msg("查询DeBox群组信息失败")
+            })?
+            .ok_or_else(|| {
+                error!("DeBox群组不存在");
+                Error::DbQueryEmptyError.into_err_with_msg("DeBox群组不存在")
+            })?;
 
         // 获取账号信息
         let account = self
@@ -592,7 +601,7 @@ impl DeboxGroupMemberService {
         let client = self.debox_client(&account)?;
 
         // 添加debox群组成员
-        self.debox_member_add(&client, group.group_gid, req.debox_user_ids)
+        self.debox_member_add(&client, group.gid, req.debox_user_ids)
             .await?;
 
         // 同步群组成员列表

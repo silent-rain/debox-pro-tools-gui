@@ -1,7 +1,12 @@
 .operationButton {
   display: flex;
   gap: 8px;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-top: 8px;
   margin-bottom: 8px;
+  
+  .adm-button {
+    flex: 1;
+    max-width: 100px;
+  }
 }

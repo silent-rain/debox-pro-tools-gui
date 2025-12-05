@@ -1,0 +1,29 @@
+.contentContainer {
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 0px;
+  color: #999;
+}
+
+.groupItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .groupInfo {
+    flex: 1;
+
+    .groupName {
+      font-weight: bold;
+    }
+
+    .groupDesc {
+      font-size: 12px;
+      color: #666;
+    }
+  }
+}
