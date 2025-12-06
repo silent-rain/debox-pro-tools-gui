@@ -40,6 +40,8 @@ tauri-plugin-websocket = { workspace = true }
 tauri-plugin-log = { workspace = true }
 tauri-plugin-fs = { workspace = true }
 tauri-plugin-http = { workspace = true, features = ["unsafe-headers"] }
+tauri-plugin-dialog = { workspace = true }
+tauri-plugin-os = { workspace = true }
 # tauri-plugin-notification = { workspace = true, features = [
 #     "windows7-compat", # 支持 Windows 7
 # ] }

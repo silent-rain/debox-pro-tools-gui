@@ -52,6 +52,8 @@ tauri-plugin-log = "2.7"
 tauri-plugin-fs = "2.4"
 tauri-plugin-http = "2.5"
 tauri-plugin-notification = "2.3"
+tauri-plugin-dialog = "2.4"
+tauri-plugin-os = "2"
 openssl-sys = "0.9.111"
 
 # 服务框架
@@ -114,7 +116,6 @@ rust-embed = "8.5"
 uap-rust = "0.0.4"
 dirs = "6.0"
 bytes = "1.10"
-
 
 
 # 日志

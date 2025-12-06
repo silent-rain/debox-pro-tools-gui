@@ -10,6 +10,8 @@ import { useAuthStore } from '@/stores';
 import { ROUTES } from '@/constants/routes';
 import Empty from '@/components/empty';
 import styles from './index.module.scss';
+import { BaseDirectory, writeFile } from '@tauri-apps/plugin-fs';
+import { platform } from '@tauri-apps/plugin-os';
 
 // 获取账号列表
 const fetchAccounts = async (): Promise<DeboxAccount[]> => {
@@ -38,6 +40,56 @@ const deleteAccount = async (accountId: number) => {
   return data;
 };
 
+// 在 Tauri 环境中保存文件
+const saveFileTauri = async (filename: string, content: string) => {
+  try {
+    const currentPlatform = platform();
+    console.log(currentPlatform);
+
+    // 在 Android 上，使用保存对话框让用户选择位置
+    if (currentPlatform === 'android' || currentPlatform === 'ios') {
+      // 动态导入保存对话框
+      const { save } = await import('@tauri-apps/plugin-dialog');
+
+      // 使用保存对话框
+      const filePath = await save({
+        filters: [
+          {
+            name: 'JSON文件',
+            extensions: ['json'],
+          },
+        ],
+        defaultPath: filename,
+      });
+
+      // const filePath = filename;
+
+      if (filePath) {
+        // 将字符串内容转换为Uint8Array
+        const data = new TextEncoder().encode(content);
+        await writeFile(filePath, data, { baseDir: BaseDirectory.Download });
+        console.log('文件写入成功到用户选择路径');
+      } else {
+        console.log('用户取消了保存操作');
+        return; // 用户取消保存
+      }
+    } else {
+      // 网页环境使用原有逻辑
+      // 其他平台使用原有逻辑
+      const blob = new Blob([content], { type: 'application/json' });
+      saveAs(blob, filename);
+    }
+
+    Modal.show({
+      content: '导出成功',
+      closeOnMaskClick: true,
+    });
+  } catch (error) {
+    console.error('Tauri 保存文件失败:', error);
+    throw error;
+  }
+};
+
 // 下载配置文件
 const downloadConfigFile = async (accountId: number) => {
   const response = await DeboxAccountApi.info({
@@ -54,9 +106,10 @@ const downloadConfigFile = async (accountId: number) => {
   };
 
   const filename = response.name !== '' ? response.name : response.debox_user_id;
-  const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+  const content = JSON.stringify(data);
 
-  saveAs(blob, filename); // 自动处理下载逻辑
+  await saveFileTauri(`${filename}.json`, content);
+
   return;
 };
 
@@ -71,9 +124,9 @@ const exportAllConfigFiles = async () => {
   const accounts = response.data_list;
 
   const filename = 'configs.json';
-  const blob = new Blob([JSON.stringify(accounts)], { type: 'application/json' });
+  const content = JSON.stringify(accounts);
 
-  saveAs(blob, filename); // 自动处理下载逻辑
+  await saveFileTauri(filename, content);
 };
 
 // 用户列表

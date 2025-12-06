@@ -11,6 +11,13 @@
     "shell:allow-open",
     "log:default",
     "fs:default",
+    "fs:allow-create",
+    "fs:allow-write",
+    "fs:allow-write-file",
+    "fs:allow-appdata-write",
+    "fs:allow-appdata-write-recursive",
+    "fs:allow-download-write",
+    "fs:allow-download-write-recursive",
     "websocket:default",
     "http:default",
     {
@@ -20,6 +27,8 @@
           "path": "$APPDATA/*"
         }
       ]
-    }
+    },
+    "dialog:default",
+    "os:default"
   ]
 }
