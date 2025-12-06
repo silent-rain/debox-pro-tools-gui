@@ -43,9 +43,22 @@ const deleteAccount = async (accountId: number) => {
 // 在 Tauri 环境中保存文件
 const saveFileTauri = async (filename: string, content: string) => {
   try {
+    // 非 tauri 环境
+    if (window.__TAURI_OS_PLUGIN_INTERNALS__ === undefined) {
+      // 网页环境使用原有逻辑
+      // 其他平台使用原有逻辑
+      const blob = new Blob([content], { type: 'application/json' });
+      saveAs(blob, filename);
+
+      Modal.show({
+        content: '导出成功',
+        closeOnMaskClick: true,
+      });
+      return;
+    }
+
     const currentPlatform = platform();
     console.log(currentPlatform);
-
     // 在 Android 上，使用保存对话框让用户选择位置
     if (currentPlatform === 'android' || currentPlatform === 'ios') {
       // 动态导入保存对话框
@@ -319,7 +332,9 @@ const ImportAccount = () => {
     try {
       await DeboxAccountApi.uploadConfigFile(file, String(authStore.user_id));
       handleRefreshAccounts();
-      navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
+      setModalVisible(false);
+      e.target.value = '';
+      // navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
     } catch (error) {
       console.error('上传失败:', error);
     }
@@ -344,7 +359,10 @@ const ImportAccount = () => {
     try {
       await DeboxAccountApi.uploadConfigsFile(file, String(authStore.user_id));
       handleRefreshAccounts();
-      navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
+      setModalVisible(false);
+      e.target.value = '';
+      console.log('上传成功');
+      // navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
     } catch (error) {
       console.error('上传失败:', error);
       Modal.show({
