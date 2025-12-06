@@ -19,7 +19,7 @@ use crate::{
         GetDeboxAccountsReq, GetDeboxAccountsResp, UpdateAccountInfoReq, UpdateAccountInfoResp,
         UpdateAllAccountsInfoReq, UpdateAllAccountsInfoResp, UpdateDeboxAccountReq,
         UpdateDeboxAccountResp, UpdateDeboxAccountStatusReq, UpdateDeboxAccountStatusResp,
-        UploadConfigFileReq, UploadConfigFileResp,
+        UploadConfigFileReq, UploadConfigFileResp, UploadConfigsFileReq,
     },
 };
 
@@ -181,7 +181,20 @@ impl DeboxAccountController {
         TypedMultipart(req): TypedMultipart<UploadConfigFileReq>,
     ) -> Responder<UploadConfigFileResp> {
         let debox_account_service: DeboxAccountService = provider.provide();
-        let _result = debox_account_service.upload_config_file(&ctx, req).await?;
+        debox_account_service.upload_config_file(&ctx, req).await?;
+
+        let resp = Response::ok();
+        Ok(resp)
+    }
+
+    /// 批量上传配置文件
+    pub async fn upload_configs_file(
+        ctx: Context,
+        Extension(provider): Extension<AInjectProvider>,
+        TypedMultipart(req): TypedMultipart<UploadConfigsFileReq>,
+    ) -> Responder<()> {
+        let debox_account_service: DeboxAccountService = provider.provide();
+        debox_account_service.upload_configs_file(&ctx, req).await?;
 
         let resp = Response::ok();
         Ok(resp)

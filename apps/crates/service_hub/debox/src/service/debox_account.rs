@@ -23,9 +23,10 @@ use crate::{
     DeboxAccountDao, DeboxAccountFollowDao, DeboxGroupDao,
     dto::{
         debox_account::{
-            CreateDeboxAccountReq, DeleteDeboxAccountReq, GetDeboxAccountReq, GetDeboxAccountsReq,
-            UpdateAccountInfoReq, UpdateAllAccountsInfoReq, UpdateDeboxAccountReq,
-            UpdateDeboxAccountStatusReq, UploadConfigFileReq,
+            CreateDeboxAccountReq, CreateDeboxAccountsReq, DeleteDeboxAccountReq,
+            GetDeboxAccountReq, GetDeboxAccountsReq, UpdateAccountInfoReq,
+            UpdateAllAccountsInfoReq, UpdateDeboxAccountReq, UpdateDeboxAccountStatusReq,
+            UploadConfigFileReq, UploadConfigsFileReq,
         },
         debox_group::GetDeboxGroupsReq,
     },
@@ -319,6 +320,69 @@ impl DeboxAccountService {
         Ok(result)
     }
 
+    /// 批量添加数据
+    pub async fn creates(
+        &self,
+        ctx: &Context,
+        req: CreateDeboxAccountsReq,
+    ) -> Result<(), ErrorMsg> {
+        let user_id = ctx.get_user_id();
+
+        let mut failed = 0;
+        for data in req.data_list.iter() {
+            // 是否存在 DeBox 账号
+            if self
+                .exist_debox_user_id(user_id, data.debox_user_id.clone())
+                .await?
+            {
+                error!(
+                    "DeBox账号已存在, user_id: {:#?}, debox_user_id: {:#?}",
+                    user_id, data.debox_user_id
+                );
+                failed += 1;
+                continue;
+            }
+
+            // 创建基础模型
+            let active_model = debox_account::ActiveModel {
+                user_id: Set(user_id),
+                name: Set(data.name.clone()),
+                avatar: Set(data.avatar.clone()),
+                invite_code: Set(data.invite_code.clone()),
+                app_id: Set(data.app_id.clone()),
+                api_key: Set(data.api_key.clone()),
+                app_secret: Set(data.app_secret.clone()),
+                access_token: Set(data.access_token.clone()),
+                web_token: Set(data.web_token.clone()),
+                debox_user_id: Set(data.debox_user_id.clone()),
+                wallet_address: Set(data.wallet_address.clone()),
+                api_key_status: Set(data.api_key_status),
+                access_token_status: Set(data.access_token_status),
+                web_token_status: Set(data.web_token_status),
+                desc: Set(data.desc.clone()),
+                status: Set(data.status),
+                created_at: Set(data.created_at),
+                updated_at: Set(data.updated_at),
+                ..Default::default()
+            };
+
+            if let Err(e) = self.debox_account_dao.create(active_model).await {
+                error!(
+                    "debox_user_id: {:#?}, 添加DeBox账号信息失败, err: {:#?}",
+                    data.debox_user_id, e
+                );
+                failed += 1;
+            }
+        }
+        info!(
+            "批量添加DeBox账号完成, 总数量: {}, 失败数量: {}",
+            req.data_list.len(),
+            failed
+        );
+
+        Ok(())
+    }
+
     /// 更新DeBox账号
     pub async fn update(&self, ctx: &Context, req: UpdateDeboxAccountReq) -> Result<u64, ErrorMsg> {
         let user_id = ctx.get_user_id();
@@ -489,7 +553,7 @@ impl DeboxAccountService {
         &self,
         ctx: &Context,
         mut req: UploadConfigFileReq,
-    ) -> Result<debox_account::Model, ErrorMsg> {
+    ) -> Result<(), ErrorMsg> {
         // 读取json文件数据
         let mut buffer = vec![];
         req.file
@@ -507,9 +571,44 @@ impl DeboxAccountService {
             error!("文件内容转换失败, err: {:#?}", e);
             Error::ConvertType(e.to_string()).into_err_with_msg("文件内容转换失败")
         })?;
-        let result = self.create(ctx, data).await?;
+        let _result = self.create(ctx, data).await?;
 
-        Ok(result)
+        Ok(())
+    }
+
+    /// 批量上传配置文件
+    ///
+    /// 上传 json 文件
+    /// ```json
+    /// [{"app_id":"","api_key":"","app_secret":"","access_token":"","web_token":"","debox_user_id":""}]
+    /// ```
+    pub async fn upload_configs_file(
+        &self,
+        ctx: &Context,
+        mut req: UploadConfigsFileReq,
+    ) -> Result<(), ErrorMsg> {
+        // 读取json文件数据
+        let mut buffer = vec![];
+        req.file
+            .contents
+            .read_to_end(&mut buffer)
+            .map_err(|err| Error::UploadFileError(err.to_string()).into_err())?;
+
+        let file_content = String::from_utf8(buffer.clone()).map_err(|e| {
+            error!("文件内容转换失败, err: {:#?}", e);
+            Error::FromUtf8(e).into_err_with_msg("文件内容转换失败")
+        })?;
+
+        // 添加
+        let data_list: Vec<debox_account::Model> =
+            serde_json::from_str(&file_content).map_err(|e| {
+                error!("文件内容转换失败, err: {:#?}", e);
+                Error::ConvertType(e.to_string()).into_err_with_msg("文件内容转换失败")
+            })?;
+        self.creates(ctx, CreateDeboxAccountsReq { data_list })
+            .await?;
+
+        Ok(())
     }
 
     /// 账号相互关注

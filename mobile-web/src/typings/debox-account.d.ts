@@ -103,5 +103,3 @@ export interface DownloadConfigReq {
 }
 
 export interface DownloadConfigResp {}
-
-export type UploadConfigResp = DeboxAccount;

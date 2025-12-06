@@ -41,6 +41,10 @@ impl DeboxAccountRouter {
                     post(DeboxAccountController::upload_config_file),
                 )
                 .route(
+                    "/upload-configs",
+                    post(DeboxAccountController::upload_configs_file),
+                )
+                .route(
                     "/follow-account",
                     post(DeboxAccountController::follow_account),
                 )

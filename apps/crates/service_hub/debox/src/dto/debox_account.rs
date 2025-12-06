@@ -112,6 +112,13 @@ pub struct CreateDeboxAccountReq {
     pub status: bool,
 }
 
+/// 添加DeBox账号 请求体
+#[derive(Debug, Default, Serialize, Deserialize, Validate)]
+#[serde(default)]
+pub struct CreateDeboxAccountsReq {
+    pub data_list: Vec<debox_account::Model>,
+}
+
 /// 添加DeBox账号 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CreateDeboxAccountResp {}
@@ -215,3 +222,19 @@ pub struct UploadConfigFileReq {
 /// 上传配置文件 响应体
 #[derive(Debug, Serialize, Deserialize)]
 pub struct UploadConfigFileResp {}
+
+/// 批量上传配置文件 请求体
+///
+/// 单文件上传
+#[derive(TryFromMultipart)]
+pub struct UploadConfigsFileReq {
+    // The `unlimited arguments` means that this field will be limited to the
+    // total size of the request body. If you want to limit the size of this
+    // field to a specific value you can also specify a limit in bytes, like
+    // '5MiB' or '1GiB' or 'unlimited'.
+    #[form_data(limit = "5MiB")]
+    pub file: FieldData<NamedTempFile>,
+
+    // This field will be limited to the default size of 1MiB.
+    pub author: String,
+}

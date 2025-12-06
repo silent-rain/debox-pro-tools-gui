@@ -1,6 +1,6 @@
 import { Avatar, Button, List, ActionSheet, Tag, Modal, DotLoading } from 'antd-mobile';
 import { useNavigate } from 'react-router-dom';
-import { AddOutline, MoreOutline } from 'antd-mobile-icons';
+import { AddOutline, DownlandOutline, MoreOutline } from 'antd-mobile-icons';
 import { Action } from 'antd-mobile/es/components/action-sheet';
 import { useState, useRef, useEffect } from 'react';
 import { saveAs } from 'file-saver';
@@ -58,6 +58,22 @@ const downloadConfigFile = async (accountId: number) => {
 
   saveAs(blob, filename); // 自动处理下载逻辑
   return;
+};
+
+// 导出全部配置
+const exportAllConfigFiles = async () => {
+  const data: GetDeboxAccountsReq = {
+    page: 0,
+    page_size: 0,
+    all: true,
+  };
+  const response = await DeboxAccountApi.list(data);
+  const accounts = response.data_list;
+
+  const filename = 'configs.json';
+  const blob = new Blob([JSON.stringify(accounts)], { type: 'application/json' });
+
+  saveAs(blob, filename); // 自动处理下载逻辑
 };
 
 // 用户列表
@@ -220,6 +236,7 @@ const ImportAccount = () => {
   const authStore = useAuthStore();
   const [modalVisible, setModalVisible] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mutifileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAddAccount = () => {
     setModalVisible(true);
@@ -233,7 +250,8 @@ const ImportAccount = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // 上传单个文件
+  const handleSingleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) {
       console.error('请选择文件');
@@ -252,9 +270,40 @@ const ImportAccount = () => {
     }
   };
 
+  const handleMutiFileImport = () => {
+    mutifileInputRef.current?.click();
+  };
+
+  // 批量上传文件
+  const handleMultipleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      console.error('请选择文件');
+      Modal.show({
+        content: '请选择文件',
+        closeOnMaskClick: true,
+      });
+      return;
+    }
+
+    try {
+      await DeboxAccountApi.uploadConfigsFile(file, String(authStore.user_id));
+      navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
+    } catch (error) {
+      console.error('上传失败:', error);
+      Modal.show({
+        content: '上传失败，请重试',
+        closeOnMaskClick: true,
+      });
+    }
+  };
+
   return (
     <div className='account-management'>
       <div className={styles.accountHeader}>
+        <Button fill='none' onClick={exportAllConfigFiles}>
+          <DownlandOutline className={styles.addAccount} />
+        </Button>
         <Button fill='none' onClick={handleAddAccount}>
           <AddOutline className={styles.addAccount} />
         </Button>
@@ -267,7 +316,8 @@ const ImportAccount = () => {
         onClose={() => setModalVisible(false)}
         actions={[
           { key: 'form', text: '表单填写', onClick: handleFormImport },
-          { key: 'file', text: '配置导入', onClick: handleFileImport },
+          { key: 'file', text: '导入账号', onClick: handleFileImport },
+          { key: 'mutifile', text: '批量导入账号', onClick: handleMutiFileImport },
         ]}
       />
 
@@ -276,7 +326,15 @@ const ImportAccount = () => {
         type='file'
         ref={fileInputRef}
         accept='.json'
-        onChange={handleFileChange}
+        onChange={handleSingleFileChange}
+      />
+
+      <input
+        className={styles.importAccount}
+        type='file'
+        ref={mutifileInputRef}
+        accept='.json'
+        onChange={handleMultipleFileChange}
       />
 
       <AccountList />
