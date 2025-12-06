@@ -130,7 +130,7 @@ const exportAllConfigFiles = async () => {
 };
 
 // 用户列表
-const AccountList = () => {
+const AccountList = ({ accountsUpdateState }: { accountsUpdateState: number }) => {
   const navigate = useNavigate();
 
   const [visible, setVisible] = useState(false);
@@ -153,7 +153,7 @@ const AccountList = () => {
     };
 
     loadAccounts();
-  }, []);
+  }, [accountsUpdateState]);
 
   const actions: Action[] = [
     { text: '更新', key: 'update', onClick: () => handleMenuAction('update', currentAccountId!) },
@@ -290,6 +290,7 @@ const ImportAccount = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mutifileInputRef = useRef<HTMLInputElement>(null);
+  const [accountsUpdateState, setAccountsUpdateState] = useState<number>(0);
 
   const handleAddAccount = () => {
     setModalVisible(true);
@@ -317,6 +318,7 @@ const ImportAccount = () => {
 
     try {
       await DeboxAccountApi.uploadConfigFile(file, String(authStore.user_id));
+      handleRefreshAccounts();
       navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
     } catch (error) {
       console.error('上传失败:', error);
@@ -341,6 +343,7 @@ const ImportAccount = () => {
 
     try {
       await DeboxAccountApi.uploadConfigsFile(file, String(authStore.user_id));
+      handleRefreshAccounts();
       navigate(ROUTES.ACCOUNT_MANAGEMENT, { replace: true });
     } catch (error) {
       console.error('上传失败:', error);
@@ -351,9 +354,17 @@ const ImportAccount = () => {
     }
   };
 
+  // 刷新群组列表
+  const handleRefreshAccounts = () => {
+    setAccountsUpdateState((prev) => prev + 1);
+  };
+
   return (
     <div className='account-management'>
       <div className={styles.accountHeader}>
+        <Button color='primary' size='small' fill='solid' onClick={handleRefreshAccounts}>
+          刷新
+        </Button>
         <Button fill='none' onClick={exportAllConfigFiles}>
           <DownlandOutline className={styles.addAccount} />
         </Button>
@@ -390,7 +401,8 @@ const ImportAccount = () => {
         onChange={handleMultipleFileChange}
       />
 
-      <AccountList />
+      {/* 账号列表 */}
+      <AccountList accountsUpdateState={accountsUpdateState} />
     </div>
   );
 };
